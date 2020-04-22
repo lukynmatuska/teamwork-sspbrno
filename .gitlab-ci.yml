@@ -53,7 +53,8 @@ Production:
     - master
   stage: deploy_staging
   script:
-    - ls
+    - apt install tree
+    - tree dist
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
