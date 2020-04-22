@@ -16,6 +16,13 @@ module.exports = {
     password: 'password'
   },
 
+  herokuRedirect: false,
+
+  session: {
+    secret: 'very strong password for session',
+    maxAge: 86400000
+  },
+
   nodemailer: {
     sender: 'Adolf <adolf@exmaple.com>',
     settings: {

@@ -16,6 +16,13 @@ try {
     port: process.env.PORT,
     fullUrl: this.protocol + '://' + this.url + (String(this.port).length > 0 ? ':' + this.port : ''),
 
+    herokuRedirect: process.env.HEROKU_REDIRECT || false,
+
+    session: {
+      secret: process.env.SESSION_SECRET || 'secret',
+      maxAge: process.env.COOKIE_MAX_AGE || 86400000
+    },
+
     nodemailer: {
       sender: process.env.SMTP_SENDER || `Týmové práce SSPBRNO <${process.env.SMTP_USER}>`,
       settings: {
@@ -49,6 +56,12 @@ if (CONFIG.redis.url === undefined) {
 // Load the server lib (Express)
 const express = require('express')
 const app = express()
+
+// http to https redirect on Heroku
+if (CONFIG.herokuRedirect) {
+  const herokuSslRedirect = require('heroku-ssl-redirect')
+  app.use(herokuSslRedirect())
+}
 
 // load some libraries
 const moment = require('moment')
