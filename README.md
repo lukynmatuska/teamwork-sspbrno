@@ -1,4 +1,4 @@
-# Team works at SSPBRNO
+# Team work at SSPBRNO
 NodeJS webapp for administration of Team works at SSPBRNO
 
 ## Instalation on-premise
