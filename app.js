@@ -16,8 +16,6 @@ try {
     port: process.env.PORT,
     fullUrl: this.protocol + '://' + this.url + (String(this.port).length > 0 ? ':' + this.port : ''),
 
-    herokuRedirect: process.env.HEROKU_REDIRECT || false,
-
     session: {
       secret: process.env.SESSION_SECRET || 'secret',
       maxAge: process.env.COOKIE_MAX_AGE || 86400000

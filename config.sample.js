@@ -16,8 +16,6 @@ module.exports = {
     password: 'password'
   },
 
-  herokuRedirect: false,
-
   session: {
     secret: 'very strong password for session',
     maxAge: 86400000
