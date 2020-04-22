@@ -55,12 +55,6 @@ if (CONFIG.redis.url === undefined) {
 const express = require('express')
 const app = express()
 
-// http to https redirect on Heroku
-if (CONFIG.herokuRedirect) {
-  const herokuSslRedirect = require('heroku-ssl-redirect')
-  app.use(herokuSslRedirect())
-}
-
 // load some libraries
 const moment = require('moment')
 const path = require('path')
