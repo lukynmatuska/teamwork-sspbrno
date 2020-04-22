@@ -1,0 +1,11 @@
+<header class="masthead mb-auto">
+    <div class="inner">
+        <h3 class="masthead-brand">Týmové práce</h3>
+        <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link <%= active == 'home' ? 'active' : '' %>" href="/">Domů</a>
+            <% if (req.session.user != undefined) { %>
+            <a class="nav-link" href="/admin">Administrace</a>
+            <% } %>
+        </nav>
+    </div>
+</header>

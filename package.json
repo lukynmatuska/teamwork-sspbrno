@@ -1,0 +1,30 @@
+{
+    "name": "teamwork-sspbrno",
+    "author": {
+        "name": "Lukas Matuska",
+        "email": "lukynmatuska@gmail.com",
+        "url": "https://gitlab.com/matuska.lukas"
+    },
+    "version": "1.0.0",
+    "license": "Beerware",
+    "private": true,
+    "homepage": "https://gitlab.com/matuska.lukas/teamwork-sspbrno",
+    "dependencies": {
+        "bcrypt": "^3.0.6",
+        "body-parser": "^1.19.0",
+        "connect-redis": "^3.4.1",
+        "ejs": "^2.6.1",
+        "express": "^4.17.1",
+        "express-session": "^1.16.1",
+        "moment": "^2.24.0",
+        "mongoose": "^5.5.12",
+        "saslprep": "1.0.3",
+        "nodemailer": "^6.3.0",
+        "randomstring": "^1.1.5",
+        "redis": "^2.8.0"
+    },
+    "scripts": {
+        "start": "node app.js",
+        "develop": "nodemon app.js"
+    }
+}

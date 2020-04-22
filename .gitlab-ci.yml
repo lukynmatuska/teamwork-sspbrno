@@ -1,0 +1,60 @@
+# Node docker image on which this would be run
+image: node:12.16.2
+
+# Cache modules in between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - dist/
+
+stages:
+  # - test
+  - minify
+  - deploy_staging
+
+# Job 0:
+#Test:
+#  stage: test
+#  script:
+#    - npm install
+#    - npm run test
+
+# minify_js:
+#   image: node:latest
+#   stage: minify
+#   before_script:
+#     - npm install uglify-js -g
+#   script:
+#     - mkdir -p ./dist/js
+#     - uglifyjs js/API.js --output dist/js/API.min.js
+#   artifacts:
+#     expire_in: 12 hours
+#     paths:
+#       - dist
+
+minify_css:
+  image: node:latest
+  stage: minify
+  before_script:
+    - npm install uglifycss -g
+  script:
+    - mkdir -p ./dist/css
+    - uglifycss static/css/style.css static/css/animations.css --output dist/css/style.min.css
+  artifacts:
+    expire_in: 12 hours
+    paths:
+      - dist
+
+# Deploy to staging
+Production:
+  image: ruby:latest
+  only:
+    - master
+  stage: deploy_staging
+  script:
+    - ls
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
