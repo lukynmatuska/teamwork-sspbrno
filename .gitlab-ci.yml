@@ -53,8 +53,6 @@ Production:
     - master
   stage: deploy_staging
   script:
-    - rm static/css/style.css
-    - mv dist/css/style.min.css static/css/style.css
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
