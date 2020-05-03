@@ -43,12 +43,12 @@ try {
   }
 }
 
-if (CONFIG.redis === undefined) {
-  CONFIG.redis = {}
+if (global.CONFIG.redis === undefined) {
+  global.CONFIG.redis = {}
 }
 
-if (CONFIG.redis.url === undefined) {
-  CONFIG.redis.url = 'redis://localhost:6379'
+if (global.CONFIG.redis.url === undefined) {
+  global.CONFIG.redis.url = 'redis://localhost:6379'
 }
 
 // Load the server lib (Express)
@@ -66,7 +66,7 @@ const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 
 // connect to the redis server
-const redisClient = redis.createClient(CONFIG.redis.url)
+const redisClient = redis.createClient(global.CONFIG.redis.url)
 const store = new RedisStore({
   // host: 'localhost',
   // port: 6379,
@@ -106,8 +106,8 @@ app.use('/', partials.router)
 // const adminRouter = require('./routes/admin');
 // app.use('/admin', adminRouter);
 
-// const apiRouter = require('./routes/api')
-// app.use('/api', apiRouter)
+const apiRouter = require('./routes/api')
+app.use('/api', apiRouter)
 
 // const userSiteRouter = require('./routes/user-site')
 // app.use('/user-site', userSiteRouter)
@@ -116,6 +116,6 @@ const webRouter = require('./routes/web.js')
 app.use('/', webRouter)
 
 // run the server
-app.listen(CONFIG.port, () => {
-  console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} Listening on port ${CONFIG.port} (Administration of TeamWork at SSPBRNO Node.js app)`)
+app.listen(global.CONFIG.port, () => {
+  console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} Listening on port ${global.CONFIG.port} (Administration of TeamWork at SSPBRNO Node.js app)`)
 })

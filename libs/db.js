@@ -3,7 +3,7 @@ const moment = require('moment')
 
 // connect to the database
 mongoose.connect(
-  process.env.MONGODB_URI || `mongodb://${CONFIG.db.user}:${CONFIG.db.password}@${CONFIG.db.host}:${CONFIG.db.port}/${CONFIG.db.name}?${CONFIG.db.options}`,
+  process.env.MONGODB_URI || `mongodb://${global.CONFIG.db.user}:${global.CONFIG.db.password}@${global.CONFIG.db.host}:${global.CONFIG.db.port}/${global.CONFIG.db.name}?${global.CONFIG.db.options}`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
