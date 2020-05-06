@@ -17,9 +17,15 @@ var userSchema = new mongoose.Schema({
     middle: String,
     last: String
   },
-  username: String,
+  username: {
+    type: String,
+    required: true
+  },
   email: String,
-  password: String,
+  password: {
+    type: String,
+    required: true
+  },
   rescue: {
     type: Boolean,
     default: false

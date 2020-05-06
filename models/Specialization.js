@@ -12,7 +12,8 @@ const mongoose = require('../libs/db')
 
 // the schema itself
 var specializationSchema = new mongoose.Schema({
-  name: String
+  name: String,
+  short: String
 })
 
 // export

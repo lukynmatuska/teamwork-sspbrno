@@ -14,12 +14,16 @@ const mongoose = require('../libs/db')
 
 // the schema itself
 var teamWorkSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true
+  },
   description: String,
   students: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required: true
     },
     position: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,7 +34,8 @@ var teamWorkSchema = new mongoose.Schema({
   guarantors: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Specialization'
+      ref: 'User',
+      required: true
     },
     task: String
   }],
