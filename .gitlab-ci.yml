@@ -20,18 +20,18 @@ stages:
 #    - npm install
 #    - npm run test
 
-# minify_js:
-#   image: node:latest
-#   stage: minify
-#   before_script:
-#     - npm install uglify-js -g
-#   script:
-#     - mkdir -p ./dist/js
-#     - uglifyjs js/API.js --output dist/js/API.min.js
-#   artifacts:
-#     expire_in: 12 hours
-#     paths:
-#       - dist
+minify_js:
+   image: node:latest
+   stage: minify
+   before_script:
+     - npm install uglify-js -g
+   script:
+     - mkdir -p ./dist/js
+     - uglifyjs js/api.js --output dist/js/api.min.js
+   artifacts:
+     expire_in: 12 hours
+     paths:
+       - dist
 
 minify_css:
   image: node:latest
