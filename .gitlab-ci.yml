@@ -27,7 +27,7 @@ minify_js:
      - npm install uglify-js -g
    script:
      - mkdir -p ./dist/js
-     - uglifyjs js/api.js --output dist/js/api.min.js
+     - uglifyjs static/js/api.js --output dist/js/api.min.js
    artifacts:
      expire_in: 12 hours
      paths:
