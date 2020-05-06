@@ -11,12 +11,12 @@ var API = {
         type: 'POST',
         url: '/api/user/new',
         data: {
-          username,
-          password,
-          email,
-          firstname,
-          middlename,
-          lastname
+          username: username,
+          password: password,
+          email: email,
+          firstname: firstname,
+          middlename: middlename,
+          lastname: lastname
         },
         success: function (data, textStatus) {
           return data
@@ -32,8 +32,8 @@ var API = {
         type: 'POST',
         url: '/api/user/login',
         data: {
-          username,
-          password
+          username: username,
+          password: password
         },
         success: function (data, textStatus) {
           return data
@@ -47,7 +47,7 @@ var API = {
         type: 'POST',
         url: '/api/user/forgot-password',
         data: {
-          username
+          username: username
         },
         success: function (data, textStatus) {
           return data
@@ -61,8 +61,8 @@ var API = {
         type: 'POST',
         url: '/api/user/set-new-password',
         data: {
-          userId,
-          password
+          userId: userId,
+          password: password
         },
         success: function (data, textStatus) {
           return data
@@ -80,8 +80,8 @@ var API = {
         type: 'POST',
         url: '/api/user/change-type',
         data: {
-          userId,
-          type
+          userId: userId,
+          type: type
         },
         success: function (data, textStatus) {
           return data
@@ -107,10 +107,10 @@ var API = {
         type: 'POST',
         url: '/api/teamwork/new',
         data: {
-          name,
-          description,
-          students,
-          guarantors
+          name: name,
+          description: description,
+          students: students,
+          guarantors: guarantors
         },
         success: function (data, textStatus) {
           return data
@@ -130,7 +130,7 @@ var API = {
         type: 'POST',
         url: '/api/specialization/new',
         data: {
-          name,
+          name: name,
           short: shortName
         },
         success: function (data, textStatus) {
@@ -145,7 +145,7 @@ var API = {
         type: 'POST',
         url: '/api/specialization/edit',
         data: {
-          name,
+          name: name,
           short: shortName
         },
         success: function (data, textStatus) {
