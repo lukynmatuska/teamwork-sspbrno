@@ -95,7 +95,6 @@ module.exports.new = (req, res) => {
               res.send('err-sending-email')
               return console.error('Error occurred. ' + err.message)
             }
-            req.session.user = user
             return res.send('ok')
           })
         })

@@ -88,7 +88,7 @@ router.post('/user/change-type', partials.onlyGuarantor, (req, res) => {
   userController.changeType(req, res)
 })
 
-router.get('/user/list', (req, res) => {
+router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
   userController.list(req, res)
 })
 
