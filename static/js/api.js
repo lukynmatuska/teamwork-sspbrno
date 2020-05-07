@@ -101,29 +101,6 @@ var API = {
     }
   },
 
-  teamwork: {
-    new: function (name, description, students, guarantors) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/teamwork/new',
-        data: {
-          name: name,
-          description: description,
-          students: students,
-          guarantors: guarantors
-        },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
-    },
-
-    list: function () {
-      return $.get('/api/teamwork/list', {}, 'json')
-    }
-  },
-
   specialization: {
     new: function (name, shortName) {
       $.ajax({
@@ -155,8 +132,76 @@ var API = {
       })
     },
 
+    delete: function (id) {
+      $.ajax({
+        type: 'POST',
+        url: '/api/specialization/delete',
+        data: {
+          id: id
+        },
+        success: function (data, textStatus) {
+          return data
+        },
+        dataType: 'string'
+      })
+    },
+
     list: function () {
       return $.get('/api/specialization/list', {}, 'json')
+    }
+  },
+
+  teamwork: {
+    new: function (name, description, students, guarantors) {
+      $.ajax({
+        type: 'POST',
+        url: '/api/teamwork/new',
+        data: {
+          name: name,
+          description: description,
+          students: students,
+          guarantors: guarantors
+        },
+        success: function (data, textStatus) {
+          return data
+        },
+        dataType: 'string'
+      })
+    },
+
+    edit: function (name, description, students, guarantors) {
+      $.ajax({
+        type: 'POST',
+        url: '/api/teamwork/edit',
+        data: {
+          name: name,
+          description: description,
+          students: students,
+          guarantors: guarantors
+        },
+        success: function (data, textStatus) {
+          return data
+        },
+        dataType: 'string'
+      })
+    },
+
+    delete: function (id) {
+      $.ajax({
+        type: 'POST',
+        url: '/api/teamwork/delete',
+        data: {
+          id: id
+        },
+        success: function (data, textStatus) {
+          return data
+        },
+        dataType: 'string'
+      })
+    },
+
+    list: function () {
+      return $.get('/api/teamwork/list', {}, 'json')
     }
   }
 }

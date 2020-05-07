@@ -115,23 +115,12 @@ router.post('/year/change-status', partials.onlyGuarantor, (req, res) => {
   yearController.changeStatus(req, res)
 })
 
-router.post('/year/change-type', partials.onlyGuarantor, (req, res) => {
-  yearController.changeType(req, res)
+router.post('/year/switch', partials.onlyGuarantor, (req, res) => {
+  yearController.switch(req, res)
 })
 
 router.get('/year/list', partials.onlyGuarantor, (req, res) => {
   yearController.list(req, res)
-})
-
-/**
- * TeamWork
- */
-router.post('/teamwork/new', partials.onlyGuarantor, (req, res) => {
-  teamworkController.new(req, res)
-})
-
-router.get('/teamwork/list', (req, res) => {
-  teamworkController.list(req, res)
 })
 
 /**
@@ -141,16 +130,31 @@ router.post('/specialization/new', partials.onlyGuarantor, (req, res) => {
   specializationController.new(req, res)
 })
 
-router.get('/specialization/list', partials.onlyGuarantor, (req, res) => {
-  specializationController.list(req, res)
+router.post('/specialization/edit', partials.onlyGuarantor, (req, res) => {
+  specializationController.edit(req, res)
 })
 
 router.post('/specialization/delete', partials.onlyGuarantor, (req, res) => {
   specializationController.delete(req, res)
 })
 
-router.post('/specialization/edit', partials.onlyGuarantor, (req, res) => {
-  specializationController.edit(req, res)
+router.get('/specialization/list', partials.onlyGuarantor, (req, res) => {
+  specializationController.list(req, res)
+})
+
+/**
+ * TeamWork
+ */
+router.post('/teamwork/new', partials.onlyGuarantor, (req, res) => {
+  teamworkController.new(req, res)
+})
+
+router.post('/teamwork/edit', partials.onlyGuarantor, (req, res) => {
+  teamworkController.edit(req, res)
+})
+
+router.get('/teamwork/list', (req, res) => {
+  teamworkController.list(req, res)
 })
 
 /**
