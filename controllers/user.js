@@ -161,13 +161,13 @@ module.exports.enableRescue = (req, res) => {
 }
 
 module.exports.setNewPassword = (req, res) => {
-  if (req.body.userId === undefined) {
+  if (req.body.id === undefined) {
     return res.send('not-send-user-id')
   } else if (req.body.password === undefined) {
     return res.send('not-send-password')
   } else {
     User
-      .findById(req.body.userId)
+      .findById(req.body.id)
       .exec((err, user) => {
         if (err) {
           res.send(err)
@@ -175,7 +175,7 @@ module.exports.setNewPassword = (req, res) => {
         } else if (user.rescue || req.session.user.type === 'admin') {
           User
             .findByIdAndUpdate(
-              req.body.userId,
+              req.body.id,
               {
                 rescue: false,
                 password: bcrypt.hashSync(req.body.password, 15)

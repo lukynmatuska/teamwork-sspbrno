@@ -84,12 +84,17 @@ router.get('/user/update-session', partials.onlyLoggedIn, (req, res) => {
   userController.updateSession(req, res)
 })
 
-router.post('/user/change-type', partials.onlyGuarantor, (req, res) => {
+router.post('/user/change-type', partials.onlyAdmin, (req, res) => {
   userController.changeType(req, res)
 })
 
 router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
   userController.list(req, res)
+})
+
+router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
+  req.session.destroy()
+  res.send('ok')
 })
 
 // Next routes are accessible only for logged in users

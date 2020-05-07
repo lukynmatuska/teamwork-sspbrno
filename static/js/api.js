@@ -7,10 +7,9 @@ var API = {
       firstname,
       lastname,
       middlename) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/user/new',
-        data: {
+      return $.post(
+        '/api/user/new',
+        {
           username: username,
           password: password,
           email: email,
@@ -18,57 +17,40 @@ var API = {
           middlename: middlename,
           lastname: lastname
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
-    login: function (
-      username,
-      password) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/user/login',
-        data: {
+    login: function (username, password) {
+      return $.post(
+        '/api/user/login',
+        {
           username: username,
           password: password
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     forgotPassword: function (username) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/user/forgot-password',
-        data: {
+      return $.post(
+        '/api/user/forgot-password',
+        {
           username: username
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     setNewPassword: function (userId, password) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/user/set-new-password',
-        data: {
-          userId: userId,
+      return $.post(
+        '/api/user/set-new-password',
+        {
+          id: userId,
           password: password
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     updateSession: function () {
@@ -76,22 +58,22 @@ var API = {
     },
 
     changeType: function (userId, type) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/user/change-type',
-        data: {
-          userId: userId,
+      return $.post(
+        '/api/user/change-type',
+        {
+          id: userId,
           type: type
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     list: function () {
       return $.get('/api/user/list', {}, 'json')
+    },
+
+    logout: function () {
+      return $.get('/api/user/logout', {}, 'json')
     }
   },
 
@@ -103,47 +85,35 @@ var API = {
 
   specialization: {
     new: function (name, shortName) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/specialization/new',
-        data: {
+      return $.post(
+        '/api/specialization/new',
+        {
           name: name,
           short: shortName
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     edit: function (name, shortName) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/specialization/edit',
-        data: {
+      return $.post(
+        '/api/specialization/edit',
+        {
           name: name,
           short: shortName
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     delete: function (id) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/specialization/delete',
-        data: {
+      return $.post(
+        '/api/specialization/delete',
+        {
           id: id
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     list: function () {
@@ -153,51 +123,39 @@ var API = {
 
   teamwork: {
     new: function (name, description, students, guarantors) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/teamwork/new',
-        data: {
+      return $.post(
+        '/api/teamwork/new',
+        {
           name: name,
           description: description,
           students: students,
           guarantors: guarantors
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     edit: function (name, description, students, guarantors) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/teamwork/edit',
-        data: {
+      return $.post(
+        '/api/teamwork/edit',
+        {
           name: name,
           description: description,
           students: students,
           guarantors: guarantors
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     delete: function (id) {
-      $.ajax({
-        type: 'POST',
-        url: '/api/teamwork/delete',
-        data: {
+      return $.post(
+        '/api/teamwork/delete',
+        {
           id: id
         },
-        success: function (data, textStatus) {
-          return data
-        },
-        dataType: 'string'
-      })
+        'json'
+      )
     },
 
     list: function () {
