@@ -97,10 +97,6 @@ router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   res.send('ok')
 })
 
-// Next routes are accessible only for logged in users
-router.all('*', partials.onlyLoggedIn)
-
-// router.all('*', partials.onlyGuarantor)
 /**
  * Years
  */
