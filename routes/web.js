@@ -34,6 +34,13 @@ router.get('/', (req, res) => {
 })
 
 /**
+ * TeamWorks
+ */
+router.get('/teamworks', (req, res) => {
+  pageController.teamworks(req, res)
+})
+
+/**
  * Error pages for test
  */
 router.get('/403', (req, res) => {

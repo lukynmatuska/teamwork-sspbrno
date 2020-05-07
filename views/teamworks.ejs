@@ -1,0 +1,141 @@
+<%- include('./partials/header') %>
+<%- include('./partials/file-start') %>
+<%- include('./partials/menu') %>
+<main role="main" class="inner cover mt-5">
+    <h1 class="cover-heading"><%= title %></h1>
+    <span class="underline"></span>
+    <div class="mt-5 d-flex flex-dirextion-column justify-content-center align-items-stretch " id="teamworks">
+
+    </div>
+</main>
+
+<%- include('./partials/scripts-file-end') %>
+<script>
+    $(document).ready(function () {
+        API.teamwork
+            .list()
+            .done(function (teamworks) {
+                for (let i = 0; i < teamworks.length; i++) {
+                    let studentsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
+                    for (let ii = 0; ii < teamworks[i].students.length; ii++) {
+                        studentsDOMs.append(
+                            $('<li>', { class: 'list-group-item' }).append(
+                                $('<strong>', { class: 'text-dark' }).text(`${teamworks[i].students[ii].position.name}: `),
+                                $('<span>', { class: 'text-secondary' }).text(teamworks[i].students[ii].task)
+                            )
+                        )
+                    }
+
+                    let guarantorsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
+                    for (let ii = 0; ii < teamworks[i].guarantors.length; ii++) {
+                        let name = teamworks[i].guarantors[ii].user.name
+                        guarantorsDOMs.append(
+                            $('<li>', { class: 'list-group-item' }).append(
+                                $('<strong>', { class: 'text-dark' }).text(
+                                    `${name.first} ${name.middle === null ? ' ' : ` ${name.middle} `} ${name.last}: `
+                                ),
+                                $('<span>', { class: 'text-secondary' }).text(teamworks[i].guarantors[ii].task)
+                            )
+                        )
+                    }
+
+                    $('div#teamworks').append(
+                        $('<div>', { class: 'card flex-grow-1' }).append(
+                            $('<div>', { class: 'card-body' }).append(
+                                $('<h3>', { class: 'card-title text-dark' }).text(teamworks[i].name),
+                                // $('<h4>', { class: 'card-subtitle mb-2 text-muted' }).text(teamworks[i].description),
+                                $('<p>', { class: 'card-text text-muted' }).text(teamworks[i].description),
+                                // $('<div>', {})
+                            ),
+                            studentsDOMs,
+                            guarantorsDOMs,
+                            $('<div>', { class: 'card-body' }).append(
+                                $('<a>', { class: 'card-link text-secondary', href: '#' }).text('Vybrat!')
+                            )
+                        )
+                    )
+                }
+            })
+        $('form#login').submit(function (event) {
+            event.preventDefault()
+            $('div#login-status')
+                .empty()
+                .append(
+                    $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+                        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                        // $('<strong>').text('Gratuluji!'),
+                        'Přihlašuji'
+                    )
+                )
+                .show()
+            let username = $('#username').val()
+            let password = $('#password').val()
+            let strongAlertText = 'Ach ne'
+            let alertText
+            let alertStatus
+
+            if (username === '') {
+                alertText = 'Uživatelské jméno nemůže být prázdné'
+            } else if (password === '') {
+                alertText = 'Heslo nemůže být prázdné'
+            }
+
+            if (alertText !== undefined) {
+                $('div#login-status')
+                    .empty()
+                    .append(
+                        $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                            $('<strong>').text(strongAlertText),
+                            alertText
+                        )
+                    )
+                    .show()
+            }
+
+            API.user.login(username, password).done(function (responseFromServer) {
+                if (responseFromServer === 'ok') {
+                    $('div#login-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Gratuluji!'),
+                                'Úspěšně jste se přihlásil(a)'
+                            )
+                        )
+                        .show()
+
+                    // Redirect to main page
+                    setTimeout(function () {
+                        window.location.href = '/';
+                    }, 3500)
+                } else if (responseFromServer === 'wrong-username') {
+                    $('div#login-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Uživatel s tímto uživatelským jménem, nebo emailem neexistuje'
+                            )
+                        )
+                        .show()
+                } else if (responseFromServer === 'wrong-password') {
+                    $('div#login-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Zadané heslo se neshoduje'
+                            )
+                        )
+                        .show()
+                }
+            })
+        })
+    })
+</script>
+<%- include('./partials/footer') %>
+<%- include('./partials/file-end') %>

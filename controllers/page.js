@@ -23,3 +23,7 @@ module.exports.login = (req, res) => {
 module.exports.register = (req, res) => {
   res.render('register', { req, res, active: 'login', title: 'Registrace' })
 }
+
+module.exports.teamworks = (req, res) => {
+  res.render('teamworks', { req, res, active: 'teamworks', title: 'Seznam týmových prací' })
+}
