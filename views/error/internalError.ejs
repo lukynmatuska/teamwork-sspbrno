@@ -1,15 +1,14 @@
-<% title = '500 Vniřní chyba serveru' %>
-<% active = '' %>
 <%- include('../partials/header') %>
 <%- include('../partials/file-start') %>
 <%- include('../partials/menu') %>
-<main role="main" class="inner cover">
+<main role="main" class="inner cover mt-auto">
     <h1 class="cover-heading"><%= title %></h1>
     <% if (error) { %>
     <p class="lead">Chyba: <%= error %></p>
     <% } %>
     <p class="lead">Zkuste to prosím později, pokud chyba přetrvává i po obnovení stránky, tak nás můžete kontakovat na
-        emailu <a href="#mailto:">@example.com</a>.</p>
+        emailu <a href="#mailto:">somebody@example.com</a>.</p>
 </main>
+<%- include('../partials/scripts-file-end') %>
 <%- include('../partials/footer') %>
 <%- include('../partials/file-end') %>

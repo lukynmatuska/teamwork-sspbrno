@@ -38,6 +38,18 @@ html, body {
     }
 }
 
+.underline::before {
+    content: '';
+    opacity: 1;
+    background: whitesmoke;
+    position: absolute;
+    left: 25%;
+    width: 50%;
+    height: 3.5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
 .underline-animation::before {
     content: '';
     opacity: 1;

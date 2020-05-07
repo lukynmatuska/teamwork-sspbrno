@@ -120,7 +120,7 @@ module.exports.login = (req, res) => {
         res.send('err-mongo-finding-user')
         return console.error(err)
       } else if (user === null) {
-        return res.status(404).send('wrong-username')
+        return res.send('wrong-username')
       } else {
         bcrypt.compare(req.body.password, user.password, (err, same) => {
           if (err) {

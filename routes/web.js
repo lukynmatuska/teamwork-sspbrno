@@ -53,6 +53,22 @@ router.all('/d', (req, res) => {
   res.redirect('/?status=destroy-ok')
 })
 
+router.get('/login', (req, res) => {
+  if (req.session.user === undefined) {
+    return pageController.login(req, res)
+  } else {
+    return res.redirect('/')
+  }
+})
+
+router.get('/register', (req, res) => {
+  if (req.session.user === undefined) {
+    return pageController.register(req, res)
+  } else {
+    return res.redirect('/')
+  }
+})
+
 router.get('*', (req, res) => {
   errorController.error404(req, res)
 })

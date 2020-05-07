@@ -1,11 +1,20 @@
-<header class="masthead mb-auto">
+<!-- <header class="masthead mb-auto"> -->
+<header class="masthead">
     <div class="inner">
         <h3 class="masthead-brand">Týmové práce</h3>
         <nav class="nav nav-masthead justify-content-center">
-            <a class="nav-link <%= active == 'home' ? 'active' : '' %>" href="/">Domů</a>
-            <% if (req.session.user != undefined) { %>
+            <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Domů</a>
+            <% if (active === 'error') { %>
+            <a class="nav-link active" href="#">Chybová stránka</a>
+            <% } %>
+            <% if (req.session.user !== undefined) { %>
+            <% if (req.session.user.type === 'admin' ) { %>
             <a class="nav-link" href="/admin">Administrace</a>
             <% } %>
+            <a class="nav-link <%= active === 'profile' ? 'active' : '' %>" href="/profile">Profil</a>
+            <% } else { %>
+            <a class="nav-link <%= active === 'login' ? 'active' : '' %>" href="/login">Přihlášení</a>
+            <% } %> 
         </nav>
     </div>
 </header>

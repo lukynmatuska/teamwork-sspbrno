@@ -15,3 +15,11 @@
 module.exports.homepage = (req, res) => {
   res.render('homepage', { req, res, active: 'home', title: '' })
 }
+
+module.exports.login = (req, res) => {
+  res.render('login', { req, res, active: 'login', title: 'Přihlášení' })
+}
+
+module.exports.register = (req, res) => {
+  res.render('register', { req, res, active: 'login', title: 'Registrace' })
+}

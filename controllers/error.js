@@ -13,15 +13,12 @@
  */
 
 module.exports.error403 = (req, res) => {
-  if (req.originalUrl.includes('/api/')) {
-    return res.status(403).send('403')
-  }
-  return res.status(403).render('error/accessDenied', { req, res })
+  return res.status(403).render('error/universal', { req, res, active: 'error', title: '403 Přístup odepřen!' })
 }
 
 module.exports.error404 = (req, res) => {
-  return res.status(404).render('error/notFound', { req, res })
+  return res.status(404).render('error/universal', { req, res, active: 'error', title: '404 Nenalezeno' })
 }
-module.exports.error500 = (req, res) => {
-  return res.status(500).render('error/internalError', { req, res, active: 'error', error: 'Testovací stránka' })
+module.exports.error500 = (req, res, error = 'Testovací stránka') => {
+  return res.status(500).render('error/internalError', { req, res, active: 'error', title: '500 Vnitřní chyba serveru', error })
 }

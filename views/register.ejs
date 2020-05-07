@@ -1,0 +1,161 @@
+<%- include('./partials/header') %>
+<%- include('./partials/file-start') %>
+<%- include('./partials/menu') %>
+<main role="main" class="inner cover mt-5">
+    <h1 class="cover-heading"><%= title %></h1>
+    <span class="underline"></span>
+    <div class="mt-5">
+        <form id="register">
+            <div class="row">
+                <div class="form-group col-sm-12 col-md-4">
+                    <label for="username">Křestní jméno</label>
+                    <input type="text" class="form-control" id="firstname" placeholder="Zadejte Vaše křestní jméno">
+                </div>
+                <div class="form-group col-sm-12 col-md-4">
+                    <label for="username">Prostřední jméno</label>
+                    <input type="text" class="form-control" id="middlename"
+                        placeholder="Zadejte střední jméno, pokud nějaké máte">
+                </div>
+                <div class="form-group col-sm-12 col-md-4">
+                    <label for="username">Příjmení</label>
+                    <input type="text" class="form-control" id="lastname" placeholder="Zadejte Vaše příjmení">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="username">Emailová adresa</label>
+                <input type="email" class="form-control" id="email" placeholder="Zadejte Váš email">
+            </div>
+            <div class="form-group">
+                <label for="username">Uživatelské jméno</label>
+                <input type="text" class="form-control" id="username" placeholder="Zvolte si uživatelské jméno">
+            </div>
+            <div class="form-group">
+                <label for="password">Heslo</label>
+                <input type="password" class="form-control" id="password" placeholder="Zadejte heslo">
+            </div>
+            <div class="form-group" id="register-status" style="display: none;"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-secondary">Zaregistrovat</button>
+            </div>
+            <div class="form-group">
+                <a href="/login">Už mám účet a chci se přihlásit</a>
+            </div>
+        </form>
+    </div>
+</main>
+<%- include('./partials/scripts-file-end') %>
+<script>
+    $(document).ready(function () {
+        $('form#register').submit(function (event) {
+            event.preventDefault()
+            $('div#register-status')
+                .empty()
+                .append(
+                    $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+                        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                        // $('<strong>').text('Gratuluji!'),
+                        'Vytvářím účet'
+                    )
+                )
+                .show()
+            let username = $('#username').val()
+            let password = $('#password').val()
+            let email = $('#email').val()
+            let firstname = $('#firstname').val()
+            let lastname = $('#lastname').val()
+            let middlename = $('#middlename').val()
+            let strongAlertText = 'Ach ne'
+            let alertText
+            let alertStatus
+
+            if (username === '') {
+                alertText = 'Uživatelské jméno nemůže být prázdné'
+            } else if (password === '') {
+                alertText = 'Heslo nemůže být prázdné'
+            } else if (!email.includes('@')) {
+                alertText = 'Zadaný email je neplatný'
+            } else if (middlename.length === 0) {
+                middlename = undefined
+            }
+
+            if (alertText !== undefined) {
+                $('div#register-status')
+                    .empty()
+                    .append(
+                        $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                            $('<strong>').text(strongAlertText),
+                            alertText
+                        )
+                    )
+                    .show()
+            }
+
+            API.user.new(username, password, email, firstname, lastname, middlename).done(function (responseFromServer) {
+                if (responseFromServer === 'ok') {
+                    $('div#register-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Gratuluji!'),
+                                'Úspěšně jste se zaregistroval(a)'
+                            )
+                        )
+                        .show()
+
+                    // Redirect to login page
+                    setTimeout(function () {
+                        window.location.href = '/login';
+                    }, 3500)
+                } else if (responseFromServer === 'username-exist') {
+                    $('div#register-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Uživatel s tímto uživatelským jménem již existuje'
+                            )
+                        )
+                        .show()
+                } else if (responseFromServer === 'email-exist') {
+                    $('div#register-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Uživatel s tímto emailem již existuje'
+                            )
+                        )
+                        .show()
+                } else if (responseFromServer === 'err-sending-email') {
+                    $('div#register-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Bohužel se nepodařilo Vám odeslat email, ale účet byl vytvořen'
+                            )
+                        )
+                        .show()
+                } else {
+                    $('div#register-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ach ne!'),
+                                'Stala se obecná chyba, o které může vědět jen administrátor'
+                            )
+                        )
+                        .show()
+                }
+            })
+        })
+    })
+</script>
+<%- include('./partials/footer') %>
+<%- include('./partials/file-end') %>
