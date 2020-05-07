@@ -32,7 +32,7 @@
                         guarantorsDOMs.append(
                             $('<li>', { class: 'list-group-item' }).append(
                                 $('<strong>', { class: 'text-dark' }).text(
-                                    `${name.first} ${name.middle === null ? ' ' : ` ${name.middle} `} ${name.last}: `
+                                    `${name.first} ${name.middle === undefined ? ' ' : ` ${name.middle} `} ${name.last}: `
                                 ),
                                 $('<span>', { class: 'text-secondary' }).text(teamworks[i].guarantors[ii].task)
                             )
