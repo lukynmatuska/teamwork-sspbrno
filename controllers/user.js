@@ -34,9 +34,9 @@ module.exports.new = (req, res) => {
       res.send('err-mongo-count-documents')
       return console.error(err)
     }
-    // First user in MongoDB will be the Guarantor (admin)
+    // First user in MongoDB will be the Admin
     if (countOfUsers === 0) {
-      usertype = 'guarantor'
+      usertype = 'admin'
     }
 
     User.findOne({
@@ -172,7 +172,7 @@ module.exports.setNewPassword = (req, res) => {
         if (err) {
           res.send(err)
           return console.error(err)
-        } else if (user.rescue || req.session.user.type === 'guarantor') {
+        } else if (user.rescue || req.session.user.type === 'admin') {
           User
             .findByIdAndUpdate(
               req.body.userId,
@@ -234,6 +234,8 @@ module.exports.changeType = (req, res) => {
     return res.send('not-send-id')
   } else if (req.body.type === undefined) {
     return res.send('not-send-type')
+  } else if (!User.schema.path('type').enumValues.includes(req.body.type)) {
+    return res.send('invalid-type')
   }
   User
     .findByIdAndUpdate(req.body.id, { type: req.body.type })

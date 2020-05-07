@@ -32,7 +32,7 @@ var userSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['student', 'guarantor'],
+    enum: ['student', 'guarantor', 'admin'],
     default: 'student'
   },
   photo: {

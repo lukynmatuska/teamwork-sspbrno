@@ -127,6 +127,26 @@ module.exports.onlyGuarantor = (req, res, next) => {
   }
 }
 
+module.exports.onlyGuarantorAndAdmin = (req, res, next) => {
+  if (req.session.user === undefined) {
+    res.status(403).send('403')
+  } else if (req.session.user.type === 'guarantor' || req.session.user.type === 'admin') {
+    next()
+  } else {
+    res.status(403).send('403')
+  }
+}
+
+module.exports.onlyAdmin = (req, res, next) => {
+  if (req.session.user === undefined) {
+    res.status(403).send('403')
+  } else if (req.session.user.type === 'admin') {
+    next()
+  } else {
+    res.status(403).send('403')
+  }
+}
+
 /**
  * Export the router
  */
