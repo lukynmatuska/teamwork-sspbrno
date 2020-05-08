@@ -137,6 +137,50 @@ module.exports.login = (req, res) => {
     })
 }
 
+module.exports.edit = (req, res) => {
+  const update = {
+    name: {}
+  }
+  let id = req.session.user._id
+
+  if (req.body.firstname !== undefined) {
+    update.name.first = req.body.firstname
+  }
+
+  if (req.body.middlename !== undefined) {
+    update.name.middle = req.body.middlename
+  }
+
+  if (req.body.lastname !== undefined) {
+    update.name.last = req.body.lastname
+  }
+
+  if (req.body.email !== undefined) {
+    update.email = req.body.email
+  }
+
+  if (Object.keys(update.name).length === 0) {
+    delete update.name
+  }
+
+  if (req.body.id !== undefined && req.session.user.type === 'admin') {
+    id = req.body.id
+  }
+
+  User
+    .findByIdAndUpdate(id, update, { new: true })
+    .populate()
+    .exec((err, user) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      } else if (id === req.session.user._id) {
+        req.session.user = user
+      }
+      res.send('ok')
+    })
+}
+
 module.exports.enableRescue = (req, res) => {
   if (req.body.username === undefined) {
     return res.send('not-send-username')
@@ -147,6 +191,7 @@ module.exports.enableRescue = (req, res) => {
       }, {
         rescue: true
       })
+      .populate('years.year')
       .exec((err, user) => {
         if (err) {
           res.send('err')
@@ -179,10 +224,12 @@ module.exports.setNewPassword = (req, res) => {
               {
                 rescue: false,
                 password: bcrypt.hashSync(req.body.password, 15)
-              }, {
+              },
+              {
                 new: true
               }
             )
+            .populate('years.year')
             .exec((err, user) => {
               if (err) {
                 res.send('err')

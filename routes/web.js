@@ -21,6 +21,7 @@ moment.locale('cs')
  */
 const errorController = require('../controllers/error')
 const pageController = require('../controllers/page')
+const partials = require('../routes/partials')
 
 /**
  * Routes
@@ -68,12 +69,21 @@ router.get('/login', (req, res) => {
   }
 })
 
+router.get('/logout', partials.onlyLoggedIn, (req, res) => {
+  req.session.destroy()
+  res.redirect('/login?logout=ok')
+})
+
 router.get('/register', (req, res) => {
   if (req.session.user === undefined) {
     return pageController.register(req, res)
   } else {
     return res.redirect('/')
   }
+})
+
+router.get('/profile', partials.onlyLoggedIn, (req, res) => {
+  pageController.profile(req, res)
 })
 
 router.get('*', (req, res) => {

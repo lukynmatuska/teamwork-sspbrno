@@ -103,7 +103,11 @@ router.all('*', this.setYearForUser)
 
 module.exports.onlyLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
-    return res.send('please-login')
+    if (req.originalUrl.includes('api')) {
+      res.send('please-login')
+    } else {
+      res.redirect('/login')
+    }
   } else {
     next()
   }

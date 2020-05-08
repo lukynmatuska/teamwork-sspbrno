@@ -72,6 +72,10 @@ router.post('/user/login', (req, res) => {
   userController.login(req, res)
 })
 
+router.post('/user/edit', partials.onlyLoggedIn, (req, res) => {
+  userController.edit(req, res)
+})
+
 router.post('/user/forgot-password', (req, res) => {
   userController.enableRescue(req, res)
 })

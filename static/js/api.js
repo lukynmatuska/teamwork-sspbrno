@@ -32,6 +32,14 @@ var API = {
       )
     },
 
+    edit: function (object) {
+      return $.post(
+        '/api/user/edit',
+        object,
+        'json'
+      )
+    },
+
     forgotPassword: function (username) {
       return $.post(
         '/api/user/forgot-password',
