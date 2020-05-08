@@ -43,14 +43,14 @@
                 .show()
             let username = $('#username').val()
             let password = $('#password').val()
-            let strongAlertText = 'Ach ne'
+            let strongAlertText = 'Ach ne!'
             let alertText
             let alertStatus
 
             if (username === '') {
-                alertText = 'Uživatelské jméno nemůže být prázdné'
+                alertText = ' Uživatelské jméno nemůže být prázdné'
             } else if (password === '') {
-                alertText = 'Heslo nemůže být prázdné'
+                alertText = ' Heslo nemůže být prázdné'
             }
 
             if (alertText !== undefined) {
@@ -74,14 +74,14 @@
                             $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Gratuluji!'),
-                                'Úspěšně jste se přihlásil(a)'
+                                ' Úspěšně jste se přihlásil(a)'
                             )
                         )
                         .show()
 
-                    // Redirect to main page
+                    // Redirect to teamworks page
                     setTimeout(function () {
-                        window.location.href = '/';
+                        window.location.href = '/teamworks';
                     }, 3500)
                 } else if (responseFromServer === 'wrong-username') {
                     $('div#login-status')
@@ -90,7 +90,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Uživatel s tímto uživatelským jménem, nebo emailem neexistuje'
+                                ' Uživatel s tímto uživatelským jménem, nebo emailem neexistuje'
                             )
                         )
                         .show()
@@ -101,7 +101,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Zadané heslo se neshoduje'
+                                ' Zadané heslo se neshoduje'
                             )
                         )
                         .show()
