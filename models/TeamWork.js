@@ -22,8 +22,7 @@ var teamWorkSchema = new mongoose.Schema({
   students: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+      ref: 'User'
     },
     position: {
       type: mongoose.Schema.Types.ObjectId,
