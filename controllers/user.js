@@ -29,7 +29,9 @@ module.exports.new = (req, res) => {
   const email = req.body.email.trim().toLowerCase()
   const username = req.body.username.trim().toLowerCase()
 
-  User.countDocuments({}, (err, countOfUsers) => {
+  User.countDocuments({
+    type: 'admin'
+  }, (err, countOfUsers) => {
     if (err) {
       res.send('err-mongo-count-documents')
       return console.error(err)
