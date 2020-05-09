@@ -110,13 +110,15 @@ module.exports.login = (req, res) => {
   } else if (req.body.password === undefined) {
     res.send('not-send-password')
   }
-  User.findOne({
-    $or: [{
-      username: req.body.username.trim().toLowerCase()
-    }, {
-      email: req.body.username.trim().toLowerCase()
-    }]
-  })
+  User
+    .findOne({
+      $or: [{
+        username: req.body.username.trim().toLowerCase()
+      }, {
+        email: req.body.username.trim().toLowerCase()
+      }]
+    })
+    .populate('years.year')
     .exec((err, user) => {
       if (err) {
         res.send('err-mongo-finding-user')
@@ -171,7 +173,7 @@ module.exports.edit = (req, res) => {
 
   User
     .findByIdAndUpdate(id, update, { new: true })
-    .populate()
+    .populate('years.year')
     .exec((err, user) => {
       if (err) {
         res.send('err')
