@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="main-content d-flex flex-column min-vh-100">
+    <%- include('../partials/topbar') %>
+    <!-- Header -->
+    <div class="header d-flex align-items-center flex-grow-1"
+      style="background-image: url(//images.unsplash.com/photo-1515900387962-fd8dba567ed0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80); background-size: cover; background-position: center;">
+      <!-- Mask -->
+      <span class="mask bg-gradient-default opacity-7"></span>
+      <div class="container-fluid">
+        <div class="header-body">
+          <div class="row">
+            <div class="col-lg-7 col-md-10">
+              <h1 class="display-2 text-white"><%= title %></h1>
+              <p class="text-white">Chcete se dostat někam, kde nemáte udělený přístup, pokud si myslíte, že na něj máte
+                nárok, zažádejte si o něj u správce.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <%- include('../partials/footer') %>
+    </div>
+  </div>
+  <%- include('../partials/scripts-file-end') %>
+  <%- include('../partials/file-end') %>

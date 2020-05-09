@@ -1,0 +1,187 @@
+<!-- Topnav -->
+<nav class="navbar navbar-top navbar-expand navbar-dark bg-transparent">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse">
+            <!-- Navbar links -->
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item d-xl-none">
+                    <!-- Sidenav toggler -->
+                    <div class="pr-3 sidenav-toggler sidenav-toggler-dark" data-action="sidenav-pin"
+                        data-target="#sidenav-main">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Title -->
+            <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="#"><%= title %></a>
+
+            <!-- Years -->
+            <ul class="navbar-nav align-items-center d-none d-md-flex ml-lg-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <div class="media align-items-center">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="mb-0 text-sm  font-weight-bold">
+                                &nbsp;Ročník <%= req.session.year.name %>&nbsp;
+                            </span>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-right">
+                        <div class=" dropdown-header noti-title">
+                            <h6 class="text-overflow m-0">Vyberte si ročník:</h6>
+                        </div>
+                        <% req.session.user.years.forEach((object) => { %>
+                        <button type="button" onclick="switchYear('<%= object.year._id %>')"
+                            class="dropdown-item <%= req.session.year._id == object.year._id ? 'active' : '' %>">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span><%= object.year.name %></span>
+                        </button>
+                        <% }) %>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- User -->
+            <ul class="navbar-nav align-items-center ml-auto ml-md-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <div class="media align-items-center">
+                            <span class="avatar avatar-sm rounded-circle">
+                                <img alt="Avatar" src="<%= req.session.user.photo %>">
+                            </span>
+                            <div class="media-body ml-2 d-none d-lg-block">
+                                <span class="mb-0 text-sm font-weight-bold ">
+                                    <%= req.session.user.name.first %> <%= req.session.user.name.middle %>
+                                    <%= req.session.user.name.last %>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right ">
+                        <div class="dropdown-header noti-title">
+                            <h6 class="text-overflow m-0">Vítejte <%= osloveni(req.session.user.name.first) %>!</h6>
+                        </div>
+                        <a href="/admin/profile/" class="dropdown-item <%= active === 'profile' ? 'active' : '' %>">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                        <button type="button" onclick="updateSession()" class="dropdown-item">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Aktulizace sezení</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Odhlásit se</span>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+    function switchYear(year) {
+        swal({
+            title: "Přepíná se rok ...",
+            text: "Vydrž momentík ...",
+            icon: "warning",
+            timer: 2000,
+        }).then((value) => {
+            if ('<%= req.session.year._id %>' == year) {
+                swal({
+                    title: 'Asi jsi se uklikl',
+                    text: 'Vybral jsi stejný rok, jako je ten aktuální.',
+                    icon: 'warning',
+                });
+            } else {
+                $.post({
+                    url: '/admin/year/',
+                    data: {
+                        id: year,
+                    },
+                    success: function (response) {
+                        switch (response) {
+                            case 'ok':
+                                swal({
+                                    title: 'Rok se změnil!',
+                                    text: 'Jaká byla cesta časem?',
+                                    icon: 'success',
+                                    timer: 3000,
+                                }).then((value) => {
+                                    location.reload()
+                                })
+                                break;
+
+                            case 'not-permissions-for-this-year':
+                                swal({
+                                    title: 'Rok se nezměnil!',
+                                    text: 'Nastala chyba, protože nemáš práva na rok, na který se chceš přepnout.',
+                                    icon: 'error',
+                                });
+                                break;
+
+                            case 'not-found-year-bad-id':
+                                swal({
+                                    title: 'Rok se nezměnil!',
+                                    text: 'Nastala chyba, protože jsi na server poslal špatné id roku, na který se chceš přepnout.',
+                                    icon: 'error',
+                                });
+                                break;
+
+                            case 'not-sent-year':
+                                swal({
+                                    title: 'Rok se nezměnil!',
+                                    text: 'Nastala chyba, protože jsi neposlal na server id roku, na který se chceš přepnout.',
+                                    icon: 'error',
+                                });
+                                break;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function updateSession() {
+        swal({
+            title: "Sezení se aktualizuje ...",
+            text: "Vydrž prosím ...",
+            icon: "warning",
+            timer: 2000,
+        }).then((value) => {
+            API.user
+                .updateSession()
+                .done(function (response) {
+                    // console.log(response);
+                    switch (response) {
+                        case 'ok':
+                            swal({
+                                title: 'Gratuluji!',
+                                text: 'Sezení bylo aktualizováno.',
+                                icon: 'success',
+                                timer: 3000,
+                            }).then(() => {
+                                location.reload();
+                            });
+                            break;
+
+                        default:
+                            swal({
+                                title: 'Chyba!',
+                                text: `Kontaktuj správce prosím tě a vzkaž mu: '${response}'`,
+                                icon: 'error',
+                            });
+                            break;
+                    }
+                })
+        })
+    }
+</script>

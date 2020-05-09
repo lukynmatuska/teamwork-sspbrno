@@ -103,8 +103,8 @@ app.use(express.static(path.join(__dirname, 'static')))
 const partials = require('./routes/partials')
 app.use('/', partials.router)
 
-// const adminRouter = require('./routes/admin');
-// app.use('/admin', adminRouter);
+const adminRouter = require('./routes/admin')
+app.use('/admin', adminRouter)
 
 const apiRouter = require('./routes/api')
 app.use('/api', apiRouter)

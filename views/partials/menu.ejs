@@ -10,7 +10,7 @@
             <% } %>
             <% if (req.session.user !== undefined) { %>
             <% if (req.session.user.type === 'admin' ) { %>
-            <a class="nav-link" href="/admin">Administrace</a>
+            <a class="nav-link" href="/admin/">Administrace</a>
             <% } %>
             <a class="nav-link <%= active === 'profile' ? 'active' : '' %>" href="/profile">Profil</a>
             <a class="nav-link" href="/logout">Odhlásit se</a>

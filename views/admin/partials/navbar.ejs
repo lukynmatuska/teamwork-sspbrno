@@ -1,0 +1,40 @@
+<!-- Sidenav -->
+<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+  <div class="scrollbar-inner">
+    <!-- Brand -->
+    <div class="sidenav-header align-items-center">
+      <a class="navbar-brand" href="/admin/">
+        <img class="navbar-brand-img" src="/images/teamwork.png" alt="Logo">
+        Týmové práce
+      </a>
+    </div>
+    <div class="navbar-inner">
+      <!-- Collapse -->
+      <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+        <!-- Nav items -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link <%= active === 'dashboard' ? 'active' : '' %>" href="/admin/dashboard/">
+              <i class="fas fa-chart-pie text-primary"></i>
+              <span class="nav-link-text">Přehled</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= active === 'teamworks' ? 'active' : '' %>" href="/admin/teamworks/">
+              <i class="fas fa-handshake text-orange"></i>
+              <span class="nav-link-text">Týmové práce</span>
+            </a>
+          </li>
+          <% if (active === 'error') { %>
+          <li class="nav-item">
+            <a class="nav-link <%= active === 'error' ? 'active' : '' %>" href="/admin/">
+              <i class="fas fa-exclamation-triangle text-warning"></i>
+              <span class="nav-link-text">Chybová stránka</span>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

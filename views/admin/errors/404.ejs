@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="main-content d-flex flex-column min-vh-100">
+    <%- include('../partials/topbar') %>
+    <!-- Header -->
+    <div class="header d-flex align-items-center flex-grow-1"
+      style="background-image: url(/images/erik-mclean-bGWVhFY1gH0-unsplash_tiny.jpg); background-size: cover; background-position: center;">
+      <!-- Mask -->
+      <span class="mask bg-gradient-default opacity-7"></span>
+      <div class="container-fluid">
+        <div class="header-body">
+          <div class="row">
+            <div class="col-lg-7 col-md-10">
+              <h1 class="display-2 text-white"><%= title %></h1>
+              <p class="text-white">Hledáte soubor, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <%- include('../partials/footer') %>
+    </div>
+  </div>
+  <%- include('../partials/scripts-file-end') %>
+  <%- include('../partials/file-end') %>

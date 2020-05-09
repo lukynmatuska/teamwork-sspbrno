@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100">
+    <%- include('../partials/navbar') %>
+    <div class="main-content min-vh-100 d-flex flex-column">
+        <%- include('../partials/topbar') %>
+        <!-- Header -->
+        <div class="header d-flex d-flex align-items-center err-page-header flex-grow-1"
+            style="background-image: url(/images/sarah-kilian-52jRtc2S_VE-unsplash_tiny.jpg); background-size: cover; background-position: center;">
+            <!-- Mask -->
+            <span class="mask bg-gradient-default opacity-7"></span>
+            <div class="container-fluid">
+                <div class="header-body">
+                    <div class="row">
+                        <div class="col-lg-7 col-md-10">
+                            <h1 class="display-2 text-white"><%= title %></h1>
+                            <p class="text-white">Jejda, něco se nepovedlo, zkuste to prosím později.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <%- include('../partials/footer') %>
+        </div>
+    </div>
+    <%- include('../partials/scripts-file-end') %>
+    <%- include('../partials/file-end') %>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Lukas Matuska">
+
+  <title>
+    <%= (title == '') ? 'Týmové práce SPŠ Brno, Purkyňova 97' : `${title} - Týmové práce SPŠ Brno, Purkyňova 97` %>
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico" type="image/png">
+  <!-- Fonts -->
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+  <!-- Icons -->
+  <link rel="stylesheet" href="/admin/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
+  <!-- Argon CSS -->
+  <link rel="stylesheet" type="text/css" href="/admin/assets/css/argon.min.css">
+  <style>
+    *:focus {
+      outline: none;
+    }
+
+    button:focus {
+      border: none;
+      outline: none;
+    }
+
+    .min-vh-100 {
+      min-height: 100vh !important;
+    }
+
+    .dropdown-menu .active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .navbar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+      background-color: transparent;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    .sidenav {
+      z-index: 2;
+    }
+  </style>
+  <!-- JS -->
+  <script src="/admin/assets/vendor/jquery/dist/jquery.min.js"></script>
+  <script src="/admin/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/sweetalert.min.js"></script>
+  <script src="/js/cookies.js"></script>
+  <script src="/js/api.js"></script>
