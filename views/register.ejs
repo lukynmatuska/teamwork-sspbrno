@@ -53,8 +53,7 @@
                 .append(
                     $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
                         $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                        // $('<strong>').text('Gratuluji!'),
-                        'Vytvářím účet'
+                        ' Vytvářím účet'
                     )
                 )
                 .show()
@@ -85,7 +84,7 @@
                         $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                             $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                             $('<strong>').text(strongAlertText),
-                            alertText
+                            ` ${alertText}`
                         )
                     )
                     .show()
@@ -99,7 +98,7 @@
                             $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Gratuluji!'),
-                                'Úspěšně jste se zaregistroval(a)'
+                                ' Úspěšně jste se zaregistroval(a)'
                             )
                         )
                         .show()
@@ -115,7 +114,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Uživatel s tímto uživatelským jménem již existuje'
+                                ' Uživatel s tímto uživatelským jménem již existuje'
                             )
                         )
                         .show()
@@ -126,7 +125,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Uživatel s tímto emailem již existuje'
+                                ' Uživatel s tímto emailem již existuje'
                             )
                         )
                         .show()
@@ -137,7 +136,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Bohužel se nepodařilo Vám odeslat email, ale účet byl vytvořen'
+                                ' Bohužel se nepodařilo Vám odeslat email, ale účet byl vytvořen'
                             )
                         )
                         .show()
@@ -148,7 +147,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                'Stala se obecná chyba, o které může vědět jen administrátor'
+                                ' Stala se obecná chyba, o které může vědět jen administrátor'
                             )
                         )
                         .show()
