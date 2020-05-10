@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'list' }) %>
+		<div class="container-fluid mt--7 flex-grow-1">
+			<!-- Light table -->
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h3 class="mb-0">Seznam</h3>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="teamworks">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col" class="sort">ID</th>
+										<th scope="col" class="sort" data-sort="name">Název</th>
+										<th scope="col">Studenti</th>
+										<th scope="col">Garanti</th>
+										<th scope="col">Akce</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/datatables') %>
+	<script>
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				url: '/api/teamwork/list',
+				dataType: 'json',
+				success: function (obj, textstatus) {
+					$('table#teamworks').DataTable({
+						language: {
+							url: '/js/dataTables/myCzech.json'
+						},
+						responsive: true,
+						data: obj,
+						columns: [
+							{
+								data: "_id",
+								visible: false,
+							}, {
+								data: 'name',
+							}, {
+								data: 'students',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let studentsDOMSs = $('<div>', { class: 'avatar-group' })
+									for (let i = 0; i < oData.students.length; i++) {
+										const student = oData.students[i]
+										$('<a>', {
+											href: `/admin/user/show/${student.user._id}`,
+											class: 'avatar avatar-sm rounded-circle',
+											'data-toggle': 'tooltip',
+											'data-original-title': `${student.user.name.first} ${student.user.name.middle !== undefined ? `${student.user.name.middle} ` : ''}${student.user.name.last}`,
+										}).append(
+											$('<img>', {
+												alt: 'Studentův avatar',
+												src: student.user.photo
+											})
+										).appendTo(studentsDOMSs)
+									}
+									$(nTd).html(studentsDOMSs)
+								}
+							}, {
+								data: 'guarantors',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let guarantorsDOMSs = $('<div>', { class: 'avatar-group' })
+									for (let i = 0; i < oData.guarantors.length; i++) {
+										const guarantor = oData.guarantors[i]
+										$('<a>', {
+											href: `/admin/user/show/${guarantor.user._id}`,
+											class: 'avatar avatar-sm rounded-circle',
+											'data-toggle': 'tooltip',
+											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,
+										}).append(
+											$('<img>', {
+												alt: 'Garantův avatar',
+												src: guarantor.user.photo
+											})
+										).appendTo(guarantorsDOMSs)
+									}
+									$(nTd).html(guarantorsDOMSs)
+								}
+							}, {
+								data: '_id',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$("<a>", { href: `/admin/teamworks/edit/${oData._id}`, target: "_blank", style: "background: none; border: none; padding: 0; " }).append(
+												$("<i>", { class: "fas fa-pen text-primary" }),
+											),
+											$('<a>', { href: `/admin/teamworks/show/${oData._id}`, target: "_blank", style: "background: none; border: none; padding: 0; " }).append(
+											  $('<i>', { class: "fas fa-eye text-blue" }),
+											),
+											$('<button>', {
+												onclick: `deleteUserById('${oData._id}', '${oData.name.first}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-trash text-danger" }),
+											),
+										),
+									);
+								}
+							}
+						],
+					})
+					$(function () {
+						$('[data-toggle="tooltip"]').tooltip()
+					})
+				},
+				error: function (obj, textstatus) {
+					alert(obj.msg);
+				}
+			})
+		})
+	</script>
+	<%- include('../partials/file-end') %>

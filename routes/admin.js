@@ -53,8 +53,12 @@ router.get('/dashboard', (req, res) => {
 
 /**
  * TeamWorks
- * /
-router.get('/teamworks', (req, res) => {
+ */
+router.get('/teamworks/', (req, res) => {
+  res.redirect('./list')
+})
+
+router.get('/teamworks/list', (req, res) => {
   adminPageController.teamworks.list(req, res)
 })
 
