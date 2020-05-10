@@ -60,7 +60,7 @@ router.get('/teamworks', (req, res) => {
 
 /**
  * Profile
- * /
+ */
 router.get('/profile', (req, res) => {
   adminPageController.profile(req, res)
 })
