@@ -1,0 +1,123 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'new' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0">Nová týmovka</h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<form action="" id="edit-profile-form">
+								<h6 class="heading-small text-muted mb-4">Základní údaje</h6>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="name">Název</label>
+												<input type="text" id="name" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label for="description">Popis</label>
+												<textarea class="form-control" id="description" rows="3" required
+													placeholder="Zde se prosím rozepište o zadání týmové práce"></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+								<hr class="my-4">
+								<h6 class="heading-small text-muted mb-4">Studenti</h6>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col-3">
+											<div class="form-group">
+												<label for="position">Zaměření (Pozice)</label>
+												<select class="form-control" id="position" required>
+													<option>1</option>
+													<option>2</option>
+													<option>3</option>
+													<option>4</option>
+													<option>5</option>
+												</select>
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label for="task">Popis pozice</label>
+												<textarea class="form-control" id="task" rows="1" required
+													placeholder="Zde se prosím rozepište o studentově úkolu"></textarea>
+											</div>
+										</div>
+										<div class="col-4">
+											<div class="form-group">
+												<label for="student-0">Student</label>
+												<select class="form-control" id="student-0" required>
+													<option>1</option>
+													<option>2</option>
+													<option>3</option>
+													<option>4</option>
+													<option>5</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<hr class="my-4">
+								<h6 class="heading-small text-muted mb-4">Garanti</h6>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label for="task">Popis práce</label>
+												<textarea class="form-control" id="task" rows="1" required
+													placeholder="Zde se prosím rozepište o studentově úkolu"></textarea>
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label for="guarantor-0">Učitel</label>
+												<select class="form-control" id="guarantor-0" required>
+													<option>1</option>
+													<option>2</option>
+													<option>3</option>
+													<option>4</option>
+													<option>5</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col" id="change-password-status" style="display: none;"></div>
+										<div class="col-4 text-left">
+											<button type="button" class="btn btn-primary"
+												id="change-password-button">Editovat</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/file-end') %>

@@ -22,6 +22,9 @@ module.exports.teamworks = {
   },
   new: (req, res) => {
     res.render('admin/teamworks/new', { req, res, active: 'teamworks', title: 'Nová týmová práce' })
+  },
+  edit: (req, res) => {
+    res.render('admin/teamworks/edit', { req, res, active: 'teamworks', title: 'Editace týmové práce' })
   }
 }
 

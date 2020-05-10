@@ -25,9 +25,15 @@
               <span class="nav-link-text">Týmové práce</span>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link <%= active === 'users' ? 'active' : '' %>" href="/admin/users/">
+              <i class="fas fa-users"></i>
+              <span class="nav-link-text">Uživatelé</span>
+            </a>
+          </li>
           <% if (active === 'error') { %>
           <li class="nav-item">
-            <a class="nav-link <%= active === 'error' ? 'active' : '' %>" href="/admin/">
+            <a class="nav-link <%= active === 'error' ? 'active active-pro' : '' %>" href="/admin/">
               <i class="fas fa-exclamation-triangle text-warning"></i>
               <span class="nav-link-text">Chybová stránka</span>
             </a>
