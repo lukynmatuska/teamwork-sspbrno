@@ -66,9 +66,9 @@ router.get('/teamworks/new', (req, res) => {
   adminPageController.teamworks.new(req, res)
 })
 
-/* router.get('/teamworks/edit', (req, res) => {
+router.get('/teamworks/edit/:id', (req, res) => {
   adminPageController.teamworks.edit(req, res)
-}) */
+})
 
 /**
  * Profile

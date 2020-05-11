@@ -30,7 +30,7 @@ module.exports.new = (req, res) => {
     return res.send('not-object-guarantors')
   } else {
     for (let i = 0; i < req.body.students.length; i++) {
-      if (typeof req.body.students[i].user !== String) {
+      if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
         req.body.students[i].user = undefined
       }
     }
@@ -52,46 +52,54 @@ module.exports.new = (req, res) => {
 }
 
 module.exports.edit = (req, res) => {
-  let update
+  const update = {}
   if (req.body.id === undefined) {
     return res.send('not-send-id')
-  } else if (req.body.name !== undefined) {
+  }
+  if (req.body.name !== undefined) {
     update.name = req.body.name
-  } else if (req.body.description !== undefined) {
+  }
+  if (req.body.description !== undefined) {
     update.description = req.body.description
-  } else if (typeof req.body.students !== 'object') {
+  }
+  if (typeof req.body.students !== 'object') {
     return res.send('not-object-students')
   } else if (req.body.students !== undefined) {
     update.students = req.body.students
-  } else if (typeof req.body.guarantors !== 'object') {
-    return res.send('not-object-guarantors')
-  } else if (req.body.guarantors === undefined) {
-    update.guarantors = req.body.guarantors
-  } else {
-    TeamWork
-      .findByIdAndUpdate(req.body.id, update)
-      .populate({
-        path: 'students.user',
-        select: 'name username email photo type'
-      })
-      .populate('students.position')
-      .populate({
-        path: 'guarantors.user',
-        select: 'name username email photo type'
-      })
-      .populate('year')
-      .populate({
-        path: 'author',
-        select: 'name username email photo type'
-      })
-      .exec((err, teamWork) => {
-        if (err) {
-          res.send('err')
-          return console.error(err)
-        }
-        res.send('ok')
-      })
+    for (let i = 0; i < update.students.length; i++) {
+      if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
+        update.students[i].user = undefined
+      }
+    }
   }
+  if (typeof req.body.guarantors !== 'object') {
+    return res.send('not-object-guarantors')
+  } else if (req.body.guarantors !== undefined) {
+    update.guarantors = req.body.guarantors
+  }
+  TeamWork
+    .findByIdAndUpdate(req.body.id, update)
+    .populate({
+      path: 'students.user',
+      select: 'name username email photo type'
+    })
+    .populate('students.position')
+    .populate({
+      path: 'guarantors.user',
+      select: 'name username email photo type'
+    })
+    .populate('year')
+    .populate({
+      path: 'author',
+      select: 'name username email photo type'
+    })
+    .exec((err, teamWork) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      }
+      res.send('ok')
+    })
 }
 
 module.exports.delete = (req, res) => {
@@ -132,5 +140,31 @@ module.exports.list = (req, res) => {
         return console.error(err)
       }
       return res.send(teamWorks)
+    })
+}
+
+module.exports.findById = (req, res) => {
+  TeamWork
+    .findById(req.params.id)
+    .populate({
+      path: 'students.user',
+      select: 'name username email photo type'
+    })
+    .populate('students.position')
+    .populate({
+      path: 'guarantors.user',
+      select: 'name username email photo type'
+    })
+    .populate('year')
+    .populate({
+      path: 'author',
+      select: 'name username email photo type'
+    })
+    .exec((err, teamWork) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      }
+      return res.send(teamWork)
     })
 }

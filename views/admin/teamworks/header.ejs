@@ -16,14 +16,21 @@
                                 Seznam
                                 <% } else if (active === 'new') { %>
                                 Nová
+                                <% }  else if (active === 'edit') { %>
+                                Editace
                                 <% } %>
                             </li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-lg-6 col-5 text-right">
-                    <a href="./new" class="btn btn-sm btn-neutral <%= active === 'new' ? 'active' : '' %>">Nová</a>
-                    <a href="./list" class="btn btn-sm btn-neutral <%= active === 'list' ? 'active' : '' %>">Seznam</a>
+                    <a href=".<%= active === 'edit' ? '.' : '' %>/new"
+                        class="btn btn-sm btn-neutral <%= active === 'new' ? 'active' : '' %>">Nová</a>
+                    <a href=".<%= active === 'edit' ? '.' : '' %>/list"
+                        class="btn btn-sm btn-neutral <%= active === 'list' ? 'active' : '' %>">Seznam</a>
+                    <% if (active === 'edit') { %>
+                    <a href="#" class="btn btn-sm btn-neutral active">Editace</a>
+                    <% } %>
                 </div>
             </div>
         </div>

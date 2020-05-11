@@ -162,6 +162,10 @@ router.get('/teamwork/list', (req, res) => {
   teamworkController.list(req, res)
 })
 
+router.get('/teamwork/find-by-id/:id', (req, res) => {
+  teamworkController.findById(req, res)
+})
+
 /**
  * Not found route
  */

@@ -143,10 +143,11 @@ var API = {
       )
     },
 
-    edit: function (name, description, students, guarantors) {
+    edit: function (id, name, description, students, guarantors) {
       return $.post(
         '/api/teamwork/edit',
         {
+          id: id,
           name: name,
           description: description,
           students: students,
@@ -154,6 +155,10 @@ var API = {
         },
         'json'
       )
+    },
+
+    findById: function (id) {
+      return $.get(`/api/teamwork/find-by-id/${id}`, {}, 'json')
     },
 
     delete: function (id) {
