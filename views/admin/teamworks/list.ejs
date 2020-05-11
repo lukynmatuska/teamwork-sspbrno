@@ -144,7 +144,7 @@
 									let guarantorsDOMSs = $('<div>', { class: 'avatar-group' })
 									for (let i = 0; i < oData.guarantors.length; i++) {
 										const guarantor = oData.guarantors[i]
-										if (guarantor.user !== undefined || guarantor.user !== null) {
+										if (guarantor.user === undefined || guarantor.user === null) {
 											guarantor.user = {
 												name: {
 													first: 'Ještě',
