@@ -16,10 +16,11 @@
 const TeamWork = require('../models/TeamWork')
 
 module.exports.new = (req, res) => {
+  console.log(req.body)
   if (req.body.name === undefined) {
     return res.send('not-send-name')
   } else if (req.body.description === undefined) {
-    return res.send('not-send-desctiption')
+    return res.send('not-send-description')
   } else if (req.body.students === undefined) {
     return res.send('not-send-students')
   } else if (typeof req.body.students !== 'object') {
@@ -29,6 +30,11 @@ module.exports.new = (req, res) => {
   } else if (typeof req.body.guarantors !== 'object') {
     return res.send('not-object-guarantors')
   } else {
+    for (let i = 0; i < req.body.students.length; i++) {
+      if (typeof req.body.students[i].user !== String) {
+        req.body.students[i].user = undefined
+      }
+    }
     new TeamWork({
       name: req.body.name,
       description: req.body.description,

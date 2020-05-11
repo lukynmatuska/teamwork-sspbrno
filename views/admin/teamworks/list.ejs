@@ -62,8 +62,17 @@
 									let studentsDOMSs = $('<div>', { class: 'avatar-group' })
 									for (let i = 0; i < oData.students.length; i++) {
 										const student = oData.students[i]
+										if (student.user === undefined) {
+											student.user = {
+												name: {
+													first: 'Ještě',
+													last: 'neznámý'
+												},
+												photo: '/images/users/_unknown.png'
+											}
+										}
 										$('<a>', {
-											href: `/admin/user/show/${student.user._id}`,
+											href: `${student.user._id === undefined ? '#' : ''}/admin/user/show/${student.user._id}`,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${student.user.name.first} ${student.user.name.middle !== undefined ? `${student.user.name.middle} ` : ''}${student.user.name.last}`,
@@ -101,11 +110,11 @@
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									$(nTd).html(
 										$("<div>", { class: "row m-auto justify-content-around" }).append(
-											$("<a>", { href: `/admin/teamworks/edit/${oData._id}`, target: "_blank", style: "background: none; border: none; padding: 0; " }).append(
+											$("<a>", { href: `/admin/teamworks/edit/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
 												$("<i>", { class: "fas fa-pen text-primary" }),
 											),
-											$('<a>', { href: `/admin/teamworks/show/${oData._id}`, target: "_blank", style: "background: none; border: none; padding: 0; " }).append(
-											  $('<i>', { class: "fas fa-eye text-blue" }),
+											$('<a>', { href: `/admin/teamworks/show/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
+												$('<i>', { class: "fas fa-eye text-blue" }),
 											),
 											$('<button>', {
 												onclick: `deleteUserById('${oData._id}', '${oData.name.first}');`,

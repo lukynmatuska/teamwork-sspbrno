@@ -18,7 +18,10 @@ var teamWorkSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  description: String,
+  description: {
+    type: String,
+    required: true
+  },
   students: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,9 +29,13 @@ var teamWorkSchema = new mongoose.Schema({
     },
     position: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Specialization'
+      ref: 'Specialization',
+      required: true
     },
-    task: String
+    task: {
+      type: String,
+      required: true
+    }
   }],
   guarantors: [{
     user: {
@@ -36,15 +43,20 @@ var teamWorkSchema = new mongoose.Schema({
       ref: 'User',
       required: true
     },
-    task: String
+    task: {
+      type: String,
+      required: true
+    }
   }],
   year: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Year'
+    ref: 'Year',
+    required: true
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   }
 })
 

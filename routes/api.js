@@ -104,57 +104,57 @@ router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
 /**
  * Years
  */
-router.post('/year/new', partials.onlyGuarantor, (req, res) => {
+router.post('/year/new', partials.onlyAdmin, (req, res) => {
   yearController.new(req, res)
 })
 
-router.post('/year/edit', partials.onlyGuarantor, (req, res) => {
+router.post('/year/edit', partials.onlyAdmin, (req, res) => {
   yearController.edit(req, res)
 })
 
-router.post('/year/delete', partials.onlyGuarantor, (req, res) => {
+router.post('/year/delete', partials.onlyAdmin, (req, res) => {
   yearController.delete(req, res)
 })
 
-router.post('/year/change-status', partials.onlyGuarantor, (req, res) => {
+router.post('/year/change-status', partials.onlyAdmin, (req, res) => {
   yearController.changeStatus(req, res)
 })
 
-router.post('/year/switch', partials.onlyGuarantor, (req, res) => {
+router.post('/year/switch', partials.onlyAdmin, (req, res) => {
   yearController.switch(req, res)
 })
 
-router.get('/year/list', partials.onlyGuarantor, (req, res) => {
+router.get('/year/list', partials.onlyAdmin, (req, res) => {
   yearController.list(req, res)
 })
 
 /**
  * Specialization
  */
-router.post('/specialization/new', partials.onlyGuarantor, (req, res) => {
+router.post('/specialization/new', partials.onlyAdmin, (req, res) => {
   specializationController.new(req, res)
 })
 
-router.post('/specialization/edit', partials.onlyGuarantor, (req, res) => {
+router.post('/specialization/edit', partials.onlyAdmin, (req, res) => {
   specializationController.edit(req, res)
 })
 
-router.post('/specialization/delete', partials.onlyGuarantor, (req, res) => {
+router.post('/specialization/delete', partials.onlyAdmin, (req, res) => {
   specializationController.delete(req, res)
 })
 
-router.get('/specialization/list', partials.onlyGuarantor, (req, res) => {
+router.get('/specialization/list', partials.onlyAdmin, (req, res) => {
   specializationController.list(req, res)
 })
 
 /**
  * TeamWork
  */
-router.post('/teamwork/new', partials.onlyGuarantor, (req, res) => {
+router.post('/teamwork/new', partials.onlyAdmin, (req, res) => {
   teamworkController.new(req, res)
 })
 
-router.post('/teamwork/edit', partials.onlyGuarantor, (req, res) => {
+router.post('/teamwork/edit', partials.onlyAdmin, (req, res) => {
   teamworkController.edit(req, res)
 })
 
