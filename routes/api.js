@@ -166,6 +166,10 @@ router.get('/teamwork/find-by-id/:id', (req, res) => {
   teamworkController.findById(req, res)
 })
 
+router.post('/teamwork/delete', partials.onlyAdmin, (req, res) => {
+  teamworkController.delete(req, res)
+})
+
 /**
  * Not found route
  */
