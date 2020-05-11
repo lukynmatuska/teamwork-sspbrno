@@ -16,7 +16,6 @@
 const TeamWork = require('../models/TeamWork')
 
 module.exports.new = (req, res) => {
-  console.log(req.body)
   if (req.body.name === undefined) {
     return res.send('not-send-name')
   } else if (req.body.description === undefined) {
