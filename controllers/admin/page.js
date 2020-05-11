@@ -11,6 +11,7 @@
 /**
  * Models
  */
+const TeamWork = require('../../models/TeamWork')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })
@@ -25,6 +26,31 @@ module.exports.teamworks = {
   },
   edit: (req, res) => {
     res.render('admin/teamworks/edit', { req, res, active: 'teamworks', title: 'Editace týmové práce' })
+  },
+  detail: (req, res) => {
+    TeamWork
+      .findById(req.params.id)
+      .populate({
+        path: 'students.user',
+        select: 'name username email photo type'
+      })
+      .populate('students.position')
+      .populate({
+        path: 'guarantors.user',
+        select: 'name username email photo type'
+      })
+      .populate('year')
+      .populate({
+        path: 'author',
+        select: 'name username email photo type'
+      })
+      .exec((err, teamwork) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        res.render('admin/teamworks/detail', { req, res, active: 'teamworks', title: 'Detail týmové práce', teamwork })
+      })
   }
 }
 

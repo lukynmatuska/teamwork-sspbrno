@@ -1,0 +1,142 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+<%- include('../partials/select2') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'detail' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0">Detail týmovky</h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<h1 id="name"><%= teamwork.name %></h1>
+							<p id="description"><%= teamwork.description %></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<%
+				for( let i = 0; i < teamwork.students.length; i++ ) {
+				let student = teamwork.students[i]
+				if (student.user === undefined) {
+					student.user = {
+						name: {
+							first: 'Ještě',
+							last: 'neznámý'
+						},
+						photo: '/images/users/_unknown.png'
+					}
+				}
+				%>
+				<div class="col-3">
+					<div class="card">
+						<div class="row justify-content-center">
+							<div class="col-lg-3 order-lg-2">
+								<div class="card-profile-image">
+									<a href="#">
+										<img src="<%= student.user.photo %>" class="rounded-circle">
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+							<div class="d-flex justify-content-between">
+								<% if (student.user.email !== undefined) { %>
+								<a href="mailto:<%= student.user.email %> "
+									class="btn btn-sm btn-default float-right ml-auto">Poslat email</a>
+								<% } %>
+							</div>
+						</div>
+						<div class="card-body bg-gradient-secondary">
+							<div class="text-center">
+								<h5 class="h3">
+									<%= student.user.name.first %> <%= student.user.name.middle %>
+									<%= student.user.name.last %>
+								</h5>
+								<p>
+									<i class="fas fa-tasks"></i>
+									<%= student.task %>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<% } %>
+			</div>
+			<div class="row">
+				<%
+				for( let i = 0; i < teamwork.guarantors.length; i++ ) {
+				let guarantor = teamwork.guarantors[i]
+				%>
+				<div class="col-3">
+					<div class="card card-profile">
+						<img src="../../../images/sspbrno-school.jpg" alt="Default image background"
+							class="card-img-top">
+						<div class="row justify-content-center">
+							<div class="col-lg-3 order-lg-2">
+								<div class="card-profile-image">
+									<a href="#">
+										<img src="<%= guarantor.user.photo %>" class="rounded-circle">
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+							<div class="d-flex justify-content-between">
+								<a href="mailto:<%= guarantor.user.email %> "
+									class="btn btn-sm btn-default float-right ml-auto">Poslat email</a>
+							</div>
+						</div>
+						<div class="card-body bg-gradient-secondary">
+							<div class="text-center">
+								<h5 class="h3">
+									<%= guarantor.user.name.first %> <%= guarantor.user.name.middle %>
+									<%= guarantor.user.name.last %>
+								</h5>
+								<div class="h5 font-weight-300">
+									<%= guarantor.user.email %>
+								</div>
+								<div class="mt-3">
+									<% if (guarantor.user.type === 'admin') { %>
+									<i class="fas fa-user-cog"></i>
+									Administrátor (ka)
+									<% } else if (guarantor.user.type === 'guarantor') { %>
+									<i class="fas fa-user-tie"></i>
+									Garant (ka)
+									<% } else if (guarantor.user.type === 'student') { %>
+									<i class="fas fa-user-graduate"></i>
+									Student (ka)
+									<% } %>
+								</div>
+								<div class="h5 mt-2">
+									<i class="fas fa-city fa-fw"></i>
+									Purkyňka
+								</div>
+								<p>
+									<i class="fas fa-tasks"></i>
+									<%= guarantor.task %>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<% } %>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/file-end') %>
