@@ -129,7 +129,7 @@
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${student.user.name.first} ${student.user.name.middle !== undefined ? `${student.user.name.middle} ` : ''}${student.user.name.last}`,
-										}).append(
+										}).tooltip().append(
 											$('<img>', {
 												alt: 'Studentův avatar',
 												src: student.user.photo
@@ -158,7 +158,7 @@
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,
-										}).append(
+										}).tooltip().append(
 											$('<img>', {
 												alt: 'Garantův avatar',
 												src: guarantor.user.photo
@@ -189,9 +189,6 @@
 								}
 							}
 						],
-					})
-					$(function () {
-						$('[data-toggle="tooltip"]').tooltip()
 					})
 				},
 				error: function (obj, textstatus) {
