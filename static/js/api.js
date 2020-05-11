@@ -158,7 +158,7 @@ var API = {
     },
 
     findById: function (id) {
-      return $.get(`/api/teamwork/find-by-id/${id}`, {}, 'json')
+      return $.get('/api/teamwork/find-by-id/' + id, {}, 'json')
     },
 
     delete: function (id) {
