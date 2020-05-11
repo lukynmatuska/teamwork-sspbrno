@@ -4,7 +4,7 @@
 <main role="main" class="inner cover mt-5">
     <h1 class="cover-heading"><%= title %></h1>
     <span class="underline"></span>
-    <div class="mt-5 d-flex flex-dirextion-column justify-content-center align-items-stretch " id="teamworks">
+    <div class="mt-5" id="teamworks">
 
     </div>
 </main>
@@ -23,9 +23,15 @@
                             $('<li>', { class: 'list-group-item' }).append(
                                 $('<strong>', { class: 'text-dark' }).text(`${teamworks[i].students[ii].position.name}: `),
                                 $('<span>', { class: 'text-dark' }).text(teamworks[i].students[ii].task),
-                                (user === undefined ? '' : $('<span>', { class: 'text-secondary' }).text(
-                                    ` - ${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
-                                ))
+                                (user === undefined ?
+                                    $('<span>', { class: 'text-success' }).text(
+                                        ` Volná pozice`
+                                    )
+                                    :
+                                    $('<span>', { class: 'text-secondary' }).text(
+                                        ` - ${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
+                                    )
+                                )
                             )
                         )
                     }
@@ -44,19 +50,21 @@
                     }
 
                     $('div#teamworks').append(
-                        $('<div>', { class: 'card flex-grow-1' }).append(
-                            $('<div>', { class: 'card-body' }).append(
-                                $('<h3>', { class: 'card-title text-dark' }).text(teamworks[i].name),
-                                // $('<h4>', { class: 'card-subtitle mb-2 text-muted' }).text(teamworks[i].description),
-                                $('<p>', { class: 'card-text text-muted' }).text(teamworks[i].description),
-                                // $('<div>', {})
-                            ),
-                            $('<h5>', { class: 'card-title text-dark' }).text('Pozice'),
-                            studentsDOMs,
-                            $('<h5>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
-                            guarantorsDOMs,
-                            $('<div>', { class: 'card-body' }).append(
-                                $('<a>', { class: 'card-link text-secondary', href: '#' }).text('Vybrat!')
+                        $('<div>', { class: 'row mb-4' }).append(
+                            $('<div>', { class: 'col' }).append(
+                                $('<div>', { class: 'card flex-grow-1' }).append(
+                                    $('<div>', { class: 'card-body' }).append(
+                                        $('<h3>', { class: 'card-title text-dark' }).text(teamworks[i].name),
+                                        $('<p>', { class: 'card-text text-muted' }).text(teamworks[i].description)
+                                    ),
+                                    $('<h4>', { class: 'card-title text-dark' }).text('Pozice'),
+                                    studentsDOMs,
+                                    $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
+                                    guarantorsDOMs,
+                                    $('<div>', { class: 'card-body' }).append(
+                                        $('<a>', { class: 'card-link text-secondary', href: '#' }).text('Vybrat!')
+                                    )
+                                )
                             )
                         )
                     )
