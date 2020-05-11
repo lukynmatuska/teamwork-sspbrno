@@ -93,6 +93,10 @@ router.get('/users/edit/:id', (req, res) => {
   adminPageController.users.edit(req, res)
 })
 
+router.get('/users/detail/:id', (req, res) => {
+  adminPageController.users.detail(req, res)
+})
+
 /**
  * Profile
  */

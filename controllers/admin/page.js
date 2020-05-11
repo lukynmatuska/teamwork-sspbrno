@@ -73,6 +73,18 @@ module.exports.users = {
         }
         res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user })
       })
+  },
+  detail: (req, res) => {
+    User
+      .findById(req.params.id)
+      .populate('years.year')
+      .exec((err, user) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user })
+      })
   }
 }
 

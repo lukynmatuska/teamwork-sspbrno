@@ -125,7 +125,7 @@
 											}
 										}
 										$('<a>', {
-											href: `${student.user._id === undefined ? '#' : ''}/admin/user/show/${student.user._id}`,
+											href: `${student.user._id === undefined ? '#' : ''}/admin/users/detail/${student.user._id}`,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${student.user.name.first} ${student.user.name.middle !== undefined ? `${student.user.name.middle} ` : ''}${student.user.name.last}`,
@@ -154,7 +154,7 @@
 											}
 										}
 										$('<a>', {
-											href: `/admin/user/detail/${guarantor.user._id}`,
+											href: `${guarantor.user._id === undefined ? '#' : ''}/admin/users/detail/${guarantor.user._id}`,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,

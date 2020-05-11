@@ -106,7 +106,7 @@
 								data: "_id",
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									$(nTd).html(
-										$('<a>', { href: '#/admin/users/detail/' + oData._id, class: 'avatar avatar-sm rounded-circle m-auto' }).append(
+										$('<a>', { href: '/admin/users/detail/' + oData._id, class: 'avatar avatar-sm rounded-circle m-auto' }).append(
 											$('<img>', { alt: 'Uživatelův avatar', src: oData.photo})
 										)
 									)
@@ -141,7 +141,7 @@
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									$(nTd).html('')
 									for (let i = 0; i < oData.years.length; i++) {
-										$('<a>', { href: '/admin/years/show/' + oData.years[i].year._id, class: 'badge badge-pill badge-default' })
+										$('<a>', { href: '/admin/years/detail/' + oData.years[i].year._id, class: 'badge badge-pill badge-default' })
 											.text(oData.years[i].year.name)
 											.appendTo($(nTd))
 									}

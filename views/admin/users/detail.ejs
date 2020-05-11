@@ -1,0 +1,158 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'detail' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col">
+					<div class="card card-profile">
+						<img src="../../../images/sspbrno-school.jpg" alt="Default image background"
+							class="card-img-top" style="max-height: 250px; object-fit: cover;">
+						<div class="row justify-content-center">
+							<div class="col-lg-3 order-lg-2">
+								<div class="card-profile-image">
+									<a href="#">
+										<img src="<%= user.photo %>" class="rounded-circle">
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+							<div class="d-flex justify-content-between">
+								<a href="mailto:<%= user.email %> "
+									class="btn btn-sm btn-default float-right ml-auto">Poslat email</a>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="text-center">
+								<h5 class="h3">
+									<%= user.name.first %> <%= user.name.middle %>
+									<%= user.name.last %>
+								</h5>
+								<div class="h5 font-weight-300">
+									<%= user.email %>
+								</div>
+								<div class="mt-3">
+									<% if (user.type === 'admin') { %>
+									<i class="fas fa-user-cog"></i>
+									Administrátor (ka)
+									<% } else if (user.type === 'guarantor') { %>
+									<i class="fas fa-user-tie"></i>
+									Garant (ka)
+									<% } else if (user.type === 'student') { %>
+									<i class="fas fa-user-graduate"></i>
+									Student (ka)
+									<% } %>
+								</div>
+								<div class="h5 mt-2">
+									<i class="fas fa-city fa-fw"></i>
+									Purkyňka
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<script>
+		function editProfile() {
+			API.user
+				.edit({
+					id: '<%= user._id %>',
+					firstname: $('#firstname').val(),
+					middlename: $('#middlename').val(),
+					lastname: $('#lastname').val(),
+					email: $('#email').val()
+				})
+				.done(function (data) {
+					console.log(data)
+					let $status = $('div#edit-user-status')
+					if (data === 'ok') {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Gratuluji!'),
+									' Úspěšně jste si upravil(a) svůj profil'
+								)
+							)
+							.show()
+						// Refresh the page
+						setTimeout(function () {
+							window.location.href = window.location.href;
+						}, 3500)
+					} else {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Ach ne! '),
+									data
+								)
+							)
+							.show()
+					}
+				})
+		}
+
+		function changePassword() {
+			API.user
+				.setNewPassword('<%= user._id %>', $('#new-password').val())
+				.done(function (data) {
+					console.log(data)
+					if (data === 'ok') {
+						$('div#change-password-status')
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Gratuluji!'),
+									' Úspěšně jste si změnil(a) heslo'
+								)
+							)
+							.show()
+						// Refresh the page
+						setTimeout(function () {
+							window.location.href = window.location.href;
+						}, 3500)
+					} else {
+						$('div#change-password-status')
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Ach ne! '),
+									data
+								)
+							)
+							.show()
+					}
+				})
+		}
+
+		$(document).ready(function () {
+			$('#edit-user-button').click(editProfile)
+			$('#edit-user-form').submit(function (event) {
+				event.preventDefault()
+				editProfile()
+			})
+
+			$('#change-password-button').click(changePassword)
+			$('#change-password-form').submit(function (event) {
+				event.preventDefault()
+				changePassword()
+			})
+		})
+	</script>
+	<%- include('../partials/file-end') %>
