@@ -1,0 +1,172 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'list' }) %>
+		<div class="container-fluid mt--7 flex-grow-1">
+			<!-- Light table -->
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h3 class="mb-0">Seznam</h3>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="users">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col" class="sort">ID</th>
+										<th scope="col" style="max-width: 35px;">Avatar</th>
+										<th scope="col" class="sort">Příjmení</th>
+										<th scope="col" class="sort">Křestní jméno</th>
+										<th scope="col">Email</th>
+										<th scope="col">Typ účtu</th>
+										<th scope="col">Ročníky</th>
+										<th scope="col">Akce</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/datatables') %>
+	<script>
+		function deleteUserById(id) {
+			swal({
+				title: 'Opravdu chcete smazat tohoto uživatele?',
+				text: 'Radši si to dvakrát rozmyslete.',
+				icon: 'warning',
+				timer: 5000,
+				dangerMode: true,
+				buttons: {
+					cancel: "Byl to omyl",
+					confirm: 'Smazat!',
+				},
+			}).then((confirm) => {
+				if (confirm) {
+					$.post({
+						url: `/api/user/delete`,
+						data: {
+							id,
+						},
+						success: function (response) {
+							console.log(response);
+							switch (response) {
+								case 'ok':
+									swal({
+										title: 'Uživatel(ka) je smazán(a)!',
+										text: 'Už ho / ji nikdy neuvidíme.',
+										icon: 'success',
+										timer: 5000
+									}).then((value) => {
+										location.reload()
+									})
+									break
+
+								default:
+									swal({
+										title: 'Něco se pokazilo!',
+										text: response,
+										icon: 'error'
+									})
+									break
+							}
+						}
+					})
+				}
+			})
+		}
+
+		$(document).ready(function () {
+			API.user
+				.list()
+				.done((dataFromServer) => {
+					$('table#users').DataTable({
+						language: {
+							url: '/js/dataTables/myCzech.json'
+						},
+						order: [[ 2, "desc" ]],
+						responsive: true,
+						data: dataFromServer,
+						columns: [
+							{
+								data: "_id",
+								visible: false,
+							}, {
+								data: "_id",
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$('<a>', { href: '#/admin/users/detail/' + oData._id, class: 'avatar avatar-sm rounded-circle m-auto' }).append(
+											$('<img>', { alt: 'Uživatelův avatar', src: oData.photo})
+										)
+									)
+								},
+							}, {
+								data: 'name.last',
+							}, {
+								data: 'name.first',
+							}, {
+								data: 'email',
+							}, {
+								data: 'years',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let text = ''
+									switch (oData.type) {
+										case 'admin':
+											text = 'Administrátor(ka)'
+											break;
+								
+										case 'guarantor':
+											text = 'Garant(ka)'
+											break;
+									
+										default:
+											text = 'Student(ka)'
+											break;
+									}
+									$(nTd).html(text)
+								}
+							}, {
+								data: 'years',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html('')
+									for (let i = 0; i < oData.years.length; i++) {
+										$('<a>', { href: '/admin/years/show/' + oData.years[i].year._id, class: 'badge badge-pill badge-default' })
+											.text(oData.years[i].year.name)
+											.appendTo($(nTd))
+									}
+								}
+							}, {
+								data: '_id',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$("<a>", { href: `/admin/users/edit/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
+												$("<i>", { class: "fas fa-pen text-primary" }),
+											),
+											$('<button>', {
+												onclick: `deleteUserById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-trash text-danger" }),
+											),
+										),
+									);
+								}
+							}
+						],
+					})
+				})
+		})
+	</script>
+	<%- include('../partials/file-end') %>

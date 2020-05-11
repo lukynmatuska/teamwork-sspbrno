@@ -92,6 +92,10 @@ router.post('/user/change-type', partials.onlyAdmin, (req, res) => {
   userController.changeType(req, res)
 })
 
+router.post('/user/delete', partials.onlyAdmin, (req, res) => {
+  userController.delete(req, res)
+})
+
 router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
   userController.list(req, res)
 })

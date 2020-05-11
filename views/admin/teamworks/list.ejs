@@ -144,8 +144,17 @@
 									let guarantorsDOMSs = $('<div>', { class: 'avatar-group' })
 									for (let i = 0; i < oData.guarantors.length; i++) {
 										const guarantor = oData.guarantors[i]
+										if (guarantor.user !== undefined || guarantor.user !== null) {
+											guarantor.user = {
+												name: {
+													first: 'Ještě',
+													last: 'neznámý'
+												},
+												photo: '/images/users/_unknown.png'
+											}
+										}
 										$('<a>', {
-											href: `/admin/user/show/${guarantor.user._id}`,
+											href: `/admin/user/detail/${guarantor.user._id}`,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,

@@ -6,7 +6,8 @@ var API = {
       email,
       firstname,
       lastname,
-      middlename) {
+      middlename,
+      usertype) {
       return $.post(
         '/api/user/new',
         {
@@ -15,7 +16,8 @@ var API = {
           email: email,
           firstname: firstname,
           middlename: middlename,
-          lastname: lastname
+          lastname: lastname,
+          usertype: usertype
         },
         'json'
       )
@@ -82,6 +84,16 @@ var API = {
 
     logout: function () {
       return $.get('/api/user/logout', {}, 'json')
+    },
+
+    delete: function (userId) {
+      return $.post(
+        '/api/user/delete',
+        {
+          id: userId
+        },
+        'json'
+      )
     }
   },
 

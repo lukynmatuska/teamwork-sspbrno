@@ -1,0 +1,47 @@
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+    style="background-image: url(/images/timon-studler-BIk2ANMmNz4-unsplash_tiny_cropped.jpg); background-size: cover; background-position: center;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-6"></span>
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/admin/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Uživatelé</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <% if (active === 'list') { %>
+                                Seznam
+                                <% } else if (active === 'new') { %>
+                                Nový
+                                <% }  else if (active === 'edit') { %>
+                                Editace
+                                <% }  else if (active === 'detail') { %>
+                                Detail
+                                <% } %>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <% if (active === 'edit' || active === 'detail') {
+                        pathEditor = '.'
+                    } else {
+                        pathEditor = ''
+                    } %>
+                    <a href=".<%= pathEditor %>/new"
+                        class="btn btn-sm btn-neutral <%= active === 'new' ? 'active' : '' %>">Nový</a>
+                    <a href=".<%= pathEditor %>/list"
+                        class="btn btn-sm btn-neutral <%= active === 'list' ? 'active' : '' %>">Seznam</a>
+                    <% if (active === 'edit') { %>
+                    <a href="#" class="btn btn-sm btn-neutral active">Editace</a>
+                    <% } else if (active === 'detail') { %>
+                    <a href="#" class="btn btn-sm btn-neutral active">Detail</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@
  * Models
  */
 const TeamWork = require('../../models/TeamWork')
+const User = require('../../models/User')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })
@@ -50,6 +51,27 @@ module.exports.teamworks = {
           return console.error(err)
         }
         res.render('admin/teamworks/detail', { req, res, active: 'teamworks', title: 'Detail týmové práce', teamwork })
+      })
+  }
+}
+
+module.exports.users = {
+  list: (req, res) => {
+    res.render('admin/users/list', { req, res, active: 'users', title: 'Seznam uživatelů' })
+  },
+  new: (req, res) => {
+    res.render('admin/users/new', { req, res, active: 'users', title: 'Nový uživatel' })
+  },
+  edit: (req, res) => {
+    User
+      .findById(req.params.id)
+      .populate('years.year')
+      .exec((err, user) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user })
       })
   }
 }

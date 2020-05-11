@@ -75,6 +75,25 @@ router.get('/teamworks/detail/:id', (req, res) => {
 })
 
 /**
+ * Users
+ */
+router.get('/users/', (req, res) => {
+  res.redirect('./list')
+})
+
+router.get('/users/list', (req, res) => {
+  adminPageController.users.list(req, res)
+})
+
+router.get('/users/new', (req, res) => {
+  adminPageController.users.new(req, res)
+})
+
+router.get('/users/edit/:id', (req, res) => {
+  adminPageController.users.edit(req, res)
+})
+
+/**
  * Profile
  */
 router.get('/profile', (req, res) => {

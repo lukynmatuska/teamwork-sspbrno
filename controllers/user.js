@@ -18,14 +18,18 @@ const nodemailer = require('nodemailer')
 const User = require('../models/User')
 
 module.exports.new = (req, res) => {
+  let usertype
   if (req.body.username === undefined) {
     return res.send('not-send-username')
   } else if (req.body.password === undefined) {
     return res.send('not-send-password')
   } else if (req.body.email === undefined) {
     return res.send('not-send-email')
+  } else if (req.body.usertype === undefined) {
+    usertype = 'student'
+  } else if (req.body.usertype !== undefined && (req.session.user !== undefined ? (req.session.user.type === 'admin') : false)) {
+    usertype = req.body.usertype
   }
-  let usertype = 'student'
   const email = req.body.email.trim().toLowerCase()
   const username = req.body.username.trim().toLowerCase()
 
@@ -316,5 +320,22 @@ module.exports.list = (req, res) => {
         return console.error(err)
       }
       res.status(200).json(users)
+    })
+}
+
+module.exports.delete = (req, res) => {
+  if (req.body.id === undefined) {
+    return res.send('not-send-id')
+  }
+  User
+    .deleteOne({
+      _id: req.body.id
+    })
+    .exec((err) => {
+      if (err) {
+        res.send(err)
+        return console.error(err)
+      }
+      res.send('ok')
     })
 }

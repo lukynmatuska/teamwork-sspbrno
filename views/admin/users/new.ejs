@@ -1,0 +1,174 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+<%- include('../partials/select2') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'new' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0">Nový uživatel</h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<form action="./" method="POST" id="new-user">
+								<h6 class="heading text-muted mb-4">Základní údaje</h6>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="firstname">Křestní
+													jméno</label>
+												<input type="text" id="firstname" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="middlename">Prostřední
+													jméno</label>
+												<input type="text" id="middlename" class="form-control"
+													placeholder="Žádné">
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="lastname">Příjmení</label>
+												<input type="text" id="lastname" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label class="form-control-label" for="username">Uživatelské jméno</label>
+												<input type="text" id="username" class="form-control" required
+													placeholder="Vyplňte prosím toto prázdné povinné pole">
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label class="form-control-label" for="password">Heslo</label>
+												<input type="password" id="password" class="form-control" required
+													placeholder="Vyplňte prosím toto prázdné povinné pole">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label class="form-control-label" for="email">Email</label>
+												<input type="email" id="email" class="form-control" required
+													placeholder="Vyplňte prosím toto prázdné povinné pole">
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label for="user-type">Typ uživatele</label>
+												<select class="form-control" id="user-type">
+													<option value="student">Student(ka)</option>
+													<option value="guarantor">Garant(ka)</option>
+													<option value="admin">Administrátor(ka)</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col" id="new-user-status" style="display: none;"></div>
+										<div class="col-4 text-left">
+											<button type="submit" class="btn btn-primary"
+												id="new-user-button">Vytvořit</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<script>
+		$(document).ready(() => {
+			$('select#user-type').select2({
+				minimumResultsForSearch: -1
+			})
+
+			$('form#new-user').submit(function (event) {
+				event.preventDefault()
+				let $status = $('div#new-user-status')
+				$status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-default alert-dismissible fade show', role: 'alert' }).append(
+							$('<span>', { class: 'alert-icon' }).append(
+								$('<i>', { class: 'fas fa-circle-notch fa-spin' })
+							),
+							$('<span>', { class: 'alert-text' }).append(
+								// $('<strong>').text('Gratuluji!'),
+								'Zpracovávám'
+							),
+							$('<button>', { type: 'button', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'Close' }).append(
+								$('<span>', { 'aria-hidden': 'true' }).html('&times;')
+							)
+						)
+					)
+					.show()
+
+				API.user.new(
+					$('#username').val(),
+					$('#password').val(),
+					$('#email').val(),
+					$('#firstname').val(),
+					$('#lastname').val(),
+					$('#middlename').val(),
+					$('#user-type').val()
+				).done(function (responseFromServer) {
+					if (responseFromServer === 'ok') {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Gratuluji!'),
+									' Úspěšně jste vytvořil(a) nového uživatele'
+								)
+							)
+							.show()
+
+						// Redirect to teamworks page
+						setTimeout(function () {
+							window.location.href = window.location.href;
+						}, 3500)
+					} else {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Ach ne! '),
+									responseFromServer
+								)
+							)
+							.show()
+					}
+				})
+			})
+		})
+	</script>
+	<%- include('../partials/file-end') %>
