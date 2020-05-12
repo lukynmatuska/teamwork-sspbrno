@@ -50,6 +50,9 @@ module.exports.teamworks = {
           this.error.internalError(req, res)
           return console.error(err)
         }
+        if (teamwork === null) {
+          this.error.notFound(req, res)
+        }
         res.render('admin/teamworks/detail', { req, res, active: 'teamworks', title: 'Detail týmové práce', teamwork })
       })
   }
@@ -71,6 +74,9 @@ module.exports.users = {
           this.error.internalError(req, res)
           return console.error(err)
         }
+        if (user === null) {
+          this.error.notFound(req, res)
+        }
         res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user })
       })
   },
@@ -82,6 +88,9 @@ module.exports.users = {
         if (err) {
           this.error.internalError(req, res)
           return console.error(err)
+        }
+        if (user === null) {
+          this.error.notFound(req, res)
         }
         res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user })
       })
