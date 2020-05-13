@@ -41,7 +41,7 @@ minify_css:
   script:
     - mkdir -p ./dist/css
     - uglifycss static/css/style.css static/css/animations.css --output dist/css/style.min.css
-    - uglifycss static/css/fonts.css --output dist/css/fonts.css
+    - uglifycss static/css/fonts.css --output dist/css/fonts.min.css
   artifacts:
     expire_in: 12 hours
     paths:
@@ -56,6 +56,8 @@ Production:
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev tree
-    - tree dist
+    - cp dist/css/style.min.css static/css/style.css -f
+    - cp dist/css/fonts.min.css static/css/fonts.css -f
+    - cp dist/js/api.min.js static/js/api.js -f
     - gem install dpl
     - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
