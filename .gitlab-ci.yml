@@ -41,6 +41,7 @@ minify_css:
   script:
     - mkdir -p ./dist/css
     - uglifycss static/css/style.css static/css/animations.css --output dist/css/style.min.css
+    - uglifycss static/css/fonts.css --output static/css/fonts.css
   artifacts:
     expire_in: 12 hours
     paths:
