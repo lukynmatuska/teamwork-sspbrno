@@ -16,6 +16,7 @@ const router = require('express').Router()
 const moment = require('moment')
 moment.locale('cs')
 const osloveni = require('../libs/osloveni')
+const mongoose = require('mongoose')
 
 /**
  * Controllers
@@ -34,7 +35,7 @@ router.all('*', this.setLocalVariables)
 module.exports.hasUserGivenYear = (user, year) => {
   if (user.years.length !== 0) {
     for (let i = 0; i < user.years.length; i++) {
-      if (user.years[i].year._id === year._id) {
+      if (String(user.years[i].year._id) === String(year._id)) {
         return true
       }
     }
@@ -46,13 +47,19 @@ module.exports.setYearForUser = (req, res, next) => {
   const Year = require('../models/Year')
   let yearFilter
 
+  if (req.session.user !== undefined && req.session.year !== undefined) {
+    if (req.session.user.type === 'admin') {
+      return next()
+    }
+  }
+
   if (req.session.year === undefined || req.session.user === undefined) {
     yearFilter = {
       status: 'active'
     }
-  } else if (req.session.year === undefined && req.session.user.years.length > 0 && !(this.hasUserGivenYear(req.session.user, req.session.year))) {
+  } else if (req.session.user.years.length > 0 && !(this.hasUserGivenYear(req.session.user, req.session.year))) {
     yearFilter = {
-      _id: req.session.user.years[req.session.user.years.length - 1].year._id
+      _id: mongoose.Types.ObjectId(req.session.user.years[req.session.user.years.length - 1].year._id)
     }
   }
 

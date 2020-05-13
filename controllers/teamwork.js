@@ -118,8 +118,16 @@ module.exports.delete = (req, res) => {
 }
 
 module.exports.list = (req, res) => {
+  let filter = {}
+  if (req.query.filter !== undefined) {
+    if (typeof req.query.filter === 'object') {
+      filter = req.query.filter
+    } else {
+      return res.send('bad-type-of-filter')
+    }
+  }
   TeamWork
-    .find({})
+    .find(filter)
     .populate({
       path: 'students.user',
       select: 'name username email photo type'

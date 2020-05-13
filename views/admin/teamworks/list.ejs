@@ -92,17 +92,19 @@
 			})
 		}
 		$(document).ready(function () {
-			$.ajax({
-				type: "GET",
-				url: '/api/teamwork/list',
-				dataType: 'json',
-				success: function (obj, textstatus) {
+			API.teamwork
+				.listWithFilter(
+					{
+						year: '<%= req.session.year._id %>'
+					}
+				)
+				.done((responseFromServer) => {
 					$('table#teamworks').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'
 						},
 						responsive: true,
-						data: obj,
+						data: responseFromServer,
 						columns: [
 							{
 								data: "_id",
@@ -190,11 +192,7 @@
 							}
 						],
 					})
-				},
-				error: function (obj, textstatus) {
-					alert(obj.msg);
-				}
-			})
+				})
 		})
 	</script>
 	<%- include('../partials/file-end') %>

@@ -98,6 +98,25 @@ router.get('/users/detail/:id', (req, res) => {
 })
 
 /**
+ * Years
+ */
+router.get('/years/', (req, res) => {
+  res.redirect('./list')
+})
+
+router.get('/years/list', (req, res) => {
+  adminPageController.years.list(req, res)
+})
+
+router.get('/years/new', (req, res) => {
+  adminPageController.years.new(req, res)
+})
+
+router.get('/users/years/:id', (req, res) => {
+  adminPageController.years.edit(req, res)
+})
+
+/**
  * Profile
  */
 router.get('/profile', (req, res) => {

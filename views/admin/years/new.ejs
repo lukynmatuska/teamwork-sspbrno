@@ -1,0 +1,138 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+<%- include('../partials/select2') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'new' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0">Nový ročník</h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<form action="./" method="POST" id="new-user">
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col-4">
+											<div class="form-group">
+												<label class="form-control-label" for="name">Název</label>
+												<input type="text" id="name" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="description">Popisek</label>
+												<input type="text" id="description" class="form-control"
+													placeholder="Žádný">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label for="year-status">Stav</label>
+												<select class="form-control" id="year-status">
+													<option value="prepared">Připravený</option>
+													<option value="guarantor" disabled="disabled">Aktivní</option>
+													<option value="archived">Archivovaný</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col" id="new-user-status" style="display: none;"></div>
+										<div class="col-4 text-left">
+											<button type="submit" class="btn btn-primary"
+												id="new-user-button">Vytvořit</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<script>
+		$(document).ready(() => {
+			$('select#year-status').select2({
+				minimumResultsForSearch: -1
+			})
+
+			$('form#new-user').submit(function (event) {
+				event.preventDefault()
+				let $status = $('div#new-user-status')
+				$status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-default alert-dismissible fade show', role: 'alert' }).append(
+							$('<span>', { class: 'alert-icon' }).append(
+								$('<i>', { class: 'fas fa-circle-notch fa-spin' })
+							),
+							$('<span>', { class: 'alert-text' }).append(
+								// $('<strong>').text('Gratuluji!'),
+								'Zpracovávám'
+							),
+							$('<button>', { type: 'button', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'Close' }).append(
+								$('<span>', { 'aria-hidden': 'true' }).html('&times;')
+							)
+						)
+					)
+					.show()
+
+				API.year
+					.new(
+						$('#name').val(),
+						$('#description').val(),
+						$('#year-status').val()
+					).done(function (responseFromServer) {
+						if (responseFromServer === 'ok') {
+							$status
+								.empty()
+								.append(
+									$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+										$('<strong>').text('Gratuluji!'),
+										' Úspěšně jste vytvořil(a) nový ročník'
+									)
+								)
+								.show()
+
+							// Redirect to teamworks page
+							setTimeout(function () {
+								window.location.href = window.location.href;
+							}, 3500)
+						} else {
+							$status
+								.empty()
+								.append(
+									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+										$('<strong>').text('Ach ne! '),
+										responseFromServer
+									)
+								)
+								.show()
+						}
+					})
+			})
+		})
+	</script>
+	<%- include('../partials/file-end') %>

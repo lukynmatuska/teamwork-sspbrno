@@ -13,6 +13,7 @@
  */
 const TeamWork = require('../../models/TeamWork')
 const User = require('../../models/User')
+const Year = require('../../models/Year')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })
@@ -93,6 +94,30 @@ module.exports.users = {
           this.error.notFound(req, res)
         }
         res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user })
+      })
+  }
+}
+
+module.exports.years = {
+  list: (req, res) => {
+    res.render('admin/years/list', { req, res, active: 'years', title: 'Seznam ročníků' })
+  },
+  new: (req, res) => {
+    res.render('admin/years/new', { req, res, active: 'years', title: 'Nový ročník' })
+  },
+  edit: (req, res) => {
+    Year
+      .findById(req.params.id)
+      // .populate('author')
+      .exec((err, year) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (year === null) {
+          return this.error.notFound(req, res)
+        }
+        res.render('admin/years/edit', { req, res, active: 'years', title: 'Editace ročníku', year })
       })
   }
 }

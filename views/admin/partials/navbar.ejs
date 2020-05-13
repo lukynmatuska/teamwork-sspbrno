@@ -31,6 +31,12 @@
               <span class="nav-link-text">Uživatelé</span>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link <%= active.includes('years') ? 'active' : '' %>" href="/admin/years/">
+              <i class="fas fa-clock"></i>
+              <span class="nav-link-text">Ročníky</span>
+            </a>
+          </li>
           <% if (active === 'error') { %>
           <li class="nav-item">
             <a class="nav-link <%= active === 'error' ? 'active active-pro' : '' %>" href="/admin/">

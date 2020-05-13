@@ -23,10 +23,16 @@ module.exports.new = (req, res) => {
   if (req.body.name === undefined) {
     return res.send('not-send-name')
   }
+  if (req.body.status !== undefined) {
+    if (!Year.schema.path('status').enumValues.includes(req.body.status)) {
+      return res.send('invalid-status')
+    }
+  }
   new Year({
     name: req.body.name,
     // author: (req.session.user ? req.session.user._id : null),
     description: req.body.description,
+    status: (req.body.status === undefined ? 'prepared' : req.body.status),
     created: moment()
   }).save((err, year) => {
     if (err) {
@@ -43,8 +49,8 @@ module.exports.new = (req, res) => {
           }
         }
       }, {
-        new: true
-      })
+      new: true
+    })
       .populate('years.year')
       .exec((err, user) => {
         if (err) {
@@ -65,23 +71,23 @@ module.exports.delete = (req, res) => {
       if (err) {
         return console.error(err)
       }
-
       User
         .updateMany({
-          years: {
-            $in: mongoose.Types.ObjectId(year._id)
-          }
+          'years.year': mongoose.Types.ObjectId(req.body.id)
         }, {
           $pull: {
-            years: mongoose.Types.ObjectId(year._id)
+            years: {
+              year: mongoose.Types.ObjectId(req.body.id)
+            }
           }
         })
         .exec((err) => {
           if (err) {
             res.send('err-update-users-when-deleting-year')
             return console.error(err)
+          } else {
+            userController.updateSession(req, res)
           }
-          userController.updateSession(req, res)
         })
     })
 }
@@ -148,19 +154,21 @@ module.exports.switch = (req, res) => {
       if (err) {
         return console.error(err)
       }
-      Year.findById(req.body.id, (err, year) => {
-        if (err) {
-          return console.error(err)
-        }
-        if (year === null) {
-          return res.send('not-found-year-bad-id')
-        } else if (!partials.hasUserGivenYear(user, year)) {
-          return res.send('not-permissions-for-this-year')
-        } else {
-          req.session.year = year
-          res.send('ok')
-        }
-      })
+      Year
+        .findById(req.body.id)
+        .exec((err, year) => {
+          if (err) {
+            return console.error(err)
+          }
+          if (year === null) {
+            return res.send('not-found-year-bad-id')
+          } else if (!partials.hasUserGivenYear(user, year)) {
+            return res.send('not-permissions-for-this-year')
+          } else {
+            req.session.year = year
+            res.send('ok')
+          }
+        })
     })
 }
 

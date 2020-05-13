@@ -312,7 +312,8 @@ module.exports.list = (req, res) => {
       email: 1,
       name: 1,
       photo: 1,
-      type: 1
+      type: 1,
+      years: 1
     })
     .exec((err, users) => {
       if (err) {

@@ -98,8 +98,40 @@ var API = {
   },
 
   year: {
+    new: function (name, description, status) {
+      return $.post(
+        '/api/year/new',
+        {
+          name: name,
+          description: description,
+          status: status
+        },
+        'json'
+      )
+    },
+
     list: function () {
       return $.get('/api/year/list', {}, 'json')
+    },
+
+    delete: function (yearId) {
+      return $.post(
+        '/api/year/delete',
+        {
+          id: yearId
+        },
+        'json'
+      )
+    },
+
+    switch: function (yearId) {
+      return $.post(
+        '/api/year/switch',
+        {
+          id: yearId
+        },
+        'json'
+      )
     }
   },
 
@@ -185,6 +217,12 @@ var API = {
 
     list: function () {
       return $.get('/api/teamwork/list', {}, 'json')
+    },
+
+    listWithFilter: function (filter) {
+      return $.get('/api/teamwork/list', {
+        filter: filter
+      }, 'json')
     }
   }
 }

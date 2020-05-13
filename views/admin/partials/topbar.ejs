@@ -1,5 +1,6 @@
 <!-- Topnav -->
-<nav class="navbar navbar-top navbar-expand navbar-dark bg-transparent" style="background-color: rgba( 0, 0, 0, .35) !important;">
+<nav class="navbar navbar-top navbar-expand navbar-dark bg-transparent"
+    style="background-color: rgba( 0, 0, 0, .35) !important;">
     <div class="container-fluid">
         <div class="collapse navbar-collapse">
             <!-- Navbar links -->
@@ -85,26 +86,23 @@
     </div>
 </nav>
 <script>
-    function switchYear(year) {
+    function switchYear(yearId) {
         swal({
             title: "Přepíná se rok ...",
-            text: "Vydrž momentík ...",
+            text: "Vydržte prosím moment ...",
             icon: "warning",
-            timer: 2000,
+            timer: 1500,
         }).then((value) => {
-            if ('<%= req.session.year._id %>' == year) {
+            if ('<%= req.session.year._id %>' === yearId) {
                 swal({
-                    title: 'Asi jsi se uklikl',
-                    text: 'Vybral jsi stejný rok, jako je ten aktuální.',
+                    title: 'Asi jsi se uklikl(a)',
+                    text: 'Vybral(a) jste stejný rok, jako je ten aktuální.',
                     icon: 'warning',
                 });
             } else {
-                $.post({
-                    url: '/admin/year/',
-                    data: {
-                        id: year,
-                    },
-                    success: function (response) {
+                API.year
+                    .switch(yearId)
+                    .done(function (response) {
                         switch (response) {
                             case 'ok':
                                 swal({
@@ -115,36 +113,35 @@
                                 }).then((value) => {
                                     location.reload()
                                 })
-                                break;
+                                break
 
                             case 'not-permissions-for-this-year':
                                 swal({
                                     title: 'Rok se nezměnil!',
-                                    text: 'Nastala chyba, protože nemáš práva na rok, na který se chceš přepnout.',
+                                    text: 'Nastala chyba, protože nemáte práva na ročník, na který se chcete přepnout.',
                                     icon: 'error',
-                                });
-                                break;
+                                })
+                                break
 
                             case 'not-found-year-bad-id':
                                 swal({
                                     title: 'Rok se nezměnil!',
-                                    text: 'Nastala chyba, protože jsi na server poslal špatné id roku, na který se chceš přepnout.',
+                                    text: 'Nastala chyba, protože jste na server poslal(a) špatné id ročníku, na který se chcete přepnout.',
                                     icon: 'error',
-                                });
-                                break;
+                                })
+                                break
 
-                            case 'not-sent-year':
+                            case 'not-sent-id':
                                 swal({
                                     title: 'Rok se nezměnil!',
-                                    text: 'Nastala chyba, protože jsi neposlal na server id roku, na který se chceš přepnout.',
+                                    text: 'Nastala chyba, protože jste neposlal(a) na server id ročníku, na který se chcete přepnout.',
                                     icon: 'error',
-                                });
-                                break;
+                                })
+                                break
                         }
-                    }
-                });
+                    })
             }
-        });
+        })
     }
 
     function updateSession() {

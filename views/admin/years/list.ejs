@@ -17,16 +17,13 @@
 							<h3 class="mb-0">Seznam</h3>
 						</div>
 						<div class="table-responsive">
-							<table class="table w-100" id="users">
+							<table class="table w-100" id="years">
 								<thead class="thead-light">
 									<tr>
 										<th scope="col" class="sort">ID</th>
-										<th scope="col" style="max-width: 35px;">Avatar</th>
-										<th scope="col" class="sort">Příjmení</th>
-										<th scope="col" class="sort">Křestní jméno</th>
-										<th scope="col">Email</th>
-										<th scope="col">Typ účtu</th>
-										<th scope="col">Ročníky</th>
+										<th scope="col" class="sort">Název</th>
+										<th scope="col">Popisek</th>
+										<th scope="col">Stav</th>
 										<th scope="col">Akce</th>
 									</tr>
 								</thead>
@@ -41,9 +38,9 @@
 	<%- include('../partials/scripts-file-end') %>
 	<%- include('../partials/datatables') %>
 	<script>
-		function deleteUserById(id) {
+		function deleteYearById(id) {
 			swal({
-				title: 'Opravdu chcete smazat tohoto uživatele?',
+				title: 'Opravdu chcete smazat tento ročník?',
 				text: 'Radši si to dvakrát rozmyslete.',
 				icon: 'warning',
 				timer: 5000,
@@ -54,17 +51,14 @@
 				},
 			}).then((confirm) => {
 				if (confirm) {
-					$.post({
-						url: `/api/user/delete`,
-						data: {
-							id,
-						},
-						success: function (response) {
+					API.year
+						.delete(id)
+						.done((response) => {
 							console.log(response);
 							switch (response) {
 								case 'ok':
 									swal({
-										title: 'Uživatel(ka) je smazán(a)!',
+										title: 'Ročník je smazán!',
 										text: 'Už ho / ji nikdy neuvidíme.',
 										icon: 'success',
 										timer: 5000
@@ -81,21 +75,20 @@
 									})
 									break
 							}
-						}
-					})
+						})
 				}
 			})
 		}
 
 		$(document).ready(function () {
-			API.user
+			API.year
 				.list()
 				.done((dataFromServer) => {
-					$('table#users').DataTable({
+					$('table#years').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'
 						},
-						order: [[2, "desc"]],
+						order: [[1, "desc"]],
 						responsive: true,
 						data: dataFromServer,
 						columns: [
@@ -103,55 +96,33 @@
 								data: "_id",
 								visible: false,
 							}, {
-								data: "_id",
-								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-									$(nTd).html(
-										$('<a>', { href: '/admin/users/detail/' + oData._id, class: 'avatar avatar-sm rounded-circle m-auto' }).append(
-											$('<img>', { alt: 'Uživatelův avatar', src: oData.photo })
-										)
-									)
-								},
+								data: 'name',
 							}, {
-								data: 'name.last',
+								data: 'description',
 							}, {
-								data: 'name.first',
-							}, {
-								data: 'email',
-							}, {
-								data: 'years',
+								data: 'status',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									let text = ''
-									switch (oData.type) {
-										case 'admin':
-											text = 'Administrátor(ka)'
+									let badgeClass = 'default'
+									switch (oData.status) {
+										case 'active':
+											text = 'Aktivní'
+											badgeClass = 'success'
 											break;
 
-										case 'guarantor':
-											text = 'Garant(ka)'
+										case 'archived':
+											text = 'Archivovaný'
 											break;
 
-										default:
-											text = 'Student(ka)'
+										case 'prepared':
+											text = 'Připravovaný'
+											badgeClass = 'primary'
 											break;
 									}
-									$(nTd).html(text)
-								}
-							}, {
-								data: 'years',
-								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-									$(nTd).html('')
-									for (let i = 0; i < oData.years.length; i++) {
-										let badgeColor = 'default'
-										console.log(oData.years[i])
-										if (oData.years[i].permissions.includes('edit')) {
-											badgeColor = 'primary'
-										} else if (oData.years[i].permissions.includes('read')) {
-											badgeColor = 'info'
-										}
-										$('<a>', { href: '/admin/years/detail/' + oData.years[i].year._id, class: ('badge badge-pill badge-' + badgeColor) })
-											.text(oData.years[i].year.name)
-											.appendTo($(nTd))
-									}
+									$(nTd).html(
+										$('<span>', { class: 'badge badge-pill badge-' + badgeClass })
+											.text(text)
+									)
 								}
 							}, {
 								data: '_id',
@@ -162,7 +133,7 @@
 												$("<i>", { class: "fas fa-pen text-primary" }),
 											),
 											$('<button>', {
-												onclick: `deleteUserById('${oData._id}');`,
+												onclick: `deleteYearById('${oData._id}');`,
 												style: "background: none; border: none; padding: 0; "
 											}).append(
 												$('<i>', { class: "fas fa-trash text-danger" }),
