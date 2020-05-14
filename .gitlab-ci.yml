@@ -60,5 +60,6 @@ Production:
     - mv dist/css/style.min.css static/css/style.css
     - mv dist/css/fonts.min.css static/css/fonts.css
     - mv dist/js/api.min.js static/js/api.js
+    - git add static
     - gem install dpl
     - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
