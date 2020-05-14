@@ -36,14 +36,14 @@
                     $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
                         $('<i>', { class: 'fas fa-circle-notch fa-spin' }),
                         $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                        // $('<strong>').text('Gratuluji!'),
-                        'Přihlašuji'
+                        $('<strong>').text(' Přihlašuji'),
+                        ' Vyčkejte prosím'
                     )
                 )
                 .show()
             let email = $('#email').val()
             let password = $('#password').val()
-            let strongAlertText = 'Ach ne!'
+            let strongAlertText = ' Ach ne!'
             let alertText
             let alertStatus
 
@@ -69,7 +69,9 @@
 
             API.user.login(email, password).done(function (responseFromServer) {
                 if (responseFromServer === 'ok') {
-                    $('div#login-status')
+                    Cookies.set('toast-login', 'true')
+                    window.location.href = '/teamworks';
+                    /* $('div#login-status')
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
@@ -79,12 +81,12 @@
                                 ' Úspěšně jste se přihlásil(a)'
                             )
                         )
-                        .show()
+                        .show() 
 
                     // Redirect to teamworks page
                     setTimeout(function () {
                         window.location.href = '/teamworks';
-                    }, 3500)
+                    }, 3500) */
                 } else if (responseFromServer === 'wrong-email') {
                     $('div#login-status')
                         .empty()
