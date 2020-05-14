@@ -110,6 +110,19 @@ var API = {
       )
     },
 
+    edit: function (yearId, name, description, status) {
+      return $.post(
+        '/api/year/edit',
+        {
+          id: yearId,
+          name: name,
+          description: description,
+          status: status
+        },
+        'json'
+      )
+    },
+
     list: function () {
       return $.get('/api/year/list', {}, 'json')
     },

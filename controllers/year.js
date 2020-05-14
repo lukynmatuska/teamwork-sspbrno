@@ -93,20 +93,27 @@ module.exports.delete = (req, res) => {
 }
 
 module.exports.edit = (req, res) => {
-  let update
+  const update = {}
   if (req.body.id === undefined) {
     return res.send('not-send-year-id')
-  } else if (req.body.name !== undefined) {
+  }
+
+  if (req.body.name !== undefined) {
     update.name = req.body.name
-  } else if (req.body.description !== undefined) {
+  }
+
+  if (req.body.description !== undefined) {
     update.description = req.body.description
-  } else if (req.body.status !== undefined) {
+  }
+
+  if (req.body.status !== undefined) {
     if (!Year.schema.path('status').enumValues.includes(req.body.status)) {
       return res.send('invalid-status')
     } else {
       update.status = req.body.status
     }
   }
+
   Year
     .findByIdAndUpdate(req.body.id, update, { new: true })
     // .populate('author')
