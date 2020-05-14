@@ -52,7 +52,7 @@
 									<%= req.session.user.name.last %>
 								</h5>
 								<div class="h5 font-weight-300">
-									<%= req.session.user.username %>
+									<%= req.session.user.email %>
 								</div>
 								<div class="mt-3">
 									<% if (req.session.user.type === 'admin') { %>
@@ -88,7 +88,7 @@
 							<div class="pl-lg-4">
 								<form action="" id="edit-profile-form">
 									<div class="row">
-										<div class="col">
+										<div class="col-md-3 col-sm-12">
 											<div class="form-group">
 												<label class="form-control-label" for="firstname">Křestní
 													jméno</label>
@@ -97,7 +97,7 @@
 													value="<%= req.session.user.name.first %>">
 											</div>
 										</div>
-										<div class="col">
+										<div class="col-md-3 col-sm-12">
 											<div class="form-group">
 												<label class="form-control-label" for="middlename">Prostřední
 													jméno</label>
@@ -105,7 +105,7 @@
 													placeholder="Žádné" value="<%= req.session.user.name.middle %>">
 											</div>
 										</div>
-										<div class="col">
+										<div class="col-md-3 col-sm-12">
 											<div class="form-group">
 												<label class="form-control-label" for="lastname">Příjmení</label>
 												<input type="text" id="lastname" class="form-control" required

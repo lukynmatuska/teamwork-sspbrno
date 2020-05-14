@@ -7,9 +7,9 @@
     <div class="mt-5">
         <form id="login">
             <div class="form-group">
-                <label for="username">Uživatelské jméno</label>
-                <input type="text" class="form-control" id="username"
-                    placeholder="Zadejte uživatelské jméno, nebo email">
+                <label for="email">Emailová adreda</label>
+                <input type="text" class="form-control" id="email"
+                    placeholder="Zadejte Váš email">
             </div>
             <div class="form-group">
                 <label for="password">Heslo</label>
@@ -41,14 +41,14 @@
                     )
                 )
                 .show()
-            let username = $('#username').val()
+            let email = $('#email').val()
             let password = $('#password').val()
             let strongAlertText = 'Ach ne!'
             let alertText
             let alertStatus
 
-            if (username === '') {
-                alertText = ' Uživatelské jméno nemůže být prázdné'
+            if (email === '') {
+                alertText = ' Email nemůže být prázdný'
             } else if (password === '') {
                 alertText = ' Heslo nemůže být prázdné'
             }
@@ -66,7 +66,7 @@
                     .show()
             }
 
-            API.user.login(username, password).done(function (responseFromServer) {
+            API.user.login(email, password).done(function (responseFromServer) {
                 if (responseFromServer === 'ok') {
                     $('div#login-status')
                         .empty()
@@ -83,14 +83,14 @@
                     setTimeout(function () {
                         window.location.href = '/teamworks';
                     }, 3500)
-                } else if (responseFromServer === 'wrong-username') {
+                } else if (responseFromServer === 'wrong-email') {
                     $('div#login-status')
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne!'),
-                                ' Uživatel s tímto uživatelským jménem, nebo emailem neexistuje'
+                                ' Uživatel s tímto emailem neexistuje'
                             )
                         )
                         .show()

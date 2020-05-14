@@ -17,11 +17,11 @@ var userSchema = new mongoose.Schema({
     middle: String,
     last: String
   },
-  username: {
+  email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  email: String,
   password: {
     type: String,
     required: true

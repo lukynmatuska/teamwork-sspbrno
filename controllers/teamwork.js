@@ -81,17 +81,17 @@ module.exports.edit = (req, res) => {
     .findByIdAndUpdate(req.body.id, update)
     .populate({
       path: 'students.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .exec((err, teamWork) => {
       if (err) {
@@ -130,17 +130,17 @@ module.exports.list = (req, res) => {
     .find(filter)
     .populate({
       path: 'students.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .exec((err, teamWorks) => {
       if (err) {
@@ -156,17 +156,17 @@ module.exports.findById = (req, res) => {
     .findById(req.params.id)
     .populate({
       path: 'students.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name username email photo type'
+      select: 'name email photo type'
     })
     .exec((err, teamWork) => {
       if (err) {

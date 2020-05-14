@@ -8,26 +8,22 @@
         <form id="register">
             <div class="row">
                 <div class="form-group col-sm-12 col-md-4">
-                    <label for="username">Křestní jméno</label>
+                    <label for="firstname">Křestní jméno</label>
                     <input type="text" class="form-control" id="firstname" placeholder="Zadejte Vaše křestní jméno">
                 </div>
                 <div class="form-group col-sm-12 col-md-4">
-                    <label for="username">Prostřední jméno</label>
+                    <label for="middlename">Prostřední jméno</label>
                     <input type="text" class="form-control" id="middlename"
                         placeholder="Zadejte střední jméno, pokud nějaké máte">
                 </div>
                 <div class="form-group col-sm-12 col-md-4">
-                    <label for="username">Příjmení</label>
+                    <label for="lastname">Příjmení</label>
                     <input type="text" class="form-control" id="lastname" placeholder="Zadejte Vaše příjmení">
                 </div>
             </div>
             <div class="form-group">
-                <label for="username">Emailová adresa</label>
-                <input type="email" class="form-control" id="email" placeholder="Zadejte Váš email">
-            </div>
-            <div class="form-group">
-                <label for="username">Uživatelské jméno</label>
-                <input type="text" class="form-control" id="username" placeholder="Zvolte si uživatelské jméno">
+                <label for="email">Emailová adresa</label>
+                <input type="email" class="form-control" id="email" placeholder="Zadejte Váš email" required>
             </div>
             <div class="form-group">
                 <label for="password">Heslo</label>
@@ -57,9 +53,8 @@
                     )
                 )
                 .show()
-            let username = $('#username').val()
-            let password = $('#password').val()
             let email = $('#email').val()
+            let password = $('#password').val()
             let firstname = $('#firstname').val()
             let lastname = $('#lastname').val()
             let middlename = $('#middlename').val()
@@ -67,8 +62,8 @@
             let alertText
             let alertStatus
 
-            if (username === '') {
-                alertText = 'Uživatelské jméno nemůže být prázdné'
+            if (email === '') {
+                alertText = 'Email nemůže být prázdný'
             } else if (password === '') {
                 alertText = 'Heslo nemůže být prázdné'
             } else if (!email.includes('@')) {
@@ -90,7 +85,7 @@
                     .show()
             }
 
-            API.user.new(username, password, email, firstname, lastname, middlename).done(function (responseFromServer) {
+            API.user.new(email, password, firstname, lastname, middlename).done(function (responseFromServer) {
                 if (responseFromServer === 'ok') {
                     $('div#register-status')
                         .empty()
@@ -107,17 +102,6 @@
                     setTimeout(function () {
                         window.location.href = '/login';
                     }, 3500)
-                } else if (responseFromServer === 'username-exist') {
-                    $('div#register-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
-                                ' Uživatel s tímto uživatelským jménem již existuje'
-                            )
-                        )
-                        .show()
                 } else if (responseFromServer === 'email-exist') {
                     $('div#register-status')
                         .empty()

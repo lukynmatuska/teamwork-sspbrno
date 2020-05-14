@@ -19,9 +19,7 @@ const User = require('../models/User')
 
 module.exports.new = (req, res) => {
   let usertype
-  if (req.body.username === undefined) {
-    return res.send('not-send-username')
-  } else if (req.body.password === undefined) {
+  if (req.body.password === undefined) {
     return res.send('not-send-password')
   } else if (req.body.email === undefined) {
     return res.send('not-send-email')
@@ -31,7 +29,6 @@ module.exports.new = (req, res) => {
     usertype = req.body.usertype
   }
   const email = req.body.email.trim().toLowerCase()
-  const username = req.body.username.trim().toLowerCase()
 
   User.countDocuments({
     type: 'admin'
@@ -46,22 +43,11 @@ module.exports.new = (req, res) => {
     }
 
     User.findOne({
-      $or: [
-        {
-          username
-        }, {
-          email
-        }
-      ]
+      email
     })
       .exec((err, user) => {
         if (err) {
           return console.error(err)
-        }
-
-        if (user && user.username === username) {
-          // user with that username exists
-          return res.send('username-exist')
         }
 
         if (user && user.email === email) {
@@ -72,11 +58,10 @@ module.exports.new = (req, res) => {
         // Create new user
         new User({
           name: {
-            first: req.body.firstname,
-            middle: req.body.middlename,
-            last: req.body.lastname
+            first: req.body.firstname.trim(),
+            middle: req.body.middlename.trim(),
+            last: req.body.lastname.trim()
           },
-          username,
           password: bcrypt.hashSync(req.body.password, 15),
           email,
           type: usertype
@@ -109,18 +94,12 @@ module.exports.new = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
-  if (req.body.username === undefined) {
-    res.send('not-send-username')
-  } else if (req.body.password === undefined) {
+  if (req.body.password === undefined) {
     res.send('not-send-password')
   }
   User
     .findOne({
-      $or: [{
-        username: req.body.username.trim().toLowerCase()
-      }, {
-        email: req.body.username.trim().toLowerCase()
-      }]
+      email: req.body.email.trim().toLowerCase()
     })
     .populate('years.year')
     .exec((err, user) => {
@@ -128,7 +107,7 @@ module.exports.login = (req, res) => {
         res.send('err-mongo-finding-user')
         return console.error(err)
       } else if (user === null) {
-        return res.send('wrong-username')
+        return res.send('wrong-email')
       } else {
         bcrypt.compare(req.body.password, user.password, (err, same) => {
           if (err) {
@@ -190,12 +169,12 @@ module.exports.edit = (req, res) => {
 }
 
 module.exports.enableRescue = (req, res) => {
-  if (req.body.username === undefined) {
-    return res.send('not-send-username')
+  if (req.body.email === undefined) {
+    return res.send('not-send-email')
   } else {
     User
       .findOneAndUpdate({
-        username: req.body.username.trim().toLowerCase()
+        email: req.body.email.trim().toLowerCase()
       }, {
         rescue: true
       })
@@ -205,7 +184,7 @@ module.exports.enableRescue = (req, res) => {
           res.send('err')
           return console.error(err)
         } else if (user === null) {
-          return res.send('wrong-username')
+          return res.send('wrong-email')
         } else {
           return res.send('ok')
         }
@@ -243,7 +222,7 @@ module.exports.setNewPassword = (req, res) => {
                 res.send('err')
                 return console.error(err)
               } else if (user === null) {
-                return res.send('wrong-username')
+                return res.send('wrong-email')
               } else {
                 if (req.session.user !== undefined) {
                   if (req.session.user._id === user._id) {
@@ -308,7 +287,6 @@ module.exports.list = (req, res) => {
     .find({})
     .populate('years.year')
     .select({
-      username: 1,
       email: 1,
       name: 1,
       photo: 1,

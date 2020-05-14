@@ -49,17 +49,17 @@ module.exports.teamworks = {
       .findById(req.params.id)
       .populate({
         path: 'students.user',
-        select: 'name username email photo type'
+        select: 'name email photo type'
       })
       .populate('students.position')
       .populate({
         path: 'guarantors.user',
-        select: 'name username email photo type'
+        select: 'name email photo type'
       })
       .populate('year')
       .populate({
         path: 'author',
-        select: 'name username email photo type'
+        select: 'name email photo type'
       })
       .exec((err, teamwork) => {
         if (err) {

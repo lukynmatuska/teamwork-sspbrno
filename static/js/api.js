@@ -1,9 +1,8 @@
 var API = {
   user: {
     new: function (
-      username,
-      password,
       email,
+      password,
       firstname,
       lastname,
       middlename,
@@ -11,9 +10,8 @@ var API = {
       return $.post(
         '/api/user/new',
         {
-          username: username,
-          password: password,
           email: email,
+          password: password,
           firstname: firstname,
           middlename: middlename,
           lastname: lastname,
@@ -23,11 +21,11 @@ var API = {
       )
     },
 
-    login: function (username, password) {
+    login: function (email, password) {
       return $.post(
         '/api/user/login',
         {
-          username: username,
+          email: email,
           password: password
         },
         'json'
@@ -42,11 +40,11 @@ var API = {
       )
     },
 
-    forgotPassword: function (username) {
+    forgotPassword: function (email) {
       return $.post(
         '/api/user/forgot-password',
         {
-          username: username
+          email: email
         },
         'json'
       )
