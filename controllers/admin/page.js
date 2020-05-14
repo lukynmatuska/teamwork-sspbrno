@@ -27,7 +27,22 @@ module.exports.teamworks = {
     res.render('admin/teamworks/new', { req, res, active: 'teamworks', title: 'Nová týmová práce' })
   },
   edit: (req, res) => {
-    res.render('admin/teamworks/edit', { req, res, active: 'teamworks', title: 'Editace týmové práce' })
+    TeamWork
+      .findById(req.params.id)
+      .exec((err, teamwork) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (teamwork === null) {
+          return this.error.notFound(
+            req, res,
+            '404 Týmová práce nenalezena',
+            'Hledáte týmovou práci, která se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
+        }
+        res.render('admin/teamworks/edit', { req, res, active: 'teamworks', title: 'Editace týmové práce' })
+      })
   },
   detail: (req, res) => {
     TeamWork
@@ -52,7 +67,11 @@ module.exports.teamworks = {
           return console.error(err)
         }
         if (teamwork === null) {
-          this.error.notFound(req, res)
+          return this.error.notFound(
+            req, res,
+            '404 Týmová práce nenalezena',
+            'Hledáte týmovou práci, která se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
         }
         res.render('admin/teamworks/detail', { req, res, active: 'teamworks', title: 'Detail týmové práce', teamwork })
       })
@@ -76,7 +95,11 @@ module.exports.users = {
           return console.error(err)
         }
         if (user === null) {
-          this.error.notFound(req, res)
+          return this.error.notFound(
+            req, res,
+            '404 Uživatel nenalezen',
+            'Hledáte uživatele, který se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
         }
         res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user })
       })
@@ -91,7 +114,11 @@ module.exports.users = {
           return console.error(err)
         }
         if (user === null) {
-          this.error.notFound(req, res)
+          return this.error.notFound(
+            req, res,
+            '404 Uživatel nenalezen',
+            'Hledáte uživatele, který se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
         }
         res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user })
       })
@@ -115,7 +142,11 @@ module.exports.years = {
           return console.error(err)
         }
         if (year === null) {
-          return this.error.notFound(req, res)
+          return this.error.notFound(
+            req, res,
+            '404 Ročník nenalezen',
+            'Hledáte ročník, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.'
+          )
         }
         res.render('admin/years/edit', { req, res, active: 'years', title: 'Editace ročníku', year })
       })
@@ -130,8 +161,8 @@ module.exports.error = {
   accessDenied: (req, res) => {
     res.render('admin/errors/403', { req, res, active: 'error', title: '403 Přístup odepřen' })
   },
-  notFound: (req, res) => {
-    res.render('admin/errors/404', { req, res, active: 'error', title: '404 Nenalezeno' })
+  notFound: (req, res, title = '404 Nenalezeno', description = 'Hledáte soubor, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.') => {
+    res.render('admin/errors/404', { req, res, active: 'error', title, description })
   },
   internalError: (req, res) => {
     res.render('admin/errors/500', { req, res, active: 'error', title: '500 Chyba serveru' })
