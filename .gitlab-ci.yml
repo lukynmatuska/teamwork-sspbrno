@@ -56,8 +56,9 @@ Production:
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev tree
-    - cp dist/css/style.min.css static/css/style.css -f
-    - cp dist/css/fonts.min.css static/css/fonts.css -f
-    - cp dist/js/api.min.js static/js/api.js -f
+    - rm static/css/style.css static/css/fonts.css static/js/api.js -f
+    - mv dist/css/style.min.css static/css/style.css
+    - mv dist/css/fonts.min.css static/css/fonts.css
+    - mv dist/js/api.min.js static/js/api.js
     - gem install dpl
     - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
