@@ -58,9 +58,9 @@ module.exports.new = (req, res) => {
         // Create new user
         new User({
           name: {
-            first: req.body.firstname.trim(),
-            middle: req.body.middlename.trim(),
-            last: req.body.lastname.trim()
+            first: (req.body.firstname !== undefined ? req.body.firstname.trim() : undefined),
+            middle: (req.body.middlename !== undefined ? req.body.middlename.trim() : undefined),
+            last: (req.body.lastname !== undefined ? req.body.lastname.trim() : undefined)
           },
           password: bcrypt.hashSync(req.body.password, 15),
           email,

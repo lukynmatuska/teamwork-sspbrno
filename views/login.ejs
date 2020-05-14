@@ -7,13 +7,12 @@
     <div class="mt-5">
         <form id="login">
             <div class="form-group">
-                <label for="email">Emailová adreda</label>
-                <input type="text" class="form-control" id="email"
-                    placeholder="Zadejte Váš email">
+                <label for="email">Emailová adresa</label>
+                <input type="email" class="form-control" id="email" placeholder="Zadejte Váš email" required>
             </div>
             <div class="form-group">
                 <label for="password">Heslo</label>
-                <input type="password" class="form-control" id="password" placeholder="Zadejte heslo">
+                <input type="password" class="form-control" id="password" placeholder="Zadejte heslo" required>
             </div>
             <div class="form-group" id="login-status" style="display: none;"></div>
             <div class="form-group">
@@ -35,6 +34,7 @@
                 .empty()
                 .append(
                     $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+                        $('<i>', { class: 'fas fa-circle-notch fa-spin' }),
                         $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                         // $('<strong>').text('Gratuluji!'),
                         'Přihlašuji'
@@ -58,6 +58,7 @@
                     .empty()
                     .append(
                         $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                            $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                             $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                             $('<strong>').text(strongAlertText),
                             alertText
@@ -72,8 +73,9 @@
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+                                $('<i>', { class: 'fas fa-check', 'aria-hidden': 'true' }),
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Gratuluji!'),
+                                $('<strong>').text(' Gratuluji!'),
                                 ' Úspěšně jste se přihlásil(a)'
                             )
                         )
@@ -88,8 +90,9 @@
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
+                                $('<strong>').text(' Ach ne!'),
                                 ' Uživatel s tímto emailem neexistuje'
                             )
                         )
@@ -99,8 +102,9 @@
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
+                                $('<strong>').text(' Ach ne!'),
                                 ' Zadané heslo se neshoduje'
                             )
                         )

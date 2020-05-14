@@ -29,6 +29,10 @@
                 <label for="password">Heslo</label>
                 <input type="password" class="form-control" id="password" placeholder="Zadejte heslo">
             </div>
+            <div class="form-group">
+                <label for="password-again">Heslo znovu</label>
+                <input type="password" class="form-control" id="password-again" placeholder="Zadejte heslo znovu">
+            </div>
             <div class="form-group" id="register-status" style="display: none;"></div>
             <div class="form-group">
                 <button type="submit" class="btn btn-secondary">Zaregistrovat</button>
@@ -44,99 +48,118 @@
     $(document).ready(function () {
         $('form#register').submit(function (event) {
             event.preventDefault()
-            $('div#register-status')
-                .empty()
-                .append(
-                    $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
-                        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                        ' Vytvářím účet'
-                    )
-                )
-                .show()
-            let email = $('#email').val()
-            let password = $('#password').val()
-            let firstname = $('#firstname').val()
-            let lastname = $('#lastname').val()
-            let middlename = $('#middlename').val()
-            let strongAlertText = 'Ach ne'
-            let alertText
-            let alertStatus
-
-            if (email === '') {
-                alertText = 'Email nemůže být prázdný'
-            } else if (password === '') {
-                alertText = 'Heslo nemůže být prázdné'
-            } else if (!email.includes('@')) {
-                alertText = 'Zadaný email je neplatný'
-            } else if (middlename.length === 0) {
-                middlename = undefined
-            }
-
-            if (alertText !== undefined) {
+            if ($('#password').val() !== $('#password-again').val()) {
                 $('div#register-status')
                     .empty()
                     .append(
                         $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                            $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                             $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                            $('<strong>').text(strongAlertText),
-                            ` ${alertText}`
+                            ' Hesla se musí shodovat!'
                         )
                     )
                     .show()
-            }
+            } else {
+                $('div#register-status')
+                    .empty()
+                    .append(
+                        $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+                            $('<i>', { class: 'fas fa-circle-notch fa-spin' }),
+                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                            ' Vytvářím účet'
+                        )
+                    )
+                    .show()
+                let email = $('#email').val()
+                let password = $('#password').val()
+                let firstname = $('#firstname').val()
+                let lastname = $('#lastname').val()
+                let middlename = $('#middlename').val()
+                let strongAlertText = 'Ach ne'
+                let alertText
+                let alertStatus
 
-            API.user.new(email, password, firstname, lastname, middlename).done(function (responseFromServer) {
-                if (responseFromServer === 'ok') {
-                    $('div#register-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Gratuluji!'),
-                                ' Úspěšně jste se zaregistroval(a)'
-                            )
-                        )
-                        .show()
+                if (email === '') {
+                    alertText = 'Email nemůže být prázdný'
+                } else if (password === '') {
+                    alertText = 'Heslo nemůže být prázdné'
+                } else if (!email.includes('@')) {
+                    alertText = 'Zadaný email je neplatný'
+                } else if (middlename.length === 0) {
+                    middlename = undefined
+                }
 
-                    // Redirect to login page
-                    setTimeout(function () {
-                        window.location.href = '/login';
-                    }, 3500)
-                } else if (responseFromServer === 'email-exist') {
+                if (alertText !== undefined) {
                     $('div#register-status')
                         .empty()
                         .append(
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
-                                ' Uživatel s tímto emailem již existuje'
-                            )
-                        )
-                        .show()
-                } else if (responseFromServer === 'err-sending-email') {
-                    $('div#register-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
-                                ' Bohužel se nepodařilo Vám odeslat email, ale účet byl vytvořen'
-                            )
-                        )
-                        .show()
-                } else {
-                    $('div#register-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne!'),
-                                ' Stala se obecná chyba, o které může vědět jen administrátor'
+                                $('<strong>').text(strongAlertText),
+                                ` ${alertText}`
                             )
                         )
                         .show()
                 }
-            })
+
+                API.user.new(email, password, firstname, lastname, middlename).done(function (responseFromServer) {
+                    if (responseFromServer === 'ok') {
+                        $('div#register-status')
+                            .empty()
+                            .append(
+                                $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+                                    $('<i>', { class: 'fas fa-check' }),
+                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                    $('<strong>').text('Gratuluji!'),
+                                    ' Úspěšně jste se zaregistroval(a)'
+                                )
+                            )
+                            .show()
+
+                        // Redirect to login page
+                        setTimeout(function () {
+                            window.location.href = '/login';
+                        }, 3500)
+                    } else if (responseFromServer === 'email-exist') {
+                        $('div#register-status')
+                            .empty()
+                            .append(
+                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                    $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
+                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                    $('<strong>').text('Ach ne!'),
+                                    ' Uživatel s tímto emailem již existuje'
+                                )
+                            )
+                            .show()
+                    } else if (responseFromServer === 'err-sending-email') {
+                        $('div#register-status')
+                            .empty()
+                            .append(
+                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                    $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
+                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                    $('<strong>').text('Ach ne!'),
+                                    ' Bohužel se nepodařilo Vám odeslat email, ale účet byl vytvořen'
+                                )
+                            )
+                            .show()
+                    } else {
+                        $('div#register-status')
+                            .empty()
+                            .append(
+                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                    $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
+                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                    $('<strong>').text('Ach ne!'),
+                                    ' Stala se obecná chyba, o které může vědět jen administrátor'
+                                )
+                            )
+                            .show()
+                    }
+                })
+            }
         })
     })
 </script>
