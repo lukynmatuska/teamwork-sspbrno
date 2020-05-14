@@ -150,8 +150,18 @@ module.exports.edit = (req, res) => {
     delete update.name
   }
 
-  if (req.body.id !== undefined && req.session.user.type === 'admin') {
-    id = req.body.id
+  if (req.session.user.type === 'admin') {
+    if (req.body.id !== undefined) {
+      id = req.body.id
+    }
+
+    if (req.body.years !== undefined) {
+      update.years = req.body.years
+    }
+
+    if (req.body.type !== undefined) {
+      update.type = req.body.type
+    }
   }
 
   User

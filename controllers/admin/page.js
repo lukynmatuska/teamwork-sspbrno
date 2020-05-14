@@ -101,7 +101,15 @@ module.exports.users = {
             'Hledáte uživatele, který se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
           )
         }
-        res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user })
+        Year
+          .find({})
+          .exec((err, years) => {
+            if (err) {
+              this.error.internalError(req, res)
+              return console.error(err)
+            }
+            res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user, years })
+          })
       })
   },
   detail: (req, res) => {

@@ -70,9 +70,9 @@
 							</div>
 						</div>
 						<div class="card-body bg-secondary">
-							<h6 class="heading-small text-muted mb-4">Základní údaje</h6>
-							<div class="pl-lg-4">
-								<form action="./" id="edit-user-form" method="POST">
+							<form action="./" id="edit-user-form" method="POST">
+								<h6 class="heading-small text-muted mb-4">Základní údaje</h6>
+								<div class="pl-lg-4">
 									<div class="row">
 										<div class="col">
 											<div class="form-group">
@@ -101,7 +101,7 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-lg-12">
+										<div class="col-md-6 col-sm-12">
 											<div class="form-group">
 												<label class="form-control-label" for="email">Email</label>
 												<input type="email" id="email" class="form-control" required
@@ -109,6 +109,79 @@
 													value="<%= user.email %>">
 											</div>
 										</div>
+										<div class="col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-control-label" for="user-type">Role</label>
+												<select class="form-control" id="user-type">
+													<option <%= user.type === 'student' ? 'selected="selected"' : '' %>
+														value="student">Student(ka)</option>
+													<option <%= user.type === 'guarant' ? 'selected="selected"' : '' %>
+														value="guarant">Garant(ka)</option>
+													<option <%= user.type === 'admin' ? 'selected="selected"' : '' %>
+														value="admin">Administrátor(ka)</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading-small text-muted mb-4">Ročníky</h6>
+									</div>
+									<div class="col float-right">
+										<button type="button" onclick="addYearRow()"
+											class="btn btn-sm btn-primary float-right">Přidat ročník</button>
+									</div>
+								</div>
+								<div class="pl-lg-4">
+									<div id="user-years">
+										<% user.years.forEach((yearObject, i) => { %>
+										<div class="row">
+											<div class="col-md-6 col-sm-12">
+												<div class="form-group">
+													<label class="form-control-label" for="user-year-<%= i %>">
+														Ročník
+													</label>
+													<select class="form-control" id="user-year-<%= i %>"
+														required="required">
+														<option value="">
+															Vyberte ročník
+														</option>
+														<% years.forEach((yearFromDB) => { %>
+														<option
+															<%= String(yearObject.year._id) == String(yearFromDB._id) ? 'selected="selected"' : '' %>
+															value="<%= yearFromDB._id %>">
+															<%= yearFromDB.name %>
+														</option>
+														<% }) %>
+													</select>
+												</div>
+											</div>
+											<div class="col-md-5 col-sm-12">
+												<div class="form-group">
+													<label class="form-control-label"
+														for="user-year-permissions-<%= i %>">
+														Práva
+													</label>
+													<select class="form-control" id="user-year-permissions-<%= i %>"
+														required="required">
+														<option selected="selected" value="" disabled="disabled">
+															Vyberte práva k ročníku
+														</option>
+														<option
+															<%= yearObject.permissions.includes('read') ? 'selected="selected"' : '' %>
+															value="read">Čtení</option>
+														<option
+															<%= yearObject.permissions.includes('edit') ? 'selected="selected"' : '' %>
+															value="edit">Editace</option>
+													</select>
+												</div>
+											</div>
+											<div class="col-1 m-auto">
+												<button class="btn btn-danger m-auto" type="button"
+													onclick="$(this).parent().parent().remove()">×</button></div>
+										</div>
+										<% }) %>
 									</div>
 									<div class="row">
 										<div class="col" id="edit-user-status" style="display: none;"></div>
@@ -117,8 +190,8 @@
 												id="edit-user-button">Editovat</button>
 										</div>
 									</div>
-								</form>
-							</div>
+								</div>
+							</form>
 							<hr class="my-4">
 							<h6 class="heading-small text-muted mb-4">Změna hesla</h6>
 							<div class="pl-lg-4">
@@ -126,14 +199,16 @@
 									<div class="row">
 										<div class="col">
 											<div class="form-group">
-												<label class="form-control-label" for="new-password">Nové heslo</label>
+												<label class="form-control-label" for="new-password">Nové
+													heslo</label>
 												<input type="password" id="new-password" class="form-control" required
 													placeholder="Vyplňte prosím toto povinné pole">
 											</div>
 										</div>
 									</div>
 									<div class="row">
-										<div class="col" id="change-password-status" style="display: none;"></div>
+										<div class="col" id="change-password-status" style="display: none;">
+										</div>
 										<div class="col-4 text-left">
 											<button type="submit" class="btn btn-primary"
 												id="change-password-button">Editovat</button>
@@ -149,7 +224,59 @@
 		</div>
 	</div>
 	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/select2') %>
 	<script>
+		function addYearRow(i = $('div#user-years .row').length, motherDOM = $('div#user-years')) {
+			$('<div>', { class: 'row' }).append(
+				$('<div>', { class: 'col-md-6 col-sm-12' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `user-year-${i}` }).text('Ročník'),
+						$('<select>', { class: 'form-control', id: `user-year-${i}`, required: 'required' })
+					)
+				),
+				$('<div>', { class: 'col-md-5 col-sm-12' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `user-year-permissions-${i}` }).text('Práva'),
+						$('<select>', { class: 'form-control', id: `user-year-permissions-${i}`, required: 'required' }).append(
+							$('<option>', { value: 'read' }).text('Čtení'),
+							$('<option>', { value: 'edit' }).text('Editace'),
+						)
+					)
+				),
+				$('<div>', { class: 'col-1 m-auto' }).append(
+					$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+				)
+			).appendTo(motherDOM)
+			$(`select#user-year-permissions-${i}`).select2()
+			let $selectUsersYear = $(`select#user-year-${i}`).select2()
+			$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
+			$selectUsersYear.prop("disabled", true);
+			API.year.list().done((listOfYears) => {
+				$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
+				listOfYears.forEach((year) => {
+					$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
+				})
+				$selectUsersYear.prop("disabled", false);
+			})
+		}
+
+		function getYearsForRequest() {
+			let years = []
+
+			for (let i = 0; i < $('div#user-years .row').length; i++) {
+				let year = {
+					permissions: ['read'],
+					year: $(`select#user-year-${i}`).val()
+				}
+				
+				if ($(`select#user-year-permissions-${i}`).val() === 'edit') {
+					year.permissions.push('edit')
+				}
+				years.push(year)
+			}
+
+			return years
+		}
 		function editProfile() {
 			API.user
 				.edit({
@@ -157,7 +284,8 @@
 					firstname: $('#firstname').val(),
 					middlename: $('#middlename').val(),
 					lastname: $('#lastname').val(),
-					email: $('#email').val()
+					email: $('#email').val(),
+					years: getYearsForRequest()
 				})
 				.done(function (data) {
 					console.log(data)
@@ -228,6 +356,7 @@
 		}
 
 		$(document).ready(function () {
+			$('select').select2()
 			$('#edit-user-button').click(editProfile)
 			$('#edit-user-form').submit(function (event) {
 				event.preventDefault()
