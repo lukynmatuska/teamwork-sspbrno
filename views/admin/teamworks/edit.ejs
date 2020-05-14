@@ -6,13 +6,13 @@
 		$('<div>', { class: 'row' }).append(
 			$('<div>', { class: 'col-2' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-position` }).text('Zaměření (Pozice)'),
+					$('<label>', { class: 'form-control-label', for: `student-${i}-position` }).text('Zaměření (Pozice)'),
 					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required', value: (student === undefined ? '' : student.position._id) })
 				)
 			),
 			$('<div>', { class: 'col' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-task` }).text('Popis pozice'),
+					$('<label>', { class: 'form-control-label', for: `student-${i}-task` }).text('Popis pozice'),
 					$('<textarea>', {
 						class: 'form-control', id: `student-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o studentově úkolu'
@@ -21,7 +21,7 @@
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-user` }).text('Student'),
+					$('<label>', { class: 'form-control-label', for: `student-${i}-user` }).text('Student'),
 					$('<select>', { class: 'form-control', id: `student-${i}-user`, value: (student === undefined ? '' : (student.user === undefined ? '' : student.user._id)) })
 				)
 			),
@@ -70,7 +70,7 @@
 		$('<div>', { class: 'row' }).append(
 			$('<div>', { class: 'col' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `guarantor-${i}-task` }).text('Popis práce'),
+					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-task` }).text('Popis práce'),
 					$('<textarea>', {
 						class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o garantově zadaní'
@@ -79,7 +79,7 @@
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `guarantor-${i}-user` }).text('Učitel'),
+					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-user` }).text('Učitel'),
 					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor === undefined ? '' : (guarantor.user === undefined ? '' : guarantor.user._id)) })
 				)
 			),
