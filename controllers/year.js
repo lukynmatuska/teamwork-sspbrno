@@ -49,8 +49,8 @@ module.exports.new = (req, res) => {
           }
         }
       }, {
-      new: true
-    })
+        new: true
+      })
       .populate('years.year')
       .exec((err, user) => {
         if (err) {

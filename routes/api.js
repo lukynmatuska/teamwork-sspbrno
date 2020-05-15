@@ -105,6 +105,10 @@ router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   res.send('ok')
 })
 
+router.get('/user/am-i-logged-in', (req, res) => {
+  res.send(req.session.user !== undefined)
+})
+
 /**
  * Years
  */
@@ -172,6 +176,14 @@ router.get('/teamwork/find-by-id/:id', (req, res) => {
 
 router.post('/teamwork/delete', partials.onlyAdmin, (req, res) => {
   teamworkController.delete(req, res)
+})
+
+router.post('/teamwork/select', (req, res) => {
+  teamworkController.select(req, res)
+})
+
+router.get('/teamwork/has-student-been-asigned-to-teamwork', (req, res) => {
+  teamworkController.hasStudentBeenAsignedToTeamWork(req, res)
 })
 
 /**

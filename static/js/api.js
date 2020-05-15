@@ -92,6 +92,10 @@ var API = {
         },
         'json'
       )
+    },
+
+    loggedIn: function () {
+      return $.get('/api/user/am-i-logged-in', {}, 'json')
     }
   },
 
@@ -234,6 +238,24 @@ var API = {
       return $.get('/api/teamwork/list', {
         filter: filter
       }, 'json')
+    },
+
+    select: function (
+      teamWorkId,
+      positionId
+    ) {
+      return $.post(
+        '/api/teamwork/select',
+        {
+          id: teamWorkId,
+          position: positionId
+        },
+        'json'
+      )
+    },
+
+    hasStudentBeenAsignedToTeamWork: function () {
+      return $.get('/api/teamwork/has-student-been-asigned-to-teamwork', {}, 'json')
     }
   }
 }

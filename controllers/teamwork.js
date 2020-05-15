@@ -9,6 +9,7 @@
  */
 // const moment = require('moment')
 // const nodemailer = require('nodemailer')
+const mongoose = require('mongoose')
 
 /**
  * Models
@@ -174,5 +175,71 @@ module.exports.findById = (req, res) => {
         return console.error(err)
       }
       return res.send(teamWork)
+    })
+}
+
+module.exports.select = (req, res) => {
+  /**
+   * Add student to TeamWork
+   */
+  if (req.body.id === undefined) {
+    return res.send('not-send-id')
+  } else if (req.body.position === undefined) {
+    return res.send('not-send-position')
+  }
+  TeamWork
+    .findById(req.body.id)
+    .populate({
+      path: 'students.user',
+      select: 'name email photo type'
+    })
+    .populate('students.position')
+    .populate({
+      path: 'guarantors.user',
+      select: 'name email photo type'
+    })
+    .populate('year')
+    .populate({
+      path: 'author',
+      select: 'name email photo type'
+    })
+    .exec((err, teamWork) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      }
+      for (let i = 0; i < teamWork.students.length; i++) {
+        if (String(teamWork.students[i]._id) === String(req.body.position)) {
+          if (teamWork.students[i].user === undefined) {
+            teamWork.students[i].user = req.session.user._id
+          } else {
+            return res.send('already-asigned')
+          }
+          break
+        }
+      }
+      TeamWork
+        .findByIdAndUpdate(req.body.id, teamWork)
+        .exec((err) => {
+          if (err) {
+            res.send('err')
+            return console.error(err)
+          }
+          return res.send('ok')
+        })
+    })
+}
+
+module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
+  TeamWork
+    .countDocuments({
+      'students.user': mongoose.Types.ObjectId(req.session.user._id)
+    })
+    .exec((err, countOfTeamWorkWhereStudentIs) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      }
+      return res.send(countOfTeamWorkWhereStudentIs > 0)
     })
 }

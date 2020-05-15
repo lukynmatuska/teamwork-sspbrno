@@ -25,6 +25,30 @@
 
 <%- include('./partials/scripts-file-end') %>
 <script>
+    function selectTeamWork(DOM, teamWorkId, positionId) {
+        DOM.text('Vybírám')
+        DOM.removeClass('bg-secondary text-light')
+        DOM.addClass('btn-dark')
+        API.teamwork
+            .select(teamWorkId, positionId)
+            .done((resultFromServer) => {
+                console.log(resultFromServer)
+                DOM.removeClass('btn-dark')
+                if (resultFromServer === 'ok') {
+                    DOM.addClass('btn-success')
+                    DOM.text('Vybráno')
+                    location.reload()
+                } else if (resultFromServer === 'already-asigned') {
+                    DOM.text('Jejda! Někdo Vás předběhl')
+                    DOM.addClass('btn-danger')
+                    location.reload()
+                } else {
+                    DOM.text('Chyba!')
+                    DOM.addClass('btn-danger')
+                }
+            })
+    }
+
     $(document).ready(function () {
         if (Cookies.get('toast-login') === 'true') {
             $('#toast-login')
@@ -37,62 +61,68 @@
             Cookies.set('toast-login', 'false')
         }
         API.teamwork
-            .list()
-            .done(function (teamworks) {
-                for (let i = 0; i < teamworks.length; i++) {
-                    let studentsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
-                    for (let ii = 0; ii < teamworks[i].students.length; ii++) {
-                        let user = teamworks[i].students[ii].user
-                        studentsDOMs.append(
-                            $('<li>', { class: 'list-group-item' }).append(
-                                $('<strong>', { class: 'text-dark' }).text(`${teamworks[i].students[ii].position.name}: `),
-                                $('<span>', { class: 'text-dark' }).text(teamworks[i].students[ii].task),
-                                (user === undefined ?
-                                    $('<span>', { class: 'text-success' }).text(
-                                        ` Volná pozice`
+            .hasStudentBeenAsignedToTeamWork()
+            .done((hasStudentBeenAsignedToTeamWork) => {
+                API.teamwork
+                    .list()
+                    .done(function (teamworks) {
+                        for (let i = 0; i < teamworks.length; i++) {
+                            let studentsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
+                            for (let ii = 0; ii < teamworks[i].students.length; ii++) {
+                                let user = teamworks[i].students[ii].user
+                                studentsDOMs.append(
+                                    $('<li>', { class: 'list-group-item' }).append(
+                                        $('<strong>', { class: 'text-dark' }).text(`${teamworks[i].students[ii].position.name}: `),
+                                        $('<span>', { class: 'text-dark' }).text(teamworks[i].students[ii].task),
+                                        (user === undefined ?
+                                            (
+                                                hasStudentBeenAsignedToTeamWork ? (
+                                                    $('<span>', { class: 'text-success' }).text(` Volná pozice`)
+                                                ) : (
+                                                        $('<button>', {
+                                                            class: 'btn btn-sm bg-secondary text-light ml-2', type: 'button',
+                                                            onclick: `selectTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
+                                                        }).text('Vybrat')
+                                                    )
+                                            ) : $('<span>', { class: 'text-secondary' }).text(
+                                                ` - ${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
+                                            )
+                                        )
                                     )
-                                    :
-                                    $('<span>', { class: 'text-secondary' }).text(
-                                        ` - ${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
+                                )
+                            }
+
+                            let guarantorsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
+                            for (let ii = 0; ii < teamworks[i].guarantors.length; ii++) {
+                                let name = teamworks[i].guarantors[ii].user.name
+                                guarantorsDOMs.append(
+                                    $('<li>', { class: 'list-group-item' }).append(
+                                        $('<strong>', { class: 'text-dark' }).text(
+                                            `${name.first} ${name.middle === undefined ? ' ' : ` ${name.middle} `} ${name.last}: `
+                                        ),
+                                        $('<span>', { class: 'text-secondary' }).text(teamworks[i].guarantors[ii].task)
+                                    )
+                                )
+                            }
+
+                            $('div#teamworks').append(
+                                $('<div>', { class: 'row mb-4' }).append(
+                                    $('<div>', { class: 'col' }).append(
+                                        $('<div>', { class: 'card flex-grow-1' }).append(
+                                            $('<div>', { class: 'card-body' }).append(
+                                                $('<h3>', { class: 'card-title text-dark' }).text(teamworks[i].name),
+                                                $('<p>', { class: 'card-text text-muted' }).text(teamworks[i].description)
+                                            ),
+                                            $('<h4>', { class: 'card-title text-dark' }).text('Pozice'),
+                                            studentsDOMs,
+                                            $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
+                                            guarantorsDOMs
+                                        )
                                     )
                                 )
                             )
-                        )
-                    }
-
-                    let guarantorsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
-                    for (let ii = 0; ii < teamworks[i].guarantors.length; ii++) {
-                        let name = teamworks[i].guarantors[ii].user.name
-                        guarantorsDOMs.append(
-                            $('<li>', { class: 'list-group-item' }).append(
-                                $('<strong>', { class: 'text-dark' }).text(
-                                    `${name.first} ${name.middle === undefined ? ' ' : ` ${name.middle} `} ${name.last}: `
-                                ),
-                                $('<span>', { class: 'text-secondary' }).text(teamworks[i].guarantors[ii].task)
-                            )
-                        )
-                    }
-
-                    $('div#teamworks').append(
-                        $('<div>', { class: 'row mb-4' }).append(
-                            $('<div>', { class: 'col' }).append(
-                                $('<div>', { class: 'card flex-grow-1' }).append(
-                                    $('<div>', { class: 'card-body' }).append(
-                                        $('<h3>', { class: 'card-title text-dark' }).text(teamworks[i].name),
-                                        $('<p>', { class: 'card-text text-muted' }).text(teamworks[i].description)
-                                    ),
-                                    $('<h4>', { class: 'card-title text-dark' }).text('Pozice'),
-                                    studentsDOMs,
-                                    $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
-                                    guarantorsDOMs,
-                                    $('<div>', { class: 'card-body' }).append(
-                                        $('<a>', { class: 'card-link text-secondary', href: '#' }).text('Vybrat!')
-                                    )
-                                )
-                            )
-                        )
-                    )
-                }
+                        }
+                    })
             })
     })
 </script>
