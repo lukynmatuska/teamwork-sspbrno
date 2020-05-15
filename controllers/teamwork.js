@@ -231,15 +231,21 @@ module.exports.select = (req, res) => {
 }
 
 module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
-  TeamWork
-    .countDocuments({
-      'students.user': mongoose.Types.ObjectId(req.session.user._id)
-    })
-    .exec((err, countOfTeamWorkWhereStudentIs) => {
-      if (err) {
-        res.send('err')
-        return console.error(err)
-      }
-      return res.send(countOfTeamWorkWhereStudentIs > 0)
-    })
+  if (req.session.user === undefined) {
+    return res.send(true)
+  } else if (req.session.user.type !== 'student') {
+    return res.send(true)
+  } else {
+    TeamWork
+      .countDocuments({
+        'students.user': mongoose.Types.ObjectId(req.session.user._id)
+      })
+      .exec((err, countOfTeamWorkWhereStudentIs) => {
+        if (err) {
+          res.send('err')
+          return console.error(err)
+        }
+        return res.send(countOfTeamWorkWhereStudentIs > 0)
+      })
+  }
 }

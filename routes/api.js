@@ -183,9 +183,6 @@ router.post('/teamwork/select', (req, res) => {
 })
 
 router.get('/teamwork/has-student-been-asigned-to-teamwork', (req, res) => {
-  if (req.session.user === undefined) {
-    return res.send(true)
-  }
   teamworkController.hasStudentBeenAsignedToTeamWork(req, res)
 })
 
