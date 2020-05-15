@@ -70,10 +70,6 @@ router.get('/teamworks/edit/:id', (req, res) => {
   adminPageController.teamworks.edit(req, res)
 })
 
-router.get('/teamworks/detail/:id', (req, res) => {
-  adminPageController.teamworks.detail(req, res)
-})
-
 /**
  * Users
  */
