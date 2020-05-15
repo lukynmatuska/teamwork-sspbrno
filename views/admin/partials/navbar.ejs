@@ -1,6 +1,6 @@
 <!-- Sidenav -->
 <nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
-  <div class="scrollbar-inner">
+  <div class="scrollbar-inner d-flex flex-column">
     <!-- Brand -->
     <div class="sidenav-header align-items-center">
       <a class="navbar-brand" href="/admin/">
@@ -8,11 +8,11 @@
         Týmové práce
       </a>
     </div>
-    <div class="navbar-inner">
+    <div class="navbar-inner flex-grow-1">
       <!-- Collapse -->
       <div class="collapse navbar-collapse" id="sidenav-collapse-main">
         <!-- Nav items -->
-        <ul class="navbar-nav">
+        <ul class="navbar-nav d-flex flex-column">
           <li class="nav-item">
             <a class="nav-link <%= active === 'dashboard' ? 'active' : '' %>" href="/admin/dashboard/">
               <i class="fas fa-chart-pie text-primary"></i>
@@ -35,6 +35,19 @@
             <a class="nav-link <%= active.includes('years') ? 'active' : '' %>" href="/admin/years/">
               <i class="fas fa-clock"></i>
               <span class="nav-link-text">Ročníky</span>
+            </a>
+          </li>
+        </ul>
+        <!-- Divider -->
+        <hr class="my-3">
+        <h6 class="navbar-heading p-0 text-muted">
+          <span class="docs-normal">Ostatní</span>
+        </h6>
+        <ul class="navbar-nav mb-md-3">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="fas fa-arrow-left"></i>
+              <span class="nav-link-text">Zpět na úvodní stránku</span>
             </a>
           </li>
           <% if (active === 'error') { %>
