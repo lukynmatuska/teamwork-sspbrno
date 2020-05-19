@@ -1,6 +1,20 @@
 <%- include('./partials/header') %>
 <%- include('./partials/file-start') %>
 <%- include('./partials/menu') %>
+<div class="toast" id="toast-logout" style="position: absolute; top: 20px; right: 20px; display: none; ">
+    <div class="toast-header">
+        <i class="fas fa-key"></i>
+        <strong class="mr-auto ml-1">Olda Vrátník</strong>
+        <small class="ml-auto">Právě teď</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body text-black-50">
+        <strong class="text-darker">Gratuluji!</strong>
+        Odhlášení proběhlo úspěšně, bude se mi stýskat.
+    </div>
+</div>
 <main role="main" class="inner cover mt-5">
     <h1 class="cover-heading"><%= title %></h1>
     <span class="underline"></span>
@@ -28,6 +42,17 @@
 <%- include('./partials/scripts-file-end') %>
 <script>
     $(document).ready(function () {
+        if (Cookies.get('toast-logout') === 'true') {
+            $('#toast-logout')
+                .show()
+                .toast({
+                    animation: true,
+                    autohide: true,
+                    delay: 3500
+                })
+                .toast('show')
+            Cookies.set('toast-logout', 'false')
+        } 
         $('form#login').submit(function (event) {
             event.preventDefault()
             $('div#login-status')
@@ -70,23 +95,7 @@
             API.user.login(email, password).done(function (responseFromServer) {
                 if (responseFromServer === 'ok') {
                     Cookies.set('toast-login', 'true')
-                    window.location.href = '/teamworks';
-                    /* $('div#login-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-                                $('<i>', { class: 'fas fa-check', 'aria-hidden': 'true' }),
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text(' Gratuluji!'),
-                                ' Úspěšně jste se přihlásil(a)'
-                            )
-                        )
-                        .show() 
-
-                    // Redirect to teamworks page
-                    setTimeout(function () {
-                        window.location.href = '/teamworks';
-                    }, 3500) */
+                    window.location.href = '/teamworks'
                 } else if (responseFromServer === 'wrong-email') {
                     $('div#login-status')
                         .empty()

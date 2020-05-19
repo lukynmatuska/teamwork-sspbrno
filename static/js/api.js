@@ -254,6 +254,20 @@ var API = {
       )
     },
 
+    leave: function (
+      teamWorkId,
+      positionId
+    ) {
+      return $.post(
+        '/api/teamwork/leave',
+        {
+          id: teamWorkId,
+          position: positionId
+        },
+        'json'
+      )
+    },
+
     hasStudentBeenAsignedToTeamWork: function () {
       return $.get('/api/teamwork/has-student-been-asigned-to-teamwork', {}, 'json')
     }

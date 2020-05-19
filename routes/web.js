@@ -71,7 +71,8 @@ router.get('/login', (req, res) => {
 
 router.get('/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
-  res.redirect('/login?logout=ok')
+  res.cookie('toast-logout', 'true', { maxAge: 60000, httpOnly: false })
+  res.redirect('/login')
 })
 
 router.get('/register', (req, res) => {

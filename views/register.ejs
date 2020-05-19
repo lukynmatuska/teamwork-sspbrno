@@ -116,7 +116,7 @@
                                 $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
                                     $('<i>', { class: 'fas fa-check' }),
                                     $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Gratuluji!'),
+                                    $('<strong>').text(' Gratuluji!'),
                                     ' Úspěšně jste se zaregistroval(a)'
                                 )
                             )
@@ -124,7 +124,8 @@
 
                         // Redirect to login page
                         setTimeout(function () {
-                            window.location.href = '/login';
+                            Cookies.set('toast-register', 'true')
+                            window.location.href = '/teamworks'
                         }, 3500)
                     } else if (responseFromServer === 'email-exist') {
                         $('div#register-status')
@@ -133,7 +134,7 @@
                                 $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                     $('<i>', { class: 'fas fa-exclamation-triangle', 'aria-hidden': 'true' }),
                                     $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Ach ne!'),
+                                    $('<strong>').text(' Ach ne!'),
                                     ' Uživatel s tímto emailem již existuje'
                                 )
                             )

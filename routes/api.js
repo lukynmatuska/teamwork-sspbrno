@@ -102,6 +102,7 @@ router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
+  res.cookie('toast-logout', 'true', { maxAge: 60000, httpOnly: false })
   res.send('ok')
 })
 
@@ -180,6 +181,10 @@ router.post('/teamwork/delete', partials.onlyAdmin, (req, res) => {
 
 router.post('/teamwork/select', (req, res) => {
   teamworkController.select(req, res)
+})
+
+router.post('/teamwork/leave', partials.onlyLoggedIn, (req, res) => {
+  teamworkController.leave(req, res)
 })
 
 router.get('/teamwork/has-student-been-asigned-to-teamwork', (req, res) => {

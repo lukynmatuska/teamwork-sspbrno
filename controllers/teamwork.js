@@ -231,6 +231,61 @@ module.exports.select = (req, res) => {
     })
 }
 
+module.exports.leave = (req, res) => {
+  /**
+   * Remove student from the TeamWork
+   */
+  if (req.body.id === undefined) {
+    return res.send('not-send-id')
+  } else if (req.body.position === undefined) {
+    return res.send('not-send-position')
+  }
+
+  TeamWork
+    .findById(req.body.id)
+    .populate({
+      path: 'students.user',
+      select: 'name email photo type'
+    })
+    .populate('students.position')
+    .populate({
+      path: 'guarantors.user',
+      select: 'name email photo type'
+    })
+    .populate('year')
+    .populate({
+      path: 'author',
+      select: 'name email photo type'
+    })
+    .exec((err, teamWork) => {
+      if (err) {
+        res.send('err')
+        return console.error(err)
+      }
+
+      for (let i = 0; i < teamWork.students.length; i++) {
+        if (String(teamWork.students[i]._id) === String(req.body.position)) {
+          if (String(teamWork.students[i].user._id) === String(req.session.user._id)) {
+            teamWork.students[i].user = undefined
+          } else {
+            return res.send('already-free')
+          }
+          break
+        }
+      }
+
+      TeamWork
+        .findByIdAndUpdate(req.body.id, teamWork)
+        .exec((err) => {
+          if (err) {
+            res.send('err')
+            return console.error(err)
+          }
+          return res.send('ok')
+        })
+    })
+}
+
 module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
   if (req.session.user === undefined) {
     return res.send(true)

@@ -1,10 +1,10 @@
 <%- include('./partials/header') %>
 <%- include('./partials/file-start') %>
 <%- include('./partials/menu') %>
-<div class="toast" id="toast-login" style="position: absolute; top: 20px; right: 20px;">
+<div class="toast" id="toast-login" style="position: absolute; top: 20px; right: 20px; display: none; ">
     <div class="toast-header">
         <i class="fas fa-key"></i>
-        <strong class="mr-auto ml-1">Přihlášení</strong>
+        <strong class="mr-auto ml-1">Olda Vrátník</strong>
         <small class="ml-auto">Právě teď</small>
         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -15,12 +15,24 @@
         Přihlášení proběhlo úspěšně.
     </div>
 </div>
+<div class="toast" id="toast-register" style="position: absolute; top: 20px; right: 20px; display: none; ">
+    <div class="toast-header">
+        <i class="fas fa-key"></i>
+        <strong class="mr-auto ml-1">Olda Vrátník</strong>
+        <small class="ml-auto">Právě teď</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body text-black-50">
+        <strong class="text-darker">Gratuluji!</strong>
+        Registrace proběhla úspěšně.
+    </div>
+</div>
 <main role="main" class="inner cover mt-5">
     <h1 class="cover-heading"><%= title %></h1>
     <span class="underline"></span>
-    <div class="mt-5" id="teamworks">
-
-    </div>
+    <div class="mt-5" id="teamworks"></div>
 </main>
 
 <%- include('./partials/scripts-file-end') %>
@@ -49,9 +61,34 @@
             })
     }
 
+    function leaveTeamWork(DOM, teamWorkId, positionId) {
+        DOM.text('Odcházím')
+        DOM.removeClass('bg-secondary text-light')
+        DOM.addClass('btn-dark')
+        API.teamwork
+            .leave(teamWorkId, positionId)
+            .done((resultFromServer) => {
+                console.log(resultFromServer)
+                DOM.removeClass('btn-dark')
+                if (resultFromServer === 'ok') {
+                    DOM.addClass('btn-success')
+                    DOM.text('Odebráno')
+                    location.reload()
+                } else if (resultFromServer === 'already-free') {
+                    DOM.text('Jejda! Ani jste nebyl přihlášen')
+                    DOM.addClass('btn-danger')
+                    location.reload()
+                } else {
+                    DOM.text('Chyba!')
+                    DOM.addClass('btn-danger')
+                }
+            })
+    }
+
     $(document).ready(function () {
         if (Cookies.get('toast-login') === 'true') {
             $('#toast-login')
+                .show()
                 .toast({
                     animation: true,
                     autohide: true,
@@ -59,6 +96,16 @@
                 })
                 .toast('show')
             Cookies.set('toast-login', 'false')
+        } else if (Cookies.get('toast-register') === 'true') {
+            $('#toast-register')
+                .show()
+                .toast({
+                    animation: true,
+                    autohide: true,
+                    delay: 3500
+                })
+                .toast('show')
+            Cookies.set('toast-register', 'false')
         }
         API.teamwork
             .hasStudentBeenAsignedToTeamWork()
@@ -76,17 +123,23 @@
                                         $('<span>', { class: 'text-dark' }).text(teamworks[i].students[ii].task),
                                         $('<span>', { class: 'text-secondary' }).text(' - '),
                                         (user === undefined ?
-                                            (
-                                                hasStudentBeenAsignedToTeamWork ? (
-                                                    $('<span>', { class: 'text-success' }).text(` Volná pozice`)
-                                                ) : (
-                                                        $('<button>', {
-                                                            class: 'btn btn-sm bg-secondary text-light ml-2', type: 'button',
-                                                            onclick: `selectTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
-                                                        }).text('Vybrat')
-                                                    )
-                                            ) : $('<span>', { class: 'text-secondary' }).text(
-                                                `${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
+                                            (hasStudentBeenAsignedToTeamWork ? (
+                                                $('<span>', { class: 'text-success' }).text(` Volná pozice`)
+                                            ) : (
+                                                    $('<button>', {
+                                                        class: 'btn btn-sm bg-secondary text-light ml-2', type: 'button',
+                                                        onclick: `selectTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
+                                                    }).text('Vybrat')
+                                                )
+                                            ) : (
+                                                ('<%= req.session.user === undefined ? "" : req.session.user._id %>' === String(user._id)) ? (
+                                                    $('<button>', {
+                                                        class: 'btn btn-sm bg-danger text-light ml-2', type: 'button',
+                                                        onclick: `leaveTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
+                                                    }).text('Odejít')
+                                                ) : $('<span>', { class: 'text-secondary' }).text(
+                                                    `${user.name.first}${user.name.middle === undefined ? ' ' : ` ${user.name.middle} `}${user.name.last}`
+                                                )
                                             )
                                         )
                                     )
