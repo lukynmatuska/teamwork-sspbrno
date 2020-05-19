@@ -9,7 +9,8 @@
             <div class="row">
                 <div class="form-group col-sm-12 col-md-4">
                     <label for="firstname">Křestní jméno</label>
-                    <input type="text" class="form-control" id="firstname" placeholder="Zadejte Vaše křestní jméno">
+                    <input type="text" class="form-control" id="firstname" required
+                        placeholder="Zadejte Vaše křestní jméno">
                 </div>
                 <div class="form-group col-sm-12 col-md-4">
                     <label for="middlename">Prostřední jméno</label>
@@ -18,7 +19,7 @@
                 </div>
                 <div class="form-group col-sm-12 col-md-4">
                     <label for="lastname">Příjmení</label>
-                    <input type="text" class="form-control" id="lastname" placeholder="Zadejte Vaše příjmení">
+                    <input type="text" class="form-control" id="lastname" required placeholder="Zadejte Vaše příjmení">
                 </div>
             </div>
             <div class="form-group">
@@ -79,7 +80,11 @@
                 let alertText
                 let alertStatus
 
-                if (email === '') {
+                if (firstname === '') {
+                    alertText = 'Křestní jméno nemůže být prázdné'
+                } else if (lastname === '') {
+                    alertText = 'Příjmení nemůže být prázdné'
+                } else if (email === '') {
                     alertText = 'Email nemůže být prázdný'
                 } else if (password === '') {
                     alertText = 'Heslo nemůže být prázdné'
