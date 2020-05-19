@@ -16,7 +16,7 @@ const router = require('express').Router()
 const moment = require('moment')
 moment.locale('cs')
 const osloveni = require('../libs/osloveni')
-const mongoose = require('mongoose')
+const mongoose = require('../libs/db')
 
 /**
  * Controllers

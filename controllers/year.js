@@ -9,7 +9,7 @@
  */
 const moment = require('moment')
 moment.locale('cs')
-const mongoose = require('mongoose')
+const mongoose = require('../libs/db')
 const userController = require('./user')
 const partials = require('../routes/partials')
 
