@@ -14,6 +14,7 @@
 const TeamWork = require('../../models/TeamWork')
 const User = require('../../models/User')
 const Year = require('../../models/Year')
+const Specialization = require('../../models/Specialization')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })
@@ -110,6 +111,33 @@ module.exports.users = {
             }
             res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user, years })
           })
+      })
+  }
+}
+
+module.exports.specializations = {
+  list: (req, res) => {
+    res.render('admin/specializations/list', { req, res, active: 'specializations', title: 'Seznam zaměření' })
+  },
+  new: (req, res) => {
+    res.render('admin/specializations/new', { req, res, active: 'specializations', title: 'Nové zaměření' })
+  },
+  edit: (req, res) => {
+    Specialization
+      .findById(req.params.id)
+      .exec((err, specialization) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (specialization === null) {
+          return this.error.notFound(
+            req, res,
+            '404 Zaměření nenalezeno',
+            'Hledáte zaměření, které se tu nenachází, přeji Vám příjmenou hru na schovávanou.'
+          )
+        }
+        res.render('admin/specializations/edit', { req, res, active: 'years', title: 'Editace zaměření', specialization })
       })
   }
 }

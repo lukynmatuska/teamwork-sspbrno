@@ -21,8 +21,6 @@ moment.locale('cs')
  */
 const adminPageController = require('../controllers/admin/page')
 const errorController = require('../controllers/error')
-const pageController = require('../controllers/page')
-const partials = require('./partials')
 
 /**
  * Routes
@@ -68,6 +66,25 @@ router.get('/teamworks/new', (req, res) => {
 
 router.get('/teamworks/edit/:id', (req, res) => {
   adminPageController.teamworks.edit(req, res)
+})
+
+/**
+ * Specializations
+ */
+router.get('/specializations/', (req, res) => {
+  res.redirect('./list')
+})
+
+router.get('/specializations/list', (req, res) => {
+  adminPageController.specializations.list(req, res)
+})
+
+router.get('/specializations/new', (req, res) => {
+  adminPageController.specializations.new(req, res)
+})
+
+router.get('/specializations/edit/:id', (req, res) => {
+  adminPageController.specializations.edit(req, res)
 })
 
 /**

@@ -1,0 +1,135 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'list' }) %>
+		<div class="container-fluid mt--7 flex-grow-1">
+			<!-- Light table -->
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h3 class="mb-0">Seznam</h3>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="specializations">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col" class="sort">ID</th>
+										<th scope="col" class="sort" data-sort="name">Název</th>
+										<th scope="col">Krátký název</th>
+										<th scope="col">Akce</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/datatables') %>
+	<script>
+		function deleteSpecializationById(id) {
+			swal({
+				title: 'Opravdu chcete smazat toto zaměření?',
+				text: 'Radši si to dvakrát rozmyslete.',
+				icon: 'warning',
+				timer: 5000,
+				dangerMode: true,
+				buttons: {
+					cancel: "Byl to omyl",
+					confirm: 'Smazat!',
+				},
+			}).then((confirm) => {
+				if (confirm) {
+					API.specialization
+						.delete(id)
+						.done(function (response) {
+							console.log(response);
+							switch (response) {
+								case 'ok':
+									swal({
+										title: 'Zaměření je smazáno!',
+										text: 'Už ji nikdy neuvidíme.',
+										icon: 'success',
+										timer: 5000
+									}).then((value) => {
+										location.reload()
+									})
+									break
+
+								case 'not-sent-id':
+									swal({
+										title: 'Zaměření se nesmazalo!',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID specializace, kterou chcete smazat.',
+										icon: 'error'
+									})
+									break
+
+								default:
+									swal({
+										title: 'Něco se pokazilo!',
+										text: response,
+										icon: 'error'
+									})
+									break
+							}
+						}
+						)
+				}
+			})
+		}
+		$(document).ready(function () {
+			API.specialization
+				.list(
+					{
+						year: '<%= req.session.year._id %>'
+					}
+				)
+				.done((responseFromServer) => {
+					$('table#specializations').DataTable({
+						language: {
+							url: '/js/dataTables/myCzech.json'
+						},
+						responsive: true,
+						data: responseFromServer,
+						columns: [
+							{
+								data: "_id",
+								visible: false
+							}, {
+								data: 'name'
+							}, {
+								data: 'short'
+							}, {
+								data: '_id',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$("<a>", { href: `/admin/specializations/edit/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
+												$("<i>", { class: "fas fa-pen text-primary" }),
+											),
+											$('<button>', {
+												onclick: `deleteSpecializationById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-trash text-danger" }),
+											),
+										),
+									);
+								}
+							}
+						],
+					})
+				})
+		})
+	</script>
+	<%- include('../partials/file-end') %>

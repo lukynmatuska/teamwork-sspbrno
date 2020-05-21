@@ -162,10 +162,11 @@ var API = {
       )
     },
 
-    edit: function (name, shortName) {
+    edit: function (id, name, shortName) {
       return $.post(
         '/api/specialization/edit',
         {
+          id: id,
           name: name,
           short: shortName
         },
@@ -183,8 +184,8 @@ var API = {
       )
     },
 
-    list: function () {
-      return $.get('/api/specialization/list', {}, 'json')
+    list: function (filter = {}) {
+      return $.get('/api/specialization/list', filter, 'json')
     }
   },
 
