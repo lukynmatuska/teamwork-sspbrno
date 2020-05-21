@@ -51,12 +51,9 @@
 				},
 			}).then((confirm) => {
 				if (confirm) {
-					$.post({
-						url: `/api/teamwork/delete`,
-						data: {
-							id,
-						},
-						success: function (response) {
+					API.teamwork
+						.delete(id)
+						.done(function (response) {
 							console.log(response);
 							switch (response) {
 								case 'ok':
@@ -73,7 +70,7 @@
 								case 'not-sent-id':
 									swal({
 										title: 'Týmová práce se nesmazala!',
-										text: 'Nastala chyba, protože jsi neposlal na server ID rezervace, kterou chceš smazat.',
+										text: 'Nastala chyba, protože jste(a) neposlal na server ID týmové práce, kterou chcete smazat.',
 										icon: 'error'
 									})
 									break
@@ -87,10 +84,11 @@
 									break
 							}
 						}
-					})
+						)
 				}
 			})
 		}
+
 		$(document).ready(function () {
 			API.teamwork
 				.listWithFilter(
