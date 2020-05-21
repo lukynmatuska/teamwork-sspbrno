@@ -71,8 +71,11 @@ module.exports.delete = (req, res) => {
 }
 
 module.exports.list = (req, res) => {
+  if (req.query.filter) {
+    req.query.filter = {}
+  }
   Specialization
-    .find({})
+    .find(req.query.filter)
     .exec((err, specializations) => {
       if (err) {
         res.send(err)

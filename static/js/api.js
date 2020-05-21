@@ -184,7 +184,10 @@ var API = {
       )
     },
 
-    list: function (filter = {}) {
+    list: function (filter) {
+      if (filter === undefined) {
+        filter = {}
+      }
       return $.get('/api/specialization/list', filter, 'json')
     }
   },
@@ -231,14 +234,11 @@ var API = {
       )
     },
 
-    list: function () {
-      return $.get('/api/teamwork/list', {}, 'json')
-    },
-
-    listWithFilter: function (filter) {
-      return $.get('/api/teamwork/list', {
-        filter: filter
-      }, 'json')
+    list: function (filter) {
+      if (filter === undefined) {
+        filter = {}
+      }
+      return $.get('/api/teamwork/list', { filter: filter }, 'json')
     },
 
     select: function (

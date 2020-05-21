@@ -152,7 +152,7 @@ router.post('/specialization/delete', partials.onlyAdmin, (req, res) => {
   specializationController.delete(req, res)
 })
 
-router.get('/specialization/list', partials.onlyAdmin, (req, res) => {
+router.get('/specialization/list', (req, res) => {
   specializationController.list(req, res)
 })
 
