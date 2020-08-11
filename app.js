@@ -76,13 +76,13 @@ const store = new RedisStore({
 
 // set up the redis store to saving session data
 app.use(session({
-  secret: 'S%MZE^J2tk^Sc*7jwsHi6jiPuc6&DfxaimFT2TttDRQfruW',
+  secret: global.CONFIG.session.secret,
   store,
   name: 'BSID',
   resave: true,
   saveUninitialized: false,
   cookie: {
-    maxAge: 86400000
+    maxAge: global.CONFIG.session.maxAge
   }
 }))
 
