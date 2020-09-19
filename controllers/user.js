@@ -73,10 +73,10 @@ module.exports.new = (req, res) => {
 
           // Send email
           const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-          const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.`
+          const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
           const message = {
             from: global.CONFIG.nodemailer.sender,
-            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''}${user.name.last}" <${user.email}>`,
+            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
             subject: 'Váš nový účet 👤🔑',
             text
           }
