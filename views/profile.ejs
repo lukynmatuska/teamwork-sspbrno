@@ -224,7 +224,11 @@
 <script src="/js/select2.min.js"></script>
 <script>
     function isGivenSpecializationMine(specializationId) {
-        return (specializationId == '<%= req.session.user.specialization._id %>')
+			<% if (req.session.user.specialization === undefined) { %>
+			return false
+                <% } else { %>
+            return (specializationId == '<%= req.session.user.specialization._id %>')
+                <% } %>
     }
 
     function getSpecializationParameters(specialization) {
