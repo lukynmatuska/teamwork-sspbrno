@@ -5,6 +5,7 @@ var API = {
       password,
       firstname,
       lastname,
+      specialization,
       middlename,
       usertype) {
       return $.post(
@@ -15,7 +16,8 @@ var API = {
           firstname: firstname,
           middlename: middlename,
           lastname: lastname,
-          usertype: usertype
+          usertype: usertype,
+          specialization: specialization
         },
         'json'
       )

@@ -1,4 +1,5 @@
 <%- include('./partials/header') %>
+<link href="/css/select2.min.css" rel="stylesheet" />
 <%- include('./partials/file-start') %>
 <%- include('./partials/menu') %>
 <main role="main" class="inner cover mt-5">
@@ -34,6 +35,10 @@
                 <label for="password-again">Heslo znovu</label>
                 <input type="password" class="form-control" id="password-again" placeholder="Zadejte heslo znovu">
             </div>
+            <div class="form-group">
+                <label for="select-specialization">Specializace</label>
+                <select class="form-control" id="select-specialization"></select>
+            </div>
             <div class="form-group" id="register-status" style="display: none;"></div>
             <div class="form-group">
                 <button type="submit" class="btn btn-secondary">Zaregistrovat</button>
@@ -45,8 +50,19 @@
     </div>
 </main>
 <%- include('./partials/scripts-file-end') %>
+<script src="/js/select2.min.js"></script>
 <script>
     $(document).ready(function () {
+        API.specialization.list().done(function (specializations) {
+            specializations.forEach(specialization => {
+                $('#select-specialization').append(
+                    $('<option>', { value: specialization._id }).text(specialization.name)
+                )
+            })
+            $('#select-specialization').select2({
+                minimumResultsForSearch: -1
+            })
+        })
         $('form#register').submit(function (event) {
             event.preventDefault()
             if ($('#password').val() !== $('#password-again').val()) {
@@ -79,6 +95,7 @@
                 let strongAlertText = 'Ach ne'
                 let alertText
                 let alertStatus
+                let specialization = $('#select-specialization').val()
 
                 if (firstname === '') {
                     alertText = 'Křestní jméno nemůže být prázdné'
@@ -108,7 +125,8 @@
                         .show()
                 }
 
-                API.user.new(email, password, firstname, lastname, middlename).done(function (responseFromServer) {
+                API.user.new(email, password, firstname, lastname, specialization, middlename).done(function (responseFromServer) {
+                    // console.log(responseFromServer)
                     if (responseFromServer === 'ok') {
                         $('div#register-status')
                             .empty()

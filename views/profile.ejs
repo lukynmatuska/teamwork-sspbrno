@@ -1,4 +1,5 @@
 <%- include('./partials/header') %>
+<link href="/css/select2.min.css" rel="stylesheet" />
 <style>
     .emp-profile {
         padding: 3%;
@@ -137,11 +138,11 @@
                     </h5>
                     <h6>
                         <% if (req.session.user.type === 'student') { %>
-                        Student (ka)
+                        Student(ka)
                         <% } else if (req.session.user.type === 'guarantor') { %>
-                        Garant (ka)
+                        Garant(ka)
                         <% } else if (req.session.user.type === 'admin') { %>
-                        Administrátor (ka)
+                        Administrátor(ka)
                         <% }%>
                     </h6>
                 </div>
@@ -200,6 +201,16 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-dark">Specializace</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select class="form-control" id="select-specialization"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12">
                         <button type="button" id="edit-profile" class="profile-edit-btn">Upravit profil</button>
                     </div>
@@ -210,14 +221,40 @@
     </div>
 </main>
 <%- include('./partials/scripts-file-end') %>
+<script src="/js/select2.min.js"></script>
 <script>
+    function isGivenSpecializationMine(specializationId) {
+        return (specializationId == '<%= req.session.user.specialization._id %>')
+    }
+
+    function getSpecializationParameters(specialization) {
+        let parameters = { value: specialization._id }
+        if (isGivenSpecializationMine(specialization._id)) {
+            parameters.selected = 'selected'
+        }
+        return parameters
+    }
+    $(document).ready(function () {
+        API.specialization.list().done(function (specializations) {
+            specializations.forEach(specialization => {
+                $('#select-specialization').append(
+                    $('<option>', getSpecializationParameters(specialization)).text(specialization.name)
+                )
+            })
+            $('#select-specialization').select2({
+                minimumResultsForSearch: -1
+            })
+        })
+    })
+
     $('#edit-profile').click(function () {
         API.user
             .edit({
                 firstname: $('#firstname').val(),
                 middlename: $('#middlename').val(),
                 lastname: $('#lastname').val(),
-                email: $('#email').val()
+                email: $('#email').val(),
+                specialization: $('#select-specialization').val()
             })
             .done(function (data) {
                 console.log(data)

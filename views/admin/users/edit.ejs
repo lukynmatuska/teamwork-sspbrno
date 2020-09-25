@@ -123,6 +123,18 @@
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col-md-12 col-sm-12">
+											<div class="form-group">
+												<label class="form-control-label"
+													for="specialization">Specializace</label>
+												<select class="form-control" id="specialization">
+													<option value="null" selected>Garant(ka) / Administrátor(ka)
+													</option>
+												</select>
+											</div>
+										</div>
+									</div>
 								</div>
 								<div class="row">
 									<div class="col float-left">
@@ -268,7 +280,7 @@
 					permissions: ['read'],
 					year: $(`select#user-year-${i}`).val()
 				}
-				
+
 				if ($(`select#user-year-permissions-${i}`).val() === 'edit') {
 					year.permissions.push('edit')
 				}
@@ -285,6 +297,7 @@
 					middlename: $('#middlename').val(),
 					lastname: $('#lastname').val(),
 					email: $('#email').val(),
+					specialization: $('#specialization').val(),
 					years: getYearsForRequest()
 				})
 				.done(function (data) {
@@ -355,8 +368,39 @@
 				})
 		}
 
+		function hasUserGivenSpecialization(specialization) {
+			<% if (user.specialization === undefined) { %>
+			return false
+					<% } else { %>
+			return '<%= user.specialization._id %>' === specialization._id
+					<% } %>
+		}
+
+		function getSpecializationParameters(specialization) {
+			let parameters = { value: specialization._id }
+			if (hasUserGivenSpecialization(specialization)) {
+				parameters.selected = 'selected'
+			}
+			return parameters
+		}
+
 		$(document).ready(function () {
-			$('select').select2()
+			API.specialization.list().done(function (specializations) {
+				// console.log(specializations)
+				specializations.forEach(specialization => {
+					$('select#specialization').append(
+						$('<option>', getSpecializationParameters(specialization)).text(specialization.name)
+					)
+				})
+				$('select#specialization').select2({
+					minimumResultsForSearch: -1
+				})
+			})
+
+			$('select').select2({
+				minimumResultsForSearch: -1
+			})
+
 			$('#edit-user-button').click(editProfile)
 			$('#edit-user-form').submit(function (event) {
 				event.preventDefault()

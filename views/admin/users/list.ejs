@@ -26,6 +26,7 @@
 										<th scope="col" class="sort">Křestní jméno</th>
 										<th scope="col">Email</th>
 										<th scope="col">Typ účtu</th>
+										<th scope="col">Specializace</th>
 										<th scope="col">Ročníky</th>
 										<th scope="col">Akce</th>
 									</tr>
@@ -135,6 +136,15 @@
 											break;
 									}
 									$(nTd).html(text)
+								}
+							}, {
+								data: 'name',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									if (oData.specialization !== undefined) {
+										$(nTd).html(oData.specialization.name)
+									} else {
+										$(nTd).html('')
+									}
 								}
 							}, {
 								data: 'years',

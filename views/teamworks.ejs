@@ -85,6 +85,10 @@
             })
     }
 
+    function isGivenSpecializationMine(specializationId) {
+        return (specializationId == '<%= req.session.user.specialization._id %>')
+    }
+
     $(document).ready(function () {
         if (Cookies.get('toast-login') === 'true') {
             $('#toast-login')
@@ -126,10 +130,14 @@
                                             (hasStudentBeenAsignedToTeamWork ? (
                                                 $('<span>', { class: 'text-success' }).text(` Volná pozice`)
                                             ) : (
-                                                    $('<button>', {
-                                                        class: 'btn btn-sm bg-secondary text-light ml-2', type: 'button',
-                                                        onclick: `selectTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
-                                                    }).text('Vybrat')
+                                                    isGivenSpecializationMine(teamworks[i].students[ii].position._id) ? (
+                                                        $('<button>', {
+                                                            class: 'btn btn-sm bg-secondary text-light ml-2', type: 'button',
+                                                            onclick: `selectTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`
+                                                        }).text('Vybrat')
+                                                    ) : (
+                                                            $('<span>', { class: 'text-success' }).text(` Volná pozice jiné specializace`)
+                                                        )
                                                 )
                                             ) : (
                                                 ('<%= req.session.user === undefined ? "" : req.session.user._id %>' === String(user._id)) ? (
