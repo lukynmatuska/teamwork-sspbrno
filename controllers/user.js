@@ -23,6 +23,8 @@ module.exports.new = (req, res) => {
     return res.send('not-send-password')
   } else if (req.body.email === undefined) {
     return res.send('not-send-email')
+  } else if (req.body.specialization === undefined) {
+    return res.send('not-send-user-specialization')
   } else if (req.body.usertype === undefined) {
     usertype = 'student'
   } else if (req.body.usertype !== undefined && (req.session.user !== undefined ? (req.session.user.type === 'admin') : false)) {
@@ -62,6 +64,7 @@ module.exports.new = (req, res) => {
             middle: (req.body.middlename !== undefined ? req.body.middlename.trim() : undefined),
             last: (req.body.lastname !== undefined ? req.body.lastname.trim() : undefined)
           },
+          specialization: req.body.specialization,
           password: bcrypt.hashSync(req.body.password, 15),
           email,
           type: usertype
@@ -73,10 +76,10 @@ module.exports.new = (req, res) => {
 
           // Send email
           const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-          const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.`
+          const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
           const message = {
             from: global.CONFIG.nodemailer.sender,
-            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''}${user.name.last}" <${user.email}>`,
+            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
             subject: 'Váš nový účet 👤🔑',
             text
           }
@@ -104,6 +107,7 @@ module.exports.login = (req, res) => {
     .findOne({
       email: req.body.email.trim().toLowerCase()
     })
+    .populate('specialization')
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
@@ -164,11 +168,19 @@ module.exports.edit = (req, res) => {
 
     if (req.body.type !== undefined) {
       update.type = req.body.type
+      if (['admin', 'guarantor'].includes(update.type)) {
+        update.specialization = undefined
+      }
+    }
+
+    if (req.body.specialization !== undefined) {
+      update.specialization = req.body.specialization
     }
   }
 
   User
     .findByIdAndUpdate(id, update, { new: true })
+    .populate('specialization')
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
@@ -191,6 +203,7 @@ module.exports.enableRescue = (req, res) => {
       }, {
         rescue: true
       })
+      .populate('specialization')
       .populate('years.year')
       .exec((err, user) => {
         if (err) {
@@ -229,6 +242,7 @@ module.exports.setNewPassword = (req, res) => {
                 new: true
               }
             )
+            .populate('specialization')
             .populate('years.year')
             .exec((err, user) => {
               if (err) {
@@ -255,6 +269,7 @@ module.exports.setNewPassword = (req, res) => {
 module.exports.updateSession = (req, res) => {
   User
     .findById(req.session.user._id)
+    .populate('specialization')
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
@@ -298,6 +313,7 @@ module.exports.changeType = (req, res) => {
 module.exports.list = (req, res) => {
   User
     .find({})
+    .populate('specialization')
     .populate('years.year')
     .select({
       email: 1,

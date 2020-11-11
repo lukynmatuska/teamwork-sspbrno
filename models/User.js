@@ -39,6 +39,10 @@ var userSchema = new mongoose.Schema({
     type: String,
     default: '/images/users/_default.png'
   },
+  specialization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Specialization'
+  },
   years: [{
     year: {
       type: mongoose.Schema.Types.ObjectId,
