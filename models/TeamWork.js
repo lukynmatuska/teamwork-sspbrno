@@ -48,6 +48,14 @@ var teamWorkSchema = new mongoose.Schema({
       required: true
     }
   }],
+  consultants: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    tasks: String
+  }],
   year: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Year',
