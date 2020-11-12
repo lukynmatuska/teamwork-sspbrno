@@ -94,6 +94,7 @@ module.exports.setYearForUser = (req, res, next) => {
               }
               console.log('The first year was successfully created!')
               req.session.year = year
+              next()
             })
           } else {
             console.error('Year not found')
