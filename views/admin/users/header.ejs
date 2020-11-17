@@ -10,12 +10,14 @@
                     <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                             <li class="breadcrumb-item"><a href="/admin/"><i class="fas fa-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="#">Uživatelé</a></li>
+                            <li class="breadcrumb-item">Uživatelé</li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 <% if (active === 'list') { %>
                                 Seznam
                                 <% } else if (active === 'new') { %>
-                                Nový
+                                    Nový
+                                <% } else if (active === 'import') { %>
+                                    Import
                                 <% }  else if (active === 'edit') { %>
                                 Editace
                                 <% }  else if (active === 'detail') { %>
@@ -33,6 +35,8 @@
                     } %>
                     <a href=".<%= pathEditor %>/new"
                         class="btn btn-sm btn-neutral <%= active === 'new' ? 'active' : '' %>">Nový</a>
+                    <a href=".<%= pathEditor %>/import"
+                        class="btn btn-sm btn-neutral <%= active === 'import' ? 'active' : '' %>">Import</a>
                     <a href=".<%= pathEditor %>/list"
                         class="btn btn-sm btn-neutral <%= active === 'list' ? 'active' : '' %>">Seznam</a>
                     <% if (active === 'edit') { %>

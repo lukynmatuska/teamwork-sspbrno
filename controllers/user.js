@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt')
 // const moment = require('moment')
 const osloveni = require('../libs/osloveni')
 const nodemailer = require('nodemailer')
+const xlsx = require('node-xlsx').default
 
 /**
  * Models
@@ -346,4 +347,18 @@ module.exports.delete = (req, res) => {
       }
       res.send('ok')
     })
+}
+
+module.exports.import = (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).json({
+      status: 'error',
+      error: 'No files were uploaded.'
+    })
+  }
+  const students = xlsx.parse(req.files.fileToImport.data)[0].data
+  res.json({
+    status: 'ok',
+    error: null
+  })
 }

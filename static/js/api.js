@@ -34,6 +34,13 @@ var API = {
       )
     },
 
+    import: function (fileToImport, userType) {
+      let formData = new FormData()
+      formData.append('fileToImport', fileToImport)
+      formData.append('userType', userType)
+      return fetch('/api/user/import', { method: 'POST', body: formData })
+    },
+
     edit: function (object) {
       return $.post(
         '/api/user/edit',

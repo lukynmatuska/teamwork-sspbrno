@@ -100,6 +100,8 @@ router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
   userController.list(req, res)
 })
 
+router.post('/user/import', partials.onlyAdmin, userController.import)
+
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
   res.cookie('toast-logout', 'true', { maxAge: 60000, httpOnly: false })

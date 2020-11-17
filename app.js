@@ -59,6 +59,8 @@ const app = express()
 const moment = require('moment')
 const path = require('path')
 const bodyparser = require('body-parser')
+const fileUpload = require('express-fileupload')
+app.use(fileUpload())
 
 // Session handling
 const session = require('express-session')

@@ -102,6 +102,8 @@ router.get('/users/new', (req, res) => {
   adminPageController.users.new(req, res)
 })
 
+router.get('/users/import', adminPageController.users.import)
+
 router.get('/users/edit/:id', (req, res) => {
   adminPageController.users.edit(req, res)
 })

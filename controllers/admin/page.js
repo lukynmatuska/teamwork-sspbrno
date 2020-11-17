@@ -86,6 +86,9 @@ module.exports.users = {
   new: (req, res) => {
     res.render('admin/users/new', { req, res, active: 'users', title: 'Nový uživatel' })
   },
+  import: (req, res) => {
+    res.render('admin/users/import', { req, res, active: 'users', title: 'Import uživatelů' })
+  },
   edit: (req, res) => {
     User
       .findById(req.params.id)
