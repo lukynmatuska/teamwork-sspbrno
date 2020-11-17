@@ -17,6 +17,7 @@ const xlsx = require('node-xlsx').default
  * Models
  */
 const User = require('../models/User')
+const Specialization = require('../models/Specialization')
 
 module.exports.new = (req, res) => {
   let usertype
@@ -356,9 +357,75 @@ module.exports.import = (req, res) => {
       error: 'No files were uploaded.'
     })
   }
-  const students = xlsx.parse(req.files.fileToImport.data)[0].data
-  res.json({
-    status: 'ok',
-    error: null
-  })
+
+  if (req.body.userType === 'student') {
+    const studentsFromTable = xlsx.parse(req.files.fileToImport.data)[0].data
+    let setOfSpecializationsFromExcel = new Set()
+    studentsFromTable.forEach(student => {
+      setOfSpecializationsFromExcel.add(student[4])
+    })
+
+    if (!setOfSpecializationsFromExcel.has('Zaměření')) {
+      return res.json({
+        status: 'error',
+        error: 'bad-table-format'
+      })
+    }
+    /* Delete heading beacause it isn't in database */
+    setOfSpecializationsFromExcel.delete('Zaměření')
+    Specialization
+      .find({})
+      .exec((err, specializationsFromDB) => {
+        if (err) {
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err
+            })
+        }
+
+        /* Create dictionary of shortnames and names of specializations from DB */
+        let dictOfSpecializationsFromDB = {}
+        specializationsFromDB.forEach(spec => {
+          dictOfSpecializationsFromDB[spec.short] = spec.id
+        })
+        let setOfSpecializationsFromDB  = new Set(Object.keys(dictOfSpecializationsFromDB))
+
+        /* Check if specializations from Excel are in DB */
+        for (specialization of setOfSpecializationsFromExcel) {
+          if (!setOfSpecializationsFromDB.has(specialization)) {
+            return res
+              .status(400)
+              .json({
+                status: 'error',
+                error: 'specialization-from-table-is-not-in-db'
+              })
+          }
+        }
+
+        let students = []
+        for (student of studentsFromTable) {
+          students.push({
+            name: {
+              first: student[2],
+              last: student[1]
+            },
+            email: student[3],
+            type: 'student',
+            specialization: dictOfSpecializationsFromDB[student[4]]
+          })
+        }
+
+        res.json({
+          status: 'ok',
+          error: null
+        })
+      })
+  }
+  /**
+   * Options for import users (not students)
+   * create map? from specializations of students and check if they exist in MongoDB
+   */
 }
