@@ -37,8 +37,18 @@ try {
         }
       }
     },
+
     redis: {
       url: process.env.REDIS_URL
+    },
+
+    db: {
+      port: process.env.MONGODB_PORT || 27017,
+      host: process.env.MONGODB_HOST || 'localhost',
+      name: process.env.MONGODB_NAME || 'teamworks',
+      user: process.env.MONGODB_USER || 'root',
+      password: process.env.MONGODB_PASS || '',
+      options: process.env.MONGODB_OPTIONS || ''
     }
   }
 }
