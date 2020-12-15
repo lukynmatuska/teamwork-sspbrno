@@ -34,11 +34,30 @@ var API = {
       )
     },
 
-    import: function (fileToImport, userType) {
-      let formData = new FormData()
-      formData.append('fileToImport', fileToImport)
-      formData.append('userType', userType)
-      return fetch('/api/user/import', { method: 'POST', body: formData })
+    parseXlsx: function (file, userType) {
+      let body = new FormData()
+      body.append('xlsx', file)
+      body.append('userType', userType)
+      return fetch(
+        '/api/user/parse-xlsx',
+        {
+          method: 'POST',
+          body: body
+        }
+      )
+    },
+
+    import: function (users, userType) {
+      let body = new FormData()
+      body.append('users', JSON.stringify(users))
+      body.append('userType', userType)
+      return fetch(
+        '/api/user/import',
+        {
+          method: 'POST',
+          body: body
+        }
+      )
     },
 
     edit: function (object) {

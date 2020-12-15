@@ -21,42 +21,54 @@
 							</div>
 						</div>
 						<div class="card-body bg-secondary">
-							<form action="./" method="POST" id="import-users">
-								<h6 class="heading text-muted mb-4">Nahrání souboru</h6>
-								<div class="pl-lg-4">
-									<div class="row">
-										<div class="col">
+							<form action="../parse" method="POST" id="parse-users">
+								<div class="row">
+									<div class="col-xs-12 col-lg-6">
+										<h6 class="heading text-muted mb-4">Zpracovaní uživatelů</h6>
+										<div class="pl-lg-4">
 											<div class="form-group">
-												<label class="form-control-label" for="import-file">
-													Soubor</label>
-												<input type="file" accept=".xlsx" id="file-to-import"
+												<label class="form-control-label" for="file-to-parse">
+													Nahrání XLSX souboru
+												</label>
+												<input type="file" accept=".xlsx" id="file-to-parse"
 													class="form-control" required />
 											</div>
 										</div>
 									</div>
-								</div>
-								<h6 class="heading text-muted mb-4">Výchozí nastavení nových uživatelů</h6>
-								<div class="pl-lg-4">
-									<div class="row">
-										<div class="col-lg-6">
-											<div class="form-group">
-												<label for="user-type">Typ uživatele</label>
-												<select class="form-control" id="user-type">
-													<option value="student">Student(ka)</option>
-													<option value="guarantor">Garant(ka)</option>
-													<option value="admin">Administrátor(ka)</option>
-												</select>
+									<div class="col-xs-12 col-lg-6">
+										<h6 class="heading text-muted mb-4">Výchozí nastavení nových uživatelů</h6>
+										<div class="pl-lg-4">
+											<div class="row">
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label for="user-type">Typ uživatele</label>
+														<select class="form-control" id="user-type">
+															<option value="student">Student(ka)</option>
+															<option value="guarantor">Garant(ka)</option>
+															<option value="admin">Administrátor(ka)</option>
+														</select>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
+									<div class="col-12" style="display: none;" id="parsed-users">
+										<h6 class="heading text-muted mb-4">Zpracovaní uživatelé</h6>
+										<div class="pl-lg-4" id="parse-users-result"></div>
+									</div>
 								</div>
-								<div class="pl-lg-4">
-									<div class="row">
-										<div class="col" id="import-users-status" style="display: none;"></div>
-										<div class="col-4 text-left">
-											<button type="submit" class="btn btn-primary"
-												id="import-users-button">Importovat</button>
-										</div>
+								<div class="row">
+									<div class="col" id="parse-users-status" style="display: none;"></div>
+									<div class="col" id="import-users-status" style="display: none;"></div>
+								</div>
+								<div class="row">
+									<div class="col text-left flex-grow-0">
+										<button type="submit" class="btn btn-primary"
+											id="parse-users-button">Zpracovat</button>
+									</div>
+									<div class="col text-left flex-grow-0">
+										<button type="button" class="btn btn-primary" disabled
+											id="import-users-button">Importovat</button>
 									</div>
 								</div>
 							</form>
@@ -69,14 +81,70 @@
 	</div>
 	<%- include('../partials/scripts-file-end') %>
 	<script>
+		function createTableForParsedUsers(users, parentElement) {
+			const theme = 'light'
+			let tableDiv = document.createElement('div')
+			tableDiv.classList = 'table-resposive'
+			let tableDivDiv = document.createElement('div')
+			tableDiv.appendChild(tableDivDiv)
+			let table = document.createElement('table')
+			table.classList = `table align-items-center table-${theme} w-100 bg-white table-striped`
+			let thead = document.createElement('thead')
+			thead.classList = `thead-${theme}`
+			let theadRow = document.createElement('tr')
+			for (val of ['Příjmení', 'Křestní jméno', 'Email', 'Specializace']) {
+				let th = document.createElement('th')
+				th.appendChild(document.createTextNode(val))
+				theadRow.appendChild(th)
+			}
+			thead.appendChild(theadRow)
+			table.appendChild(thead)
+			let tableBody = document.createElement('tbody')
+			tableBody.classList = 'list'
+
+			users.forEach(function (user) {
+				let row = document.createElement('tr')
+
+				/* Lastname */
+				let lastname = document.createElement('td')
+				lastname.appendChild(document.createTextNode(user.name.last))
+				row.appendChild(lastname)
+
+				/* Firstname */
+				let firstname = document.createElement('td')
+				firstname.appendChild(document.createTextNode(user.name.first))
+				row.appendChild(firstname)
+
+				/* Email */
+				let email = document.createElement('td')
+				email.appendChild(document.createTextNode(user.email))
+				row.appendChild(email)
+
+				/* Specialization */
+				let specialization = document.createElement('td')
+				specialization.appendChild(document.createTextNode(user.specialization))
+				row.appendChild(specialization)
+
+				tableBody.appendChild(row)
+			})
+
+			table.appendChild(tableBody)
+			tableDivDiv.appendChild(table)
+			// parentElement.innerHtml = ''
+			// parentElement.appendChild(tableDiv)
+			$(parentElement).html(tableDiv)
+		}
+
 		$(document).ready(() => {
 			$('select#user-type').select2({
 				minimumResultsForSearch: -1
 			})
 
-			$('form#import-users').submit(function (event) {
+			$('form#parse-users').submit(function (event) {
 				event.preventDefault()
-				let $status = $('div#import-users-status')
+				let $status = $('div#parse-users-status')
+				let $button = $('#parse-users-button')
+				let $importButton = $('#import-users-button')
 				$status
 					.empty()
 					.append(
@@ -94,29 +162,107 @@
 					)
 					.show()
 
-				API.user.import(
-					document.getElementById("file-to-import").files[0],
+				API.user.parseXlsx(
+					document.getElementById("file-to-parse").files[0],
 					$('#user-type').val()
 				)
 					.then(response => response.json()) // .then(data => console.log(data))
 					.then(function (responseFromServer) {
-						// console.log(responseFromServer)
+						console.log(responseFromServer)
 						if (responseFromServer.status === 'ok') {
+							$button
+								.addClass('btn-success')
+								.text('Zpracovat znovu')
+								// .removeClass('btn-primary')
+							$importButton
+								.attr('type', 'submit')
+								.attr('disabled', null)
 							$status
 								.empty()
 								.append(
 									$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
 										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 										$('<strong>').text('Gratuluji!'),
-										' Úspěšně jste naimportoval(a) nové uživatele'
+										' Úspěšně jste naparsoval(a) nové uživatele'
 									)
 								)
 								.show()
 
-							// Redirect to teamworks page
+							$('#parsed-users')
+								.show()
+								.parent()
+								.addClass('mb-4')
+							createTableForParsedUsers(responseFromServer.users, document.getElementById('parse-users-result'))
+
 							setTimeout(function () {
-								window.location.href = window.location.href
-							}, 3500)
+								$status.hide()
+								$button.removeClass('btn-success')
+							}, 5000)
+							$importButton.click(function (event) {
+								event.preventDefault()
+								let $importStatus = $('div#import-users-status')
+								$importStatus
+									.empty()
+									.append(
+										$('<div>', { class: 'alert alert-default alert-dismissible fade show', role: 'alert' }).append(
+											$('<span>', { class: 'alert-icon' }).append(
+												$('<i>', { class: 'fas fa-circle-notch fa-spin' })
+											),
+											$('<span>', { class: 'alert-text' }).append(
+												'Zpracovávám'
+											),
+											$('<button>', { type: 'button', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'Close' }).append(
+												$('<span>', { 'aria-hidden': 'true' }).html('&times;')
+											)
+										)
+									)
+									.show()
+
+								API.user.import(
+									responseFromServer.users,
+									$('#user-type').val()
+								)
+									.then(response => response.json()) // .then(data => console.log(data))
+									.then(function (resFromServer) {
+										console.log(resFromServer)
+										if (resFromServer.status === 'ok') {
+											$importStatus
+												.empty()
+												.append(
+													$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+														$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+														$('<strong>').text('Gratuluji!'),
+														' Úspěšně jste naimportoval(a) nové uživatele'
+													)
+												)
+												.show()
+										} else {
+											$importStatus
+												.empty()
+												.append(
+													$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+														$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+														$('<strong>').text('Ach ne! '),
+														resFromServer.error
+													)
+												)
+												.show()
+										}
+									})
+							})
+						} else if (resFromServer.error === 'specialization-from-table-is-not-in-db') {
+							$status
+								.empty()
+								.append(
+									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+										$('<strong>').text('Ach ne! '),
+										'Specializace ',
+										$('<i>').text(resFromServer.specialization),
+										' se bohužel nenachází v databázi'
+									)
+								)
+								.show()
 						} else {
 							$status
 								.empty()
@@ -124,7 +270,7 @@
 									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
 										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 										$('<strong>').text('Ach ne! '),
-										responseFromServer.error
+										String(resFromServer.error)
 									)
 								)
 								.show()

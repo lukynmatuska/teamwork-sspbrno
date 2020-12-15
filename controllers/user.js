@@ -8,10 +8,10 @@
  * Libs
  */
 const bcrypt = require('bcrypt')
-// const moment = require('moment')
 const osloveni = require('../libs/osloveni')
 const nodemailer = require('nodemailer')
 const xlsx = require('node-xlsx').default
+const randomstring = require("randomstring")
 
 /**
  * Models
@@ -350,7 +350,7 @@ module.exports.delete = (req, res) => {
     })
 }
 
-module.exports.import = (req, res) => {
+module.exports.parseXlsx = (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({
       status: 'error',
@@ -359,23 +359,28 @@ module.exports.import = (req, res) => {
   }
 
   if (req.body.userType === 'student') {
-    const studentsFromTable = xlsx.parse(req.files.fileToImport.data)[0].data
+    const studentsFromTable = xlsx.parse(req.files.xlsx.data)[0].data
+    studentsFromTable.shift()
     let setOfSpecializationsFromExcel = new Set()
-    studentsFromTable.forEach(student => {
-      setOfSpecializationsFromExcel.add(student[4])
-    })
-
-    if (!setOfSpecializationsFromExcel.has('Zaměření')) {
-      return res.json({
-        status: 'error',
-        error: 'bad-table-format'
-      })
+    let students = []
+    for (student of studentsFromTable) {
+      if (student.length > 0) {
+        setOfSpecializationsFromExcel.add(student[4])
+        students.push({
+          name: {
+            first: student[2],
+            last: student[1]
+          },
+          email: student[3],
+          type: req.body.userType,
+          specialization: student[4]
+        })
+      }
     }
-    /* Delete heading beacause it isn't in database */
-    setOfSpecializationsFromExcel.delete('Zaměření')
+
     Specialization
       .find({})
-      .exec((err, specializationsFromDB) => {
+      .exec(async (err, specializationsFromDB) => {
         if (err) {
           console.error(err)
           return res
@@ -389,43 +394,128 @@ module.exports.import = (req, res) => {
         /* Create dictionary of shortnames and names of specializations from DB */
         let dictOfSpecializationsFromDB = {}
         specializationsFromDB.forEach(spec => {
-          dictOfSpecializationsFromDB[spec.short] = spec.id
+          dictOfSpecializationsFromDB[spec.short] = spec
         })
-        let setOfSpecializationsFromDB  = new Set(Object.keys(dictOfSpecializationsFromDB))
+        let setOfSpecializationsFromDB = new Set(Object.keys(dictOfSpecializationsFromDB))
 
         /* Check if specializations from Excel are in DB */
         for (specialization of setOfSpecializationsFromExcel) {
+          if (!setOfSpecializationsFromDB.has(specialization)) {
+            console.log(specialization)
+            return res
+              .status(400)
+              .json({
+                status: 'error',
+                error: 'specialization-from-table-is-not-in-db',
+                specialization: specialization
+              })
+          }
+        }
+
+        res.json({
+          status: 'ok',
+          error: null,
+          users: students
+        })
+      })
+  }
+}
+
+
+module.exports.import = async (req, res) => {
+  if (req.body.users === undefined) {
+    return res
+      .status(400)
+      .json({
+        status: 'error',
+        error: 'not-send-users'
+      })
+  } else if (req.body.userType === undefined) {
+    return res
+      .status(400)
+      .json({
+        status: 'error',
+        error: 'not-send-userType'
+      })
+  } else if (req.body.userType === 'student') {
+    let students = JSON.parse(req.body.users)
+    let setOfSpecializationsFromRequest = new Set()
+    for (student of students) {
+      if (Object.values(student).length > 0) {
+        setOfSpecializationsFromRequest.add(student.specialization)
+      }
+    }
+
+    Specialization
+      .find({})
+      .exec(async (err, specializationsFromDB) => {
+        if (err) {
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err
+            })
+        }
+
+        /* Create dictionary of shortnames and names of specializations from DB */
+        let dictOfSpecializationsFromDB = {}
+        specializationsFromDB.forEach(spec => {
+          dictOfSpecializationsFromDB[spec.short] = spec
+        })
+        let setOfSpecializationsFromDB = new Set(Object.keys(dictOfSpecializationsFromDB))
+
+        /* Check if specializations from request are in DB */
+        for (specialization of setOfSpecializationsFromRequest) {
           if (!setOfSpecializationsFromDB.has(specialization)) {
             return res
               .status(400)
               .json({
                 status: 'error',
-                error: 'specialization-from-table-is-not-in-db'
+                error: 'specialization-from-table-is-not-in-db',
+                specialization: specialization
               })
           }
         }
 
-        let students = []
-        for (student of studentsFromTable) {
-          students.push({
-            name: {
-              first: student[2],
-              last: student[1]
-            },
-            email: student[3],
-            type: 'student',
-            specialization: dictOfSpecializationsFromDB[student[4]]
-          })
-        }
+        for (student of students) {
+          try {
+            student.specialization = dictOfSpecializationsFromDB[student.specialization]._id
+            student.rescue = true
+            student.password = randomstring.generate()
+            let stud = await new User(student).save()
+            // Send email
+            const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
+            const text = `Dobrý den ${osloveni(stud.name.first)},\n\nVáš účet v týmových pracích je připraven!\nZbývá už jen maličkost a tou není nic jiného, než nastavení hesla.\nTo můžeš provést zde: ${global.CONFIG.url}\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
+            const message = {
+              from: global.CONFIG.nodemailer.sender,
+              to: `"${stud.name.first}${stud.name.middle !== undefined ? ` ${stud.name.middle} ` : ''} ${stud.name.last}" <${stud.email}>`,
+              subject: 'Váš nový účet 👤🔑',
+              text
+            }
 
-        res.json({
-          status: 'ok',
-          error: null
-        })
+            transporter.sendMail(message, (err, info, response) => {
+              if (err) {
+                console.error(`Error occurred. ${err.message}`)
+                return res.status(400).json({
+                  status: 'error',
+                  error: err.message,
+                  student: student
+                })
+
+              }
+            })
+          } catch (err) {
+            console.error(err)
+            return res.status(400).json({
+              status: 'error',
+              error: err.errmsg,
+              student: student
+            })
+          }
+        }
+        return res.json({ status: 'ok', error: null })
       })
   }
-  /**
-   * Options for import users (not students)
-   * create map? from specializations of students and check if they exist in MongoDB
-   */
 }

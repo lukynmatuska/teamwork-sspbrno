@@ -101,6 +101,7 @@ router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
 })
 
 router.post('/user/import', partials.onlyAdmin, userController.import)
+router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
