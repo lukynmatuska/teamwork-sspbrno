@@ -70,6 +70,8 @@ const moment = require('moment')
 const path = require('path')
 const bodyparser = require('body-parser')
 const fileUpload = require('express-fileupload')
+const cors = require('cors')
+app.use(cors())
 app.use(fileUpload())
 
 // Session handling
@@ -99,6 +101,7 @@ app.use(session({
 }))
 
 // set extended urlencoded to true (post)
+app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
 
 // set up views directory and the rendering engine
@@ -129,5 +132,5 @@ app.use('/', webRouter)
 
 // run the server
 app.listen(global.CONFIG.port, () => {
-  console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} Listening on port ${global.CONFIG.port} (Administration of TeamWork at SSPBRNO Node.js app)`)
+  console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} CORS-enabled web app listening on port ${global.CONFIG.port} (Administration of TeamWork at SSPBRNO Node.js app)`)
 })
