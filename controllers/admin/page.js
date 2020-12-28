@@ -115,6 +115,33 @@ module.exports.users = {
             res.render('admin/users/edit', { req, res, active: 'users', title: 'Editace uživatele', user, years })
           })
       })
+  },
+  detail: (req, res) => {
+    User
+      .findById(req.params.id)
+      .populate('years.year')
+      .exec((err, user) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (user === null) {
+          return this.error.notFound(
+            req, res,
+            '404 Uživatel nenalezen',
+            'Hledáte uživatele, který se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
+        }
+        Year
+          .find({})
+          .exec((err, years) => {
+            if (err) {
+              this.error.internalError(req, res)
+              return console.error(err)
+            }
+            res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user, years })
+          })
+      })
   }
 }
 

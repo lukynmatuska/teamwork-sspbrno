@@ -32,7 +32,8 @@
 						<div class="card-body">
 							<div class="text-center">
 								<h5 class="h3">
-									<%= user.name.first %> <%= user.name.middle %>
+									<%= user.name.first %>
+									<%= user.name.middle %>
 									<%= user.name.last %>
 								</h5>
 								<div class="h5 font-weight-300">
@@ -50,10 +51,10 @@
 									Student (ka)
 									<% } %>
 								</div>
-								<div class="h5 mt-2">
+								<!--<div class="h5 mt-2">
 									<i class="fas fa-city fa-fw"></i>
 									Purkyňka
-								</div>
+								</div>-->
 							</div>
 						</div>
 					</div>
@@ -63,96 +64,4 @@
 		</div>
 	</div>
 	<%- include('../partials/scripts-file-end') %>
-	<script>
-		function editProfile() {
-			API.user
-				.edit({
-					id: '<%= user._id %>',
-					firstname: $('#firstname').val(),
-					middlename: $('#middlename').val(),
-					lastname: $('#lastname').val(),
-					email: $('#email').val()
-				})
-				.done(function (data) {
-					console.log(data)
-					let $status = $('div#edit-user-status')
-					if (data === 'ok') {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste si upravil(a) svůj profil'
-								)
-							)
-							.show()
-						// Refresh the page
-						setTimeout(function () {
-							window.location.href = window.location.href;
-						}, 3500)
-					} else {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									data
-								)
-							)
-							.show()
-					}
-				})
-		}
-
-		function changePassword() {
-			API.user
-				.setNewPassword('<%= user._id %>', $('#new-password').val())
-				.done(function (data) {
-					console.log(data)
-					if (data === 'ok') {
-						$('div#change-password-status')
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste si změnil(a) heslo'
-								)
-							)
-							.show()
-						// Refresh the page
-						setTimeout(function () {
-							window.location.href = window.location.href;
-						}, 3500)
-					} else {
-						$('div#change-password-status')
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									data
-								)
-							)
-							.show()
-					}
-				})
-		}
-
-		$(document).ready(function () {
-			$('#edit-user-button').click(editProfile)
-			$('#edit-user-form').submit(function (event) {
-				event.preventDefault()
-				editProfile()
-			})
-
-			$('#change-password-button').click(changePassword)
-			$('#change-password-form').submit(function (event) {
-				event.preventDefault()
-				changePassword()
-			})
-		})
-	</script>
 	<%- include('../partials/file-end') %>
