@@ -103,7 +103,12 @@ module.exports.new = (req, res) => {
 
 module.exports.login = (req, res) => {
   if (req.body.password === undefined) {
-    res.send('not-send-password')
+    return res
+      .status(401)
+      .json({
+        status: 'error',
+        error: 'not-send-password'
+      })
   }
   User
     .findOne({
@@ -116,17 +121,33 @@ module.exports.login = (req, res) => {
         res.send('err-mongo-finding-user')
         return console.error(err)
       } else if (user === null) {
-        return res.send('wrong-email')
+        return res
+          .status(400)
+          .json({
+            status: 'error',
+            error: 'wrong-email'
+          })
       } else {
         bcrypt.compare(req.body.password, user.password, (err, same) => {
           if (err) {
-            res.send('err-bcrypt-compare')
+            res
+              .status(401)
+              .json({
+                status: 'error',
+                err: 'err-bcrypt-compare'
+              })
             return console.error(err)
           } else if (!same) {
-            return res.send('wrong-password')
+            return res
+              .status(401)
+              .json({
+                status: 'error',
+                error: 'wrong-password'
+              })
           } else {
             req.session.user = user
-            return res.status(200).send('ok')
+            user.password = undefined
+            return res.status(200).json(user)
           }
         })
       }
@@ -405,6 +426,10 @@ module.exports.list = (req, res) => {
         res.send('err')
         return console.error(err)
       }
+      res.header("x-total-count", users.length - 1)
+      res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+      res.header('Access-Control-Expose-Headers', 'Content-Range')
+      res.header('Content-Range', `users 0-1/${users.length - 1}`)
       res.status(200).json(users)
     })
 }

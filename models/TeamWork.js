@@ -68,5 +68,15 @@ var teamWorkSchema = new mongoose.Schema({
   }
 })
 
+// Duplicate the ID field.
+teamWorkSchema.virtual('id').get(function(){
+  return this._id.toHexString()
+})
+
+// Ensure virtual fields are serialised.
+teamWorkSchema.set('toJSON', {
+  virtuals: true
+})
+
 // export
 module.exports = mongoose.model('TeamWork', teamWorkSchema, 'teamwork')

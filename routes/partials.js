@@ -112,9 +112,14 @@ router.all('*', this.setYearForUser)
 module.exports.onlyLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
     if (req.originalUrl.includes('api')) {
-      res.send('please-login')
+      return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'not-logged-in'
+      })
     } else {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
   } else {
     next()
@@ -125,37 +130,72 @@ module.exports.onlyNonLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
     next()
   } else {
-    res.status(200).send('only-for-non-logged-in')
+    return res
+      .status(200)
+      .json({
+        status: 'error',
+        error: 'only-for-non-logged-in'
+      })
   }
 }
 
 module.exports.onlyGuarantor = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   } else if (req.session.user.type === 'guarantor') {
     next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   }
 }
 
 module.exports.onlyGuarantorAndAdmin = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   } else if (req.session.user.type === 'guarantor' || req.session.user.type === 'admin') {
     next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   }
 }
 
 module.exports.onlyAdmin = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   } else if (req.session.user.type === 'admin') {
     next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: '403'
+      })
   }
 }
 

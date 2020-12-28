@@ -149,7 +149,12 @@ module.exports.list = (req, res) => {
         res.send('err')
         return console.error(err)
       }
-      return res.send(teamWorks)
+
+      res.header("x-total-count", teamWorks.length - 1)
+      res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+      res.header('Content-Range', `teamworks 0-1/${teamWorks.length - 1}`)
+      res.header('Access-Control-Expose-Headers', 'Content-Range')
+      return res.status(200).json(teamWorks)
     })
 }
 
