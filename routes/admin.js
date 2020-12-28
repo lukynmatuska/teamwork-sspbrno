@@ -13,8 +13,6 @@ const router = require('express').Router()
 /**
  * Libraries
  */
-const moment = require('moment')
-moment.locale('cs')
 
 /**
  * Controllers
@@ -44,10 +42,12 @@ router.get('/*', (req, res, next) => {
 router.get('/', (req, res) => {
   res.redirect('./dashboard')
 })
+router.get('/dashboard', adminPageController.dashboard)
 
-router.get('/dashboard', (req, res) => {
-  adminPageController.dashboard(req, res)
-})
+/**
+ * Profile
+ */
+router.get('/profile', adminPageController.profile)
 
 /**
  * TeamWorks
@@ -55,18 +55,9 @@ router.get('/dashboard', (req, res) => {
 router.get('/teamworks/', (req, res) => {
   res.redirect('./list')
 })
-
-router.get('/teamworks/list', (req, res) => {
-  adminPageController.teamworks.list(req, res)
-})
-
-router.get('/teamworks/new', (req, res) => {
-  adminPageController.teamworks.new(req, res)
-})
-
-router.get('/teamworks/edit/:id', (req, res) => {
-  adminPageController.teamworks.edit(req, res)
-})
+router.get('/teamworks/list', adminPageController.teamworks.list)
+router.get('/teamworks/new', adminPageController.teamworks.new)
+router.get('/teamworks/edit/:id', adminPageController.teamworks.edit)
 
 /**
  * Specializations
@@ -74,18 +65,9 @@ router.get('/teamworks/edit/:id', (req, res) => {
 router.get('/specializations/', (req, res) => {
   res.redirect('./list')
 })
-
-router.get('/specializations/list', (req, res) => {
-  adminPageController.specializations.list(req, res)
-})
-
-router.get('/specializations/new', (req, res) => {
-  adminPageController.specializations.new(req, res)
-})
-
-router.get('/specializations/edit/:id', (req, res) => {
-  adminPageController.specializations.edit(req, res)
-})
+router.get('/specializations/list', adminPageController.specializations.list)
+router.get('/specializations/new', adminPageController.specializations.new)
+router.get('/specializations/edit/:id', adminPageController.specializations.edit)
 
 /**
  * Users
@@ -93,24 +75,11 @@ router.get('/specializations/edit/:id', (req, res) => {
 router.get('/users/', (req, res) => {
   res.redirect('./list')
 })
-
-router.get('/users/list', (req, res) => {
-  adminPageController.users.list(req, res)
-})
-
-router.get('/users/new', (req, res) => {
-  adminPageController.users.new(req, res)
-})
-
+router.get('/users/list', adminPageController.users.list)
+router.get('/users/new', adminPageController.users.new)
 router.get('/users/import', adminPageController.users.import)
-
-router.get('/users/edit/:id', (req, res) => {
-  adminPageController.users.edit(req, res)
-})
-
-router.get('/users/detail/:id', (req, res) => {
-  adminPageController.users.detail(req, res)
-})
+router.get('/users/edit/:id', adminPageController.users.edit)
+router.get('/users/detail/:id', adminPageController.users.detail)
 
 /**
  * Years
@@ -118,43 +87,16 @@ router.get('/users/detail/:id', (req, res) => {
 router.get('/years/', (req, res) => {
   res.redirect('./list')
 })
-
-router.get('/years/list', (req, res) => {
-  adminPageController.years.list(req, res)
-})
-
-router.get('/years/new', (req, res) => {
-  adminPageController.years.new(req, res)
-})
-
-router.get('/years/edit/:id', (req, res) => {
-  adminPageController.years.edit(req, res)
-})
+router.get('/years/list', adminPageController.years.list)
+router.get('/years/new', adminPageController.years.new)
+router.get('/years/edit/:id', adminPageController.years.edit)
 
 /**
- * Profile
+ * Error pages (for testing)
  */
-router.get('/profile', (req, res) => {
-  adminPageController.profile(req, res)
-})
-
-/**
- * Error pages for test
- */
-router.get('/403', (req, res) => {
-  adminPageController.error.accessDenied(req, res)
-})
-
-router.get('/404', (req, res) => {
-  adminPageController.error.notFound(req, res)
-})
-
-router.get('/500', (req, res) => {
-  adminPageController.error.internalError(req, res)
-})
-
-router.get('*', (req, res) => {
-  adminPageController.error.notFound(req, res)
-})
+router.get('/403', adminPageController.error.accessDenied)
+router.get('/404', adminPageController.error.notFound)
+router.get('/500', adminPageController.error.internalError)
+router.get('*', adminPageController.error.notFound)
 
 module.exports = router

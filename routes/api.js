@@ -14,8 +14,6 @@ const partials = require('./partials')
 /**
  * Libraries
  */
-const moment = require('moment')
-moment.locale('cs')
 
 /**
  * Controllers
@@ -58,48 +56,23 @@ router.get('/session', (req, res) => {
 
 router.all('/session/destroy', (req, res) => {
   req.session.destroy()
-  res.status(200).send('ok')
+  res.status(200).json({
+    status: 'ok'
+  })
 })
 
 /**
  * User's login, etc.
  */
-router.post('/user/new', (req, res) => {
-  userController.new(req, res)
-})
-
-router.post('/user/login', (req, res) => {
-  userController.login(req, res)
-})
-
-router.post('/user/edit', partials.onlyLoggedIn, (req, res) => {
-  userController.edit(req, res)
-})
-
-router.post('/user/forgot-password', (req, res) => {
-  userController.enableRescue(req, res)
-})
-
-router.post('/user/set-new-password', (req, res) => {
-  userController.setNewPassword(req, res)
-})
-
-router.get('/user/update-session', partials.onlyLoggedIn, (req, res) => {
-  userController.updateSession(req, res)
-})
-
-router.post('/user/change-type', partials.onlyAdmin, (req, res) => {
-  userController.changeType(req, res)
-})
-
-router.post('/user/delete', partials.onlyAdmin, (req, res) => {
-  userController.delete(req, res)
-})
-
-router.get('/user/list', partials.onlyLoggedIn, (req, res) => {
-  userController.list(req, res)
-})
-
+router.post('/user/new', userController.new)
+router.post('/user/login', userController.login)
+router.post('/user/edit', partials.onlyLoggedIn, userController.edit)
+router.post('/user/forgot-password', userController.enableRescue)
+router.post('/user/set-new-password', userController.setNewPassword)
+router.get('/user/update-session', partials.onlyLoggedIn, userController.updateSession)
+router.post('/user/change-type', partials.onlyAdmin, userController.changeType)
+router.post('/user/delete', partials.onlyAdmin, userController.delete)
+router.get('/user/list', partials.onlyLoggedIn, userController.list)
 router.post('/user/import', partials.onlyAdmin, userController.import)
 router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
 
@@ -110,95 +83,47 @@ router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
 })
 
 router.get('/user/am-i-logged-in', (req, res) => {
-  res.send(req.session.user !== undefined)
+  res.json(req.session.user !== undefined)
 })
 
 /**
  * Years
  */
-router.post('/year/new', partials.onlyAdmin, (req, res) => {
-  yearController.new(req, res)
-})
-
-router.post('/year/edit', partials.onlyAdmin, (req, res) => {
-  yearController.edit(req, res)
-})
-
-router.post('/year/delete', partials.onlyAdmin, (req, res) => {
-  yearController.delete(req, res)
-})
-
-router.post('/year/change-status', partials.onlyAdmin, (req, res) => {
-  yearController.changeStatus(req, res)
-})
-
-router.post('/year/switch', partials.onlyAdmin, (req, res) => {
-  yearController.switch(req, res)
-})
-
-router.get('/year/list', partials.onlyAdmin, (req, res) => {
-  yearController.list(req, res)
-})
+router.post('/year/new', partials.onlyAdmin, yearController.new)
+router.post('/year/edit', partials.onlyAdmin, yearController.edit)
+router.post('/year/delete', partials.onlyAdmin, yearController.delete)
+router.post('/year/change-status', partials.onlyAdmin, yearController.changeStatus)
+router.post('/year/switch', partials.onlyAdmin, yearController.switch)
+router.get('/year/list', partials.onlyAdmin, yearController.list)
 
 /**
  * Specialization
  */
-router.post('/specialization/new', partials.onlyAdmin, (req, res) => {
-  specializationController.new(req, res)
-})
-
-router.post('/specialization/edit', partials.onlyAdmin, (req, res) => {
-  specializationController.edit(req, res)
-})
-
-router.post('/specialization/delete', partials.onlyAdmin, (req, res) => {
-  specializationController.delete(req, res)
-})
-
-router.get('/specialization/list', (req, res) => {
-  specializationController.list(req, res)
-})
+router.post('/specialization/new', partials.onlyAdmin, specializationController.new)
+router.post('/specialization/edit', partials.onlyAdmin, specializationController.edit)
+router.post('/specialization/delete', partials.onlyAdmin, specializationController.delete)
+router.get('/specialization/list', specializationController.list)
 
 /**
  * TeamWork
  */
-router.post('/teamwork/new', partials.onlyAdmin, (req, res) => {
-  teamworkController.new(req, res)
-})
-
-router.post('/teamwork/edit', partials.onlyAdmin, (req, res) => {
-  teamworkController.edit(req, res)
-})
-
-router.get('/teamwork/list', (req, res) => {
-  teamworkController.list(req, res)
-})
-
-router.get('/teamwork/find-by-id/:id', (req, res) => {
-  teamworkController.findById(req, res)
-})
-
-router.post('/teamwork/delete', partials.onlyAdmin, (req, res) => {
-  teamworkController.delete(req, res)
-})
-
-router.post('/teamwork/select', (req, res) => {
-  teamworkController.select(req, res)
-})
-
-router.post('/teamwork/leave', partials.onlyLoggedIn, (req, res) => {
-  teamworkController.leave(req, res)
-})
-
-router.get('/teamwork/has-student-been-asigned-to-teamwork', (req, res) => {
-  teamworkController.hasStudentBeenAsignedToTeamWork(req, res)
-})
+router.post('/teamwork/new', partials.onlyAdmin, teamworkController.new)
+router.post('/teamwork/edit', partials.onlyAdmin, teamworkController.edit)
+router.get('/teamwork/list', teamworkController.list)
+router.get('/teamwork/find-by-id/:id', teamworkController.findById)
+router.post('/teamwork/delete', partials.onlyAdmin, teamworkController.delete)
+router.post('/teamwork/select', partials.onlyLoggedIn, teamworkController.select)
+router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
+router.get('/teamwork/has-student-been-asigned-to-teamwork', teamworkController.hasStudentBeenAsignedToTeamWork)
 
 /**
  * Not found route
  */
 router.all('*', (req, res) => {
-  res.status(404).send('404')
+  res.status(404).json({
+    status: 'error',
+    error: 'not-found'
+  })
 })
 
 module.exports = router

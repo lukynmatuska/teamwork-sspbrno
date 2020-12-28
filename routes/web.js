@@ -13,8 +13,6 @@ const router = require('express').Router()
 /**
  * Libraries
  */
-const moment = require('moment')
-moment.locale('cs')
 
 /**
  * Controllers
@@ -27,68 +25,28 @@ const partials = require('../routes/partials')
  * Routes
  */
 
-/**
- * Homepage
- */
-router.get('/', (req, res) => {
-  pageController.homepage(req, res)
-})
+/* Homepage */
+router.get('/', pageController.homepage)
+router.get('/teamworks', pageController.teamworks)
 
-/**
- * TeamWorks
- */
-router.get('/teamworks', (req, res) => {
-  pageController.teamworks(req, res)
-})
-
-/**
- * Error pages for test
- */
-router.get('/403', (req, res) => {
-  errorController.error403(req, res)
-})
-
-router.get('/404', (req, res) => {
-  errorController.error404(req, res)
-})
-
-router.get('/500', (req, res) => {
-  errorController.error500(req, res)
-})
-
+/* Error pages for testing */
+router.get('/403', errorController.error403)
+router.get('/404', errorController.error404)
+router.get('/500', errorController.error500)
 router.all('/d', (req, res) => {
   req.session.destroy()
   res.redirect('/?status=destroy-ok')
 })
 
-router.get('/login', (req, res) => {
-  if (req.session.user === undefined) {
-    return pageController.login(req, res)
-  } else {
-    return res.redirect('/')
-  }
-})
-
+router.get('/login', partials.onlyNonLoggedIn, pageController.login)
+router.get('/register', partials.onlyNonLoggedIn, pageController.register)
+router.get('/profile', partials.onlyLoggedIn, pageController.profile)
 router.get('/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
   res.cookie('toast-logout', 'true', { maxAge: 60000, httpOnly: false })
   res.redirect('/login')
 })
 
-router.get('/register', (req, res) => {
-  if (req.session.user === undefined) {
-    return pageController.register(req, res)
-  } else {
-    return res.redirect('/')
-  }
-})
-
-router.get('/profile', partials.onlyLoggedIn, (req, res) => {
-  pageController.profile(req, res)
-})
-
-router.get('*', (req, res) => {
-  errorController.error404(req, res)
-})
+router.get('*', errorController.error404)
 
 module.exports = router
