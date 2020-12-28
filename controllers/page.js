@@ -11,6 +11,8 @@
 /**
  * Models
  */
+const User = require('../models/User')
+const errorController = require('./error')
 
 module.exports.homepage = (req, res) => {
   res.render('homepage', { req, res, active: 'home', title: '' })
@@ -30,4 +32,27 @@ module.exports.teamworks = (req, res) => {
 
 module.exports.profile = (req, res) => {
   res.render('profile', { req, res, active: 'profile', title: 'Profil' })
+}
+
+module.exports.forgotPassword = (req, res) => {
+  res.render('forgot-password', { req, res, active: 'login', title: 'Zapomenuté heslo' })
+}
+
+module.exports.setNewPassword = (req, res) => {
+  if (req.params.id === undefined) {
+    return errorController.error403(req, res)
+  }
+  User
+    .findById(req.params.id)
+    .exec((err, user) => {
+      if (err) {
+        console.error(err)
+        return errorController.error500(req, res, err)
+      } else if (user === null) {
+        return errorController.error404(req, res)
+      } else if (!user.rescue) {
+        return errorController.error403(req, res)
+      }
+      res.render('set-new-password', { req, res, active: 'login', title: 'Nové heslo' })
+    })
 }

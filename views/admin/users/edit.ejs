@@ -334,38 +334,60 @@
 		}
 
 		function changePassword() {
-			API.user
-				.setNewPassword('<%= user._id %>', $('#new-password').val())
-				.done(function (data) {
-					console.log(data)
-					if (data === 'ok') {
-						$('div#change-password-status')
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste změnil(a) heslo uživateli'
-								)
-							)
-							.show()
-						// Refresh the page
-						setTimeout(function () {
-							window.location.href = window.location.href;
-						}, 3500)
-					} else {
-						$('div#change-password-status')
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									data
-								)
-							)
-							.show()
-					}
-				})
+			let password = $('#new-password').val()
+            let alert = {
+                dom: $('#change-password-status'),
+                strongText: 'Vyhodnocuji',
+                text: 'Vyčkejte prosím',
+                status: 'info',
+                icon: 'fas fa-circle-notch fa-spin',
+                show: function() {
+                    this.dom
+                    .empty()
+                    .append(
+                        $('<div>', { class: `alert alert-${this.status} alert-dismissible` }).append(
+                            $('<i>', { class: this.icon, 'aria-hidden': 'true' }),
+                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                            $('<strong>').text(' ' + this.strongText),
+                            ' ' + this.text
+                        )
+                    )
+                    .show()
+                }
+            }
+            alert.show()
+
+            if (password === '') {
+                alert.status = 'danger'
+                alert.icon = 'fas fa-exclamation-triangle'
+                alert.strongText = 'Ach ne!'
+                alert.text = 'Heslo nemůže být prázdné'
+                return alert.show()
+            }
+
+            API.user.setNewPassword('<%= user._id %>', password).then(function (responseFromServer) {
+                if (responseFromServer.status === 'ok') {
+                    alert.status = 'success'
+                    alert.icon = 'fas fa-check'
+                    alert.strongText = 'Výborně!'
+                    alert.text = 'Uživatelovo heslo bylo změněno'
+                    setTimeout(function() {
+                        window.location.href = window.location.href
+                    }, 5555)
+                } else if (responseFromServer.error === 'wrong-email') {
+                    alert.status = 'danger'
+                    alert.icon = 'fas fa-exclamation-triangle'
+                    alert.strongText = 'Ach ne!'
+                    alert.text = 'Uživatel neexistuje'
+                } else {
+                    alert.status = 'danger'
+                    alert.icon = 'fas fa-exclamation-triangle'
+                    alert.strongText = 'Ach ne!'
+                    alert.text = 'Vnitřní chyba serveru'
+                }
+                alert.show()
+                alert.dom.delay(5000).fadeOut('slow')
+            })
 		}
 
 		function hasUserGivenSpecialization(specialization) {

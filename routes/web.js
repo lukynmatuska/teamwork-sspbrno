@@ -40,6 +40,8 @@ router.all('/d', (req, res) => {
 
 router.get('/login', partials.onlyNonLoggedIn, pageController.login)
 router.get('/register', partials.onlyNonLoggedIn, pageController.register)
+router.get('/forgot-password', partials.onlyNonLoggedIn, pageController.forgotPassword)
+router.get('/forgot-password/:id', partials.onlyNonLoggedIn, pageController.setNewPassword)
 router.get('/profile', partials.onlyLoggedIn, pageController.profile)
 router.get('/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()

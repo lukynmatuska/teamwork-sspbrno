@@ -197,7 +197,12 @@ module.exports.edit = (req, res) => {
 
 module.exports.enableRescue = (req, res) => {
   if (req.body.email === undefined) {
-    return res.send('not-send-email')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-email'
+      })
   } else {
     User
       .findOneAndUpdate({
@@ -205,16 +210,52 @@ module.exports.enableRescue = (req, res) => {
       }, {
         rescue: true
       })
-      .populate('specialization')
-      .populate('years.year')
+      // .populate('specialization')
+      // .populate('years.year')
       .exec((err, user) => {
         if (err) {
-          res.send('err')
-          return console.error(err)
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: 'mongo-err'
+            })
         } else if (user === null) {
-          return res.send('wrong-email')
+          return res
+            // .status(404)
+            .send({
+              status: 'error',
+              error: 'wrong-email'
+            })
         } else {
-          return res.send('ok')
+          // Send email
+          const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
+          const text = `Dobrý den ${osloveni(user.name.first)},\n\njelikož máte účet v týmových pracích a požádal jste o změnu hesla, zde je možnost: ${global.CONFIG.publicUrl}/forgot-password/${user._id}/\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
+          const message = {
+            from: global.CONFIG.nodemailer.sender,
+            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
+            subject: 'Zapomenuté heslo',
+            text
+          }
+
+          transporter.sendMail(message, (err, info, response) => {
+            if (err) {
+              console.error(`Error occurred when sending email:\n${err.message}`)
+              return res
+                .status(400)
+                .json({
+                  status: 'error',
+                  error: err.message
+                })
+            } else {
+              return res
+                .status(200)
+                .json({
+                  status: 'ok'
+                })
+            }
+          })
         }
       })
   }
@@ -222,48 +263,82 @@ module.exports.enableRescue = (req, res) => {
 
 module.exports.setNewPassword = (req, res) => {
   if (req.body.id === undefined) {
-    return res.send('not-send-user-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-user-id'
+      })
   } else if (req.body.password === undefined) {
-    return res.send('not-send-password')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-password'
+      })
   } else {
     User
       .findById(req.body.id)
       .exec((err, user) => {
         if (err) {
-          res.send(err)
-          return console.error(err)
-        } else if (user.rescue || req.session.user.type === 'admin') {
-          User
-            .findByIdAndUpdate(
-              req.body.id,
-              {
-                rescue: false,
-                password: bcrypt.hashSync(req.body.password, 15)
-              },
-              {
-                new: true
-              }
-            )
-            .populate('specialization')
-            .populate('years.year')
-            .exec((err, user) => {
-              if (err) {
-                res.send('err')
-                return console.error(err)
-              } else if (user === null) {
-                return res.send('wrong-email')
-              } else {
-                if (req.session.user !== undefined) {
-                  if (req.session.user._id === user._id) {
-                    req.session.user = user
-                  }
-                }
-                return res.send('ok')
-              }
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: 'mongo-err'
             })
-        } else {
-          return res.status(403).send('403')
         }
+        
+        if (!user.rescue || req.session.user != undefined) {
+          if (req.session.user.type === 'admin' || req.session.user._id === user._id) {
+        
+          } else {
+            return res.status(403).send('403')
+          }
+        }
+        User
+          .findByIdAndUpdate(
+            req.body.id,
+            {
+              rescue: false,
+              password: bcrypt.hashSync(req.body.password, 15)
+            },
+            {
+              new: true
+            }
+          )
+          .populate('specialization')
+          .populate('years.year')
+          .exec((err, user) => {
+            if (err) {
+              console.error(err)
+              return res
+                .status(500)
+                .json({
+                  status: 'error',
+                  error: err
+                })
+            } else if (user === null) {
+              return res
+                .status(404)
+                .json({
+                  status: 'error',
+                  error: 'wrong-email'
+                })
+            } else {
+              if (req.session.user !== undefined) {
+                if (req.session.user._id === user._id) {
+                  req.session.user = user
+                }
+              }
+              return res
+                .status(200)
+                .send({
+                  status: 'ok'
+                })
+            }
+          })
       })
   }
 }
@@ -322,6 +397,7 @@ module.exports.list = (req, res) => {
       name: 1,
       photo: 1,
       type: 1,
+      rescue: 1,
       years: 1
     })
     .exec((err, users) => {
