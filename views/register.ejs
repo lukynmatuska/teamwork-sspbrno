@@ -53,7 +53,7 @@
 <script src="/js/select2.min.js"></script>
 <script>
     $(document).ready(function () {
-        API.specialization.list().done(function (specializations) {
+        API.specialization.list().then(function (specializations) {
             specializations.forEach(specialization => {
                 $('#select-specialization').append(
                     $('<option>', { value: specialization._id }).text(specialization.name)
@@ -125,9 +125,9 @@
                         .show()
                 }
 
-                API.user.new(email, password, firstname, lastname, specialization, middlename).done(function (responseFromServer) {
+                API.user.new(email, password, firstname, lastname, specialization, middlename).then(function (responseFromServer) {
                     // console.log(responseFromServer)
-                    if (responseFromServer === 'ok') {
+                    if (responseFromServer.status === 'ok') {
                         $('div#register-status')
                             .empty()
                             .append(
@@ -145,7 +145,7 @@
                             Cookies.set('toast-register', 'true')
                             window.location.href = '/teamworks'
                         }, 3500)
-                    } else if (responseFromServer === 'email-exist') {
+                    } else if (responseFromServer.error === 'email-exist') {
                         $('div#register-status')
                             .empty()
                             .append(
@@ -157,7 +157,7 @@
                                 )
                             )
                             .show()
-                    } else if (responseFromServer === 'err-sending-email') {
+                    } else if (responseFromServer.error === 'err-sending-email') {
                         $('div#register-status')
                             .empty()
                             .append(

@@ -17,6 +17,22 @@ async function postData(url = '', data = {}) {
   return response.json() // parses JSON response into native JavaScript objects
 }
 
+async function getData(url = '', data = {}) {
+  const response = await fetch((API.endpoint + url), {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    // body: JSON.stringify(data)
+  })
+  return response.json()
+}
+
 var API = {
   endpoint: '/api',
   user: {
@@ -25,32 +41,30 @@ var API = {
       password,
       firstname,
       lastname,
-      specialization,
       middlename,
-      usertype) {
-      return $.post(
-        '/api/user/new',
+      usertype,
+      specialization) {
+      return postData(
+        '/user/new',
         {
-          email: email,
-          password: password,
-          firstname: firstname,
-          middlename: middlename,
-          lastname: lastname,
-          usertype: usertype,
-          specialization: specialization
-        },
-        'json'
+          email,
+          password,
+          firstname,
+          middlename,
+          lastname,
+          usertype,
+          specialization
+        }
       )
     },
 
     login: function (email, password) {
-      return $.post(
-        '/api/user/login',
+      return postData(
+        '/user/login',
         {
           email: email,
           password: password
-        },
-        'json'
+        }
       )
     },
 
@@ -59,7 +73,7 @@ var API = {
       body.append('xlsx', file)
       body.append('userType', userType)
       return fetch(
-        '/api/user/parse-xlsx',
+        API.endpoint + '/user/parse-xlsx',
         {
           method: 'POST',
           body: body
@@ -72,7 +86,7 @@ var API = {
       body.append('users', JSON.stringify(users))
       body.append('userType', userType)
       return fetch(
-        '/api/user/import',
+        API.endpoint + '/user/import',
         {
           method: 'POST',
           body: body
@@ -81,11 +95,7 @@ var API = {
     },
 
     edit: function (object) {
-      return $.post(
-        '/api/user/edit',
-        object,
-        'json'
-      )
+      return postData('/user/edit', object)
     },
 
     forgotPassword: function (email) {
@@ -97,196 +107,151 @@ var API = {
     },
 
     updateSession: function () {
-      return $.get('/api/user/update-session', {}, 'json')
+      return getData('/user/update-session')
     },
 
     changeType: function (userId, type) {
-      return $.post(
-        '/api/user/change-type',
+      return postData(
+        '/user/change-type',
         {
           id: userId,
           type: type
-        },
-        'json'
+        }
       )
     },
 
     list: function () {
-      return $.get('/api/user/list', {}, 'json')
+      return getData('/user/list')
     },
 
     logout: function () {
-      return $.get('/api/user/logout', {}, 'json')
+      return getData('/user/logout')
     },
 
     delete: function (userId) {
-      return $.post(
-        '/api/user/delete',
-        {
-          id: userId
-        },
-        'json'
-      )
+      return postData('/user/delete', { id: userId })
     },
 
     loggedIn: function () {
-      return $.get('/api/user/am-i-logged-in', {}, 'json')
+      return getData('/user/am-i-logged-in')
     }
   },
 
   year: {
     new: function (name, description, status) {
-      return $.post(
-        '/api/year/new',
+      return postData(
+        '/year/new',
         {
           name: name,
           description: description,
           status: status
-        },
-        'json'
+        }
       )
     },
 
     edit: function (yearId, name, description, status) {
-      return $.post(
-        '/api/year/edit',
+      return postData(
+        '/year/edit',
         {
           id: yearId,
           name: name,
           description: description,
           status: status
-        },
-        'json'
+        }
       )
     },
 
     list: function () {
-      return $.get('/api/year/list', {}, 'json')
+      return getData('/year/list')
     },
 
     delete: function (yearId) {
-      return $.post(
-        '/api/year/delete',
+      return postData(
+        '/year/delete',
         {
           id: yearId
-        },
-        'json'
+        }
       )
     },
 
     switch: function (yearId) {
-      return $.post(
-        '/api/year/switch',
+      return postData(
+        '/year/switch',
         {
           id: yearId
-        },
-        'json'
+        }
       )
     }
   },
 
   specialization: {
     new: function (name, shortName) {
-      return $.post(
-        '/api/specialization/new',
+      return postData(
+        '/specialization/new',
         {
           name: name,
           short: shortName
-        },
-        'json'
+        }
       )
     },
 
     edit: function (id, name, shortName) {
-      return $.post(
-        '/api/specialization/edit',
+      return postData(
+        '/specialization/edit',
         {
           id: id,
           name: name,
           short: shortName
-        },
-        'json'
+        }
       )
     },
 
     delete: function (id) {
-      return $.post(
-        '/api/specialization/delete',
-        {
-          id: id
-        },
-        'json'
-      )
+      return postData('/specialization/delete', { id })
     },
 
     list: function (filter) {
       if (filter === undefined) {
         filter = {}
       }
-      return $.get('/api/specialization/list', filter, 'json')
+      return getData('/specialization/list', filter)
     }
   },
 
   teamwork: {
-    new: function (name, description, students, guarantors) {
-      return $.post(
-        '/api/teamwork/new',
-        {
-          name: name,
-          description: description,
-          students: students,
-          guarantors: guarantors
-        },
-        'json'
-      )
+    new: function (name, description, students, guarantors, consultants) {
+      return postData( '/teamwork/new', { name, description, students, guarantors, consultants })
     },
 
-    edit: function (id, name, description, students, guarantors) {
-      return $.post(
-        '/api/teamwork/edit',
-        {
-          id: id,
-          name: name,
-          description: description,
-          students: students,
-          guarantors: guarantors
-        },
-        'json'
-      )
+    edit: function (id, name, description, students, guarantors, consultants) {
+      return postData( '/teamwork/edit', { id, name, description, students, guarantors, consultants })
     },
 
     findById: function (id) {
-      return $.get('/api/teamwork/find-by-id/' + id, {}, 'json')
+      return getData('/teamwork/find-by-id/' + id)
     },
 
     delete: function (id) {
-      return $.post(
-        '/api/teamwork/delete',
-        {
-          id: id
-        },
-        'json'
-      )
+      return postData('/teamwork/delete', { id: id })
     },
 
     list: function (filter) {
       if (filter === undefined) {
         filter = {}
       }
-      return $.get('/api/teamwork/list', { filter: filter }, 'json')
+      return getData('/teamwork/list', { filter })
     },
 
     select: function (
       teamWorkId,
       positionId
     ) {
-      return $.post(
-        '/api/teamwork/select',
+      return postData(
+        '/teamwork/select',
         {
           id: teamWorkId,
           position: positionId
-        },
-        'json'
+        }
       )
     },
 
@@ -294,18 +259,17 @@ var API = {
       teamWorkId,
       positionId
     ) {
-      return $.post(
-        '/api/teamwork/leave',
+      return postData(
+        '/teamwork/leave',
         {
           id: teamWorkId,
           position: positionId
-        },
-        'json'
+        }
       )
     },
 
     hasStudentBeenAsignedToTeamWork: function () {
-      return $.get('/api/teamwork/has-student-been-asigned-to-teamwork', {}, 'json')
+      return getData('/teamwork/has-student-been-asigned-to-teamwork')
     }
   }
 }

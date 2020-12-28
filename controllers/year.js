@@ -21,22 +21,37 @@ const User = require('../models/User')
 
 module.exports.new = (req, res) => {
   if (req.body.name === undefined) {
-    return res.send('not-send-name')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-name'
+      })
   }
   if (req.body.status !== undefined) {
     if (!Year.schema.path('status').enumValues.includes(req.body.status)) {
-      return res.send('invalid-status')
+      return res
+        .status(422)
+        .json({
+          status: 'error',
+          error: 'not-send-status'
+        })
     }
   }
   new Year({
     name: req.body.name,
-    // author: (req.session.user ? req.session.user._id : null),
     description: req.body.description,
     status: (req.body.status === undefined ? 'prepared' : req.body.status),
     created: moment()
   }).save((err, year) => {
     if (err) {
-      return console.error(err)
+      console.error(err)
+      return res
+        .status(500)
+        .json({
+          status: 'error',
+          error: err
+        })
     }
 
     User.findByIdAndUpdate(
@@ -49,27 +64,48 @@ module.exports.new = (req, res) => {
           }
         }
       }, {
-        new: true
-      })
+      new: true
+    })
       .populate('years.year')
       .exec((err, user) => {
         if (err) {
-          return console.error(err)
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err
+            })
         }
         req.session.user = user
-        res.status(200).send('ok')
+        return res
+          .status(200)
+          .json({
+            status: 'ok'
+          })
       })
   })
 }
 
 module.exports.delete = (req, res) => {
   if (req.body.id === undefined) {
-    return res.send('not-send-year-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   }
   Year
     .findByIdAndRemove(req.body.id, (err, year) => {
       if (err) {
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
       }
       User
         .updateMany({
@@ -83,11 +119,15 @@ module.exports.delete = (req, res) => {
         })
         .exec((err) => {
           if (err) {
-            res.send('err-update-users-when-deleting-year')
-            return console.error(err)
-          } else {
-            userController.updateSession(req, res)
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
           }
+          return userController.updateSession(req, res)
         })
     })
 }
@@ -95,7 +135,12 @@ module.exports.delete = (req, res) => {
 module.exports.edit = (req, res) => {
   const update = {}
   if (req.body.id === undefined) {
-    return res.send('not-send-year-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   }
 
   if (req.body.name !== undefined) {
@@ -108,7 +153,12 @@ module.exports.edit = (req, res) => {
 
   if (req.body.status !== undefined) {
     if (!Year.schema.path('status').enumValues.includes(req.body.status)) {
-      return res.send('invalid-status')
+      return res
+        .status(422)
+        .json({
+          status: 'error',
+          error: 'invalid-status'
+        })
     } else {
       update.status = req.body.status
     }
@@ -116,27 +166,50 @@ module.exports.edit = (req, res) => {
 
   Year
     .findByIdAndUpdate(req.body.id, update, { new: true })
-    // .populate('author')
     .exec((err, year) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
       }
       if (year.status === 'active') {
         req.session.year = year
       }
-      res.status(200).send('ok')
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
 
 module.exports.changeStatus = (req, res) => {
   // Change status of the year
   if (req.body.id === undefined) {
-    return res.send('not-sent-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   } else if (req.body.status === undefined) {
-    return res.send('not-sent-status')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-status'
+      })
   } else if (!Year.schema.path('status').enumValues.includes(req.body.status)) {
-    return res.send('invalid-status')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'invalid-status'
+      })
   }
 
   Year.findByIdAndUpdate(req.body.id, {
@@ -144,36 +217,77 @@ module.exports.changeStatus = (req, res) => {
   }, (err) => {
     if (err) {
       console.error(err)
+      return res
+        .status(500)
+        .json({
+          status: 'error',
+          error: err
+        })
     }
-    return res.send('ok')
+    return res
+      .status(200)
+      .json({
+        status: 'ok'
+      })
   })
 }
 
 module.exports.switch = (req, res) => {
   // This method switches the current (editing) year for user
   if (req.body.id === undefined) {
-    return res.send('not-sent-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   }
   User
     .findById(req.session.user._id)
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
       }
       Year
         .findById(req.body.id)
         .exec((err, year) => {
           if (err) {
-            return console.error(err)
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
           }
           if (year === null) {
-            return res.send('not-found-year-bad-id')
+            return res
+              .status(404)
+              .json({
+                status: 'error',
+                error: 'not-found-year-bad-id'
+              })
           } else if (!partials.hasUserGivenYear(user, year)) {
-            return res.send('not-permissions-for-this-year')
+            return res
+              .status(403)
+              .json({
+                status: 'error',
+                error: 'not-permissions-for-this-year'
+              })
           } else {
             req.session.year = year
-            res.send('ok')
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
           }
         })
     })
@@ -182,12 +296,16 @@ module.exports.switch = (req, res) => {
 module.exports.list = (req, res) => {
   Year
     .find({})
-    // .populate('author')
     .exec((err, years) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
       }
-      res.json(years)
+      return res.json(years)
     })
 }

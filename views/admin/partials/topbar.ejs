@@ -102,19 +102,20 @@
             } else {
                 API.year
                     .switch(yearId)
-                    .done(function (response) {
-                        switch (response) {
-                            case 'ok':
-                                swal({
-                                    title: 'Rok se změnil!',
-                                    text: 'Jaká byla cesta časem?',
-                                    icon: 'success',
-                                    timer: 3000,
-                                }).then((value) => {
-                                    location.reload()
-                                })
-                                break
+                    .then(function (response) {
+                        if (response.status === 'ok') {
+                            return swal({
+                                title: 'Rok se změnil!',
+                                text: 'Jaká byla cesta časem?',
+                                icon: 'success',
+                                timer: 3000,
+                            }).then((value) => {
+                                location.reload()
+                            })
+                        }
 
+                        console.error(response)
+                        switch (response.error) {
                             case 'not-permissions-for-this-year':
                                 swal({
                                     title: 'Rok se nezměnil!',
@@ -153,27 +154,23 @@
         }).then((value) => {
             API.user
                 .updateSession()
-                .done(function (response) {
-                    // console.log(response);
-                    switch (response) {
-                        case 'ok':
-                            swal({
-                                title: 'Gratuluji!',
-                                text: 'Sezení bylo aktualizováno.',
-                                icon: 'success',
-                                timer: 3000,
-                            }).then(() => {
-                                location.reload();
-                            });
-                            break;
-
-                        default:
-                            swal({
-                                title: 'Chyba!',
-                                text: `Kontaktuj správce prosím tě a vzkaž mu: '${response}'`,
-                                icon: 'error',
-                            });
-                            break;
+                .then(function (response) {
+                    if (response.status === 'ok') {
+                        swal({
+                            title: 'Gratuluji!',
+                            text: 'Sezení bylo aktualizováno.',
+                            icon: 'success',
+                            timer: 3000,
+                        }).then(() => {
+                            location.reload()
+                        })
+                    } else {
+                        console.error(response)
+                        swal({
+                            title: 'Chyba!',
+                            text: `Kontaktuj správce prosím tě a vzkaž mu: '${response.error}'`,
+                            icon: 'error',
+                        })
                     }
                 })
         })

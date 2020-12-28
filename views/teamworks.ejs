@@ -43,14 +43,14 @@
         DOM.addClass('btn-dark')
         API.teamwork
             .select(teamWorkId, positionId)
-            .done((resultFromServer) => {
+            .then((resultFromServer) => {
                 console.log(resultFromServer)
                 DOM.removeClass('btn-dark')
-                if (resultFromServer === 'ok') {
+                if (resultFromServer.status === 'ok') {
                     DOM.addClass('btn-success')
                     DOM.text('Vybráno')
                     location.reload()
-                } else if (resultFromServer === 'already-asigned') {
+                } else if (resultFromServer.error === 'already-asigned') {
                     DOM.text('Jejda! Někdo Vás předběhl')
                     DOM.addClass('btn-danger')
                     location.reload()
@@ -67,14 +67,14 @@
         DOM.addClass('btn-dark')
         API.teamwork
             .leave(teamWorkId, positionId)
-            .done((resultFromServer) => {
+            .then((resultFromServer) => {
                 console.log(resultFromServer)
                 DOM.removeClass('btn-dark')
-                if (resultFromServer === 'ok') {
+                if (resultFromServer.status === 'ok') {
                     DOM.addClass('btn-success')
                     DOM.text('Odebráno')
                     location.reload()
-                } else if (resultFromServer === 'already-free') {
+                } else if (resultFromServer.error === 'already-free') {
                     DOM.text('Jejda! Ani jste nebyl přihlášen')
                     DOM.addClass('btn-danger')
                     location.reload()
@@ -119,10 +119,10 @@
         }
         API.teamwork
             .hasStudentBeenAsignedToTeamWork()
-            .done((hasStudentBeenAsignedToTeamWork) => {
+            .then((hasStudentBeenAsignedToTeamWork) => {
                 API.teamwork
                     .list()
-                    .done(function (teamworks) {
+                    .then(function (teamworks) {
                         for (let i = 0; i < teamworks.length; i++) {
                             let studentsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
                             for (let ii = 0; ii < teamworks[i].students.length; ii++) {

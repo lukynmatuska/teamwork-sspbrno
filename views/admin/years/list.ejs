@@ -53,27 +53,23 @@
 				if (confirm) {
 					API.year
 						.delete(id)
-						.done((response) => {
-							console.log(response);
-							switch (response) {
-								case 'ok':
-									swal({
-										title: 'Ročník je smazán!',
-										text: 'Už ho / ji nikdy neuvidíme.',
-										icon: 'success',
-										timer: 5000
-									}).then((value) => {
-										location.reload()
-									})
-									break
-
-								default:
-									swal({
-										title: 'Něco se pokazilo!',
-										text: response,
-										icon: 'error'
-									})
-									break
+						.then((response) => {
+							if (response.status === 'ok') {
+								swal({
+									title: 'Ročník je smazán!',
+									text: 'Už ho / ji nikdy neuvidíme.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							} else {
+								console.error(response)
+								swal({
+									title: 'Něco se pokazilo!',
+									text: response.error,
+									icon: 'error'
+								})
 							}
 						})
 				}
@@ -83,7 +79,7 @@
 		$(document).ready(function () {
 			API.year
 				.list()
-				.done((dataFromServer) => {
+				.then((dataFromServer) => {
 					$('table#years').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'

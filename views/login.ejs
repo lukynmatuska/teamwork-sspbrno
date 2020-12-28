@@ -93,11 +93,11 @@
                     .show()
             }
 
-            API.user.login(email, password).done(function (responseFromServer) {
-                if (responseFromServer === 'ok') {
+            API.user.login(email, password).then(function (responseFromServer) {
+                if (responseFromServer.status === 'ok') {
                     Cookies.set('toast-login', 'true')
                     window.location.href = '/teamworks'
-                } else if (responseFromServer === 'wrong-email') {
+                } else if (responseFromServer.error === 'wrong-email') {
                     $('div#login-status')
                         .empty()
                         .append(
@@ -109,7 +109,7 @@
                             )
                         )
                         .show()
-                } else if (responseFromServer === 'wrong-password') {
+                } else if (responseFromServer.error === 'wrong-password') {
                     $('div#login-status')
                         .empty()
                         .append(

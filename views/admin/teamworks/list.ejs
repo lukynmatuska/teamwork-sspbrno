@@ -24,6 +24,7 @@
 										<th scope="col" class="sort" data-sort="name">Název</th>
 										<th scope="col">Studenti</th>
 										<th scope="col">Garanti</th>
+										<th scope="col">Konzultanti</th>
 										<th scope="col">Akce</th>
 									</tr>
 								</thead>
@@ -53,20 +54,18 @@
 				if (confirm) {
 					API.teamwork
 						.delete(id)
-						.done(function (response) {
-							console.log(response);
-							switch (response) {
-								case 'ok':
-									swal({
-										title: 'Týmová práce je smazána!',
-										text: 'Už ji nikdy neuvidíme.',
-										icon: 'success',
-										timer: 5000
-									}).then((value) => {
-										location.reload()
-									})
-									break
-
+						.then(function (response) {
+							if (response.status === 'ok') {
+							 	return swal({
+									title: 'Týmová práce je smazána!',
+									text: 'Už ji nikdy neuvidíme.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
 								case 'not-sent-id':
 									swal({
 										title: 'Týmová práce se nesmazala!',
@@ -76,9 +75,10 @@
 									break
 
 								default:
+									console.error(response)
 									swal({
 										title: 'Něco se pokazilo!',
-										text: response,
+										text: response.error,
 										icon: 'error'
 									})
 									break
@@ -96,7 +96,7 @@
 						year: '<%= req.session.year._id %>'
 					}
 				)
-				.done((responseFromServer) => {
+				.then((responseFromServer) => {
 					$('table#teamworks').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'
@@ -115,17 +115,20 @@
 									let studentsDOMSs = $('<div>', { class: 'avatar-group' })
 									for (let i = 0; i < oData.students.length; i++) {
 										const student = oData.students[i]
-										if (student.user === undefined) {
+										if (student.user === undefined || student.user === null) {
 											student.user = {
 												name: {
-													first: 'Ještě',
-													last: 'neznámý'
+													first: 'Neznámý',
+													last: 'uživatel'
 												},
-												photo: '/images/users/_unknown.png'
+												photo: '/images/users/_unknown.png',
+												link: '#'
 											}
+										} else {
+											student.user.link = '/admin/users/detail/' + student.user._id + '/'
 										}
 										$('<a>', {
-											href: `${student.user._id === undefined ? '#' : ''}/admin/users/detail/${student.user._id}`,
+											href: student.user.link,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${student.user.name.first} ${student.user.name.middle !== undefined ? `${student.user.name.middle} ` : ''}${student.user.name.last}`,
@@ -150,11 +153,14 @@
 													first: 'Ještě',
 													last: 'neznámý'
 												},
-												photo: '/images/users/_unknown.png'
+												photo: '/images/users/_unknown.png',
+												link: '#'
 											}
+										} else {
+											guarantor.user.link = `/admin/users/detail/${guarantor.user._id}/`
 										}
 										$('<a>', {
-											href: `${guarantor.user._id === undefined ? '#' : ''}/admin/users/detail/${guarantor.user._id}`,
+											href: guarantor.user.link,
 											class: 'avatar avatar-sm rounded-circle',
 											'data-toggle': 'tooltip',
 											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,
@@ -166,6 +172,38 @@
 										).appendTo(guarantorsDOMSs)
 									}
 									$(nTd).html(guarantorsDOMSs)
+								}
+							}, {
+								data: 'consultants',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let consultantsDOMSs = $('<div>', { class: 'avatar-group' })
+									for (let i = 0; i < oData.consultants.length; i++) {
+										const consultant = oData.consultants[i]
+										if (consultant.user === undefined || consultant.user === null) {
+											consultant.user = {
+												name: {
+													first: 'Ještě',
+													last: 'neznámý'
+												},
+												photo: '/images/users/_unknown.png',
+												link: '#'
+											}
+										} else {
+											consultant.user.link = `/admin/users/detail/${consultant.user._id}/`
+										}
+										$('<a>', {
+											href: consultant.user.link,
+											class: 'avatar avatar-sm rounded-circle',
+											'data-toggle': 'tooltip',
+											'data-original-title': `${consultant.user.name.first} ${consultant.user.name.middle !== undefined ? `${consultant.user.name.middle} ` : ''}${consultant.user.name.last}`,
+										}).tooltip().append(
+											$('<img>', {
+												alt: 'Garantův avatar',
+												src: consultant.user.photo
+											})
+										).appendTo(consultantsDOMSs)
+									}
+									$(nTd).html(consultantsDOMSs)
 								}
 							}, {
 								data: '_id',

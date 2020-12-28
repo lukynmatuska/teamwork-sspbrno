@@ -1,14 +1,12 @@
 /**
  * Team work database model
  * @author Lukas Matuska (lukynmatuska@gmail.com)
- * @version 1.0
+ * @version 1.1
  */
 
 /**
  * Libs
  */
-// const moment = require('moment');
-
 // library for easy database manipulations
 const mongoose = require('../libs/db')
 
@@ -51,10 +49,9 @@ var teamWorkSchema = new mongoose.Schema({
   consultants: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+      ref: 'User'
     },
-    tasks: String
+    task: String
   }],
   year: {
     type: mongoose.Schema.Types.ObjectId,

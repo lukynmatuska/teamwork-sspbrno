@@ -172,9 +172,9 @@
 					lastname: $('#lastname').val(),
 					email: $('#email').val()
 				})
-				.done(function (data) {
+				.then(function (data) {
 					console.log(data)
-					if (data === 'ok') {
+					if (data.status === 'ok') {
 						$('div#edit-profile-status')
 							.empty()
 							.append(
@@ -196,7 +196,7 @@
 								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
 									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 									$('<strong>').text('Ach ne! '),
-									data
+									data.error
 								)
 							)
 							.show()

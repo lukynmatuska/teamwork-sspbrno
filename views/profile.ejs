@@ -206,7 +206,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <select class="form-control" id="select-specialization"></select>
+                            <label class="text-dark"><%= req.session.user.specialization.name %></label>
                         </div>
                     </div>
                 </div>
@@ -223,46 +223,17 @@
 <%- include('./partials/scripts-file-end') %>
 <script src="/js/select2.min.js"></script>
 <script>
-    function isGivenSpecializationMine(specializationId) {
-			<% if (req.session.user.specialization === undefined) { %>
-			return false
-                <% } else { %>
-            return (specializationId == '<%= req.session.user.specialization._id %>')
-                <% } %>
-    }
-
-    function getSpecializationParameters(specialization) {
-        let parameters = { value: specialization._id }
-        if (isGivenSpecializationMine(specialization._id)) {
-            parameters.selected = 'selected'
-        }
-        return parameters
-    }
-    $(document).ready(function () {
-        API.specialization.list().done(function (specializations) {
-            specializations.forEach(specialization => {
-                $('#select-specialization').append(
-                    $('<option>', getSpecializationParameters(specialization)).text(specialization.name)
-                )
-            })
-            $('#select-specialization').select2({
-                minimumResultsForSearch: -1
-            })
-        })
-    })
-
     $('#edit-profile').click(function () {
         API.user
             .edit({
                 firstname: $('#firstname').val(),
                 middlename: $('#middlename').val(),
                 lastname: $('#lastname').val(),
-                email: $('#email').val(),
-                specialization: $('#select-specialization').val()
+                email: $('#email').val()
             })
-            .done(function (data) {
+            .then(function (data) {
                 console.log(data)
-                if (data === 'ok') {
+                if (data.status === 'ok') {
                     $('div#edit-profile-status')
                         .empty()
                         .append(
@@ -284,7 +255,7 @@
                             $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                 $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                 $('<strong>').text('Ach ne! '),
-                                data
+                                data.error
                             )
                         )
                         .show()

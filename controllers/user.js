@@ -19,91 +19,171 @@ const randomstring = require("randomstring")
 const User = require('../models/User')
 const Specialization = require('../models/Specialization')
 
+function createNewUserInMongoDB(req, res, userType) {
+  new User({
+    name: {
+      first: (req.body.firstname !== undefined ? req.body.firstname.trim() : undefined),
+      middle: (req.body.middlename !== undefined ? req.body.middlename.trim() : undefined),
+      last: (req.body.lastname !== undefined ? req.body.lastname.trim() : undefined)
+    },
+    specialization: req.body.specialization,
+    password: bcrypt.hashSync(req.body.password, 15),
+    email: req.body.email,
+    type: userType
+  }).save((err, user) => {
+    if (err) {
+      console.error(err)
+      return res
+        .status(500)
+        .json({
+          status: 'error',
+          error: 'err-mongo-save-user'
+        })
+    }
+
+    // Send email
+    const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
+    const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
+    const message = {
+      from: global.CONFIG.nodemailer.sender,
+      to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
+      subject: 'Váš nový účet 👤🔑',
+      text
+    }
+
+    transporter.sendMail(message, (err, info, response) => {
+      if (err) {
+        console.error(err.message)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'err-sending-email'
+          })
+      }
+      if (req.session.user === undefined) {
+        req.session.user = user
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
+    })
+  })
+}
+
 module.exports.new = (req, res) => {
-  let usertype
+  let userType
   if (req.body.password === undefined) {
-    return res.send('not-send-password')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-password'
+      })
   } else if (req.body.email === undefined) {
-    return res.send('not-send-email')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-email'
+      })
   } else if (req.body.specialization === undefined) {
-    return res.send('not-send-user-specialization')
+    if (!(req.session.user === undefined ? false : (req.session.user.type === 'admin'))) {
+      return res
+        .status(422)
+        .json({
+          status: 'error',
+          error: 'not-send-user-specialization'
+        })
+    }
   } else if (req.body.usertype === undefined) {
-    usertype = 'student'
+    userType = 'student'
   } else if (req.body.usertype !== undefined && (req.session.user !== undefined ? (req.session.user.type === 'admin') : false)) {
-    usertype = req.body.usertype
+    userType = req.body.usertype
   }
-  const email = req.body.email.trim().toLowerCase()
+  req.body.email = req.body.email.trim().toLowerCase()
 
   User.countDocuments({
     type: 'admin'
   }, (err, countOfUsers) => {
     if (err) {
-      res.send('err-mongo-count-documents')
-      return console.error(err)
+      console.error(err)
+      return res
+        .status(500)
+        .json({
+          status: 'error',
+          error: 'err-mongo-count-documents'
+        })
     }
     // First user in MongoDB will be the Admin
     if (countOfUsers === 0) {
-      usertype = 'admin'
+      userType = 'admin'
     }
 
     User.findOne({
-      email
+      email: req.body.email
     })
       .exec((err, user) => {
         if (err) {
           return console.error(err)
         }
 
-        if (user && user.email === email) {
+        if (user && user.email === req.body.email) {
           // user with that email exists
-          return res.send('email-exist')
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: 'email-exist'
+            })
         }
 
-        // Create new user
-        new User({
-          name: {
-            first: (req.body.firstname !== undefined ? req.body.firstname.trim() : undefined),
-            middle: (req.body.middlename !== undefined ? req.body.middlename.trim() : undefined),
-            last: (req.body.lastname !== undefined ? req.body.lastname.trim() : undefined)
-          },
-          specialization: req.body.specialization,
-          password: bcrypt.hashSync(req.body.password, 15),
-          email,
-          type: usertype
-        }).save((err, user) => {
-          if (err) {
-            res.send('err-mongo-save-user')
-            return console.error(err)
-          }
-
-          // Send email
-          const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-          const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
-          const message = {
-            from: global.CONFIG.nodemailer.sender,
-            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
-            subject: 'Váš nový účet 👤🔑',
-            text
-          }
-
-          transporter.sendMail(message, (err, info, response) => {
+        if (req.body.specialization === '') {
+          User.countDocuments({}, (err, count) => {
             if (err) {
-              res.send('err-sending-email')
-              return console.error('Error occurred. ' + err.message)
+              console.error(err)
+              return res
+                .status(500)
+                .json({
+                  status: 'error',
+                  error: 'err-mongo-count-documents'
+                })
+            } else if (count === 0) {
+              return res
+                .status(422)
+                .json({
+                  status: 'error',
+                  error: 'bad-specialization-id'
+                })
+            } else {
+              req.body.specialization = undefined
+              return createNewUserInMongoDB(req, res, userType)
             }
-            if (req.session.user === undefined) {
-              req.session.user = user
-            }
-            return res.send('ok')
           })
-        })
+        } else {
+          return createNewUserInMongoDB(req, res, userType)
+        }
       })
   })
 }
 
 module.exports.login = (req, res) => {
   if (req.body.password === undefined) {
-    res.send('not-send-password')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-password'
+      })
+  } else if (req.body.email === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-email'
+      })
   }
   User
     .findOne({
@@ -113,20 +193,44 @@ module.exports.login = (req, res) => {
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
-        res.send('err-mongo-finding-user')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'err-mongo-finding-user'
+          })
       } else if (user === null) {
-        return res.send('wrong-email')
+        return res
+          .status(422)
+          .json({
+            status: 'error',
+            error: 'wrong-email'
+          })
       } else {
         bcrypt.compare(req.body.password, user.password, (err, same) => {
           if (err) {
-            res.send('err-bcrypt-compare')
-            return console.error(err)
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: 'err-bcrypt-compare'
+              })
           } else if (!same) {
-            return res.send('wrong-password')
+            return res
+              .status(422)
+              .json({
+                status: 'error',
+                error: 'wrong-password'
+              })
           } else {
             req.session.user = user
-            return res.status(200).send('ok')
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
           }
         })
       }
@@ -170,7 +274,7 @@ module.exports.edit = (req, res) => {
 
     if (req.body.type !== undefined) {
       update.type = req.body.type
-      if (['admin', 'guarantor'].includes(update.type)) {
+      if (['admin'].includes(update.type)) {
         update.specialization = undefined
       }
     }
@@ -186,12 +290,21 @@ module.exports.edit = (req, res) => {
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-error'
+          })
       } else if (id === req.session.user._id) {
         req.session.user = user
       }
-      res.send('ok')
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
 
@@ -289,10 +402,10 @@ module.exports.setNewPassword = (req, res) => {
               error: 'mongo-err'
             })
         }
-        
+
         if (!user.rescue || req.session.user != undefined) {
           if (req.session.user.type === 'admin' || req.session.user._id === user._id) {
-        
+
           } else {
             return res.status(403).send('403')
           }
@@ -350,8 +463,13 @@ module.exports.updateSession = (req, res) => {
     .populate('years.year')
     .exec((err, user) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-error'
+          })
       }
       // Sort years by name
       user.years.sort((a, b) => {
@@ -364,26 +482,54 @@ module.exports.updateSession = (req, res) => {
         return 0
       })
       req.session.user = user
-      res.status(200).send('ok')
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
 
 module.exports.changeType = (req, res) => {
   if (req.body.id === undefined) {
-    return res.send('not-send-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   } else if (req.body.type === undefined) {
-    return res.send('not-send-type')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-type'
+      })
   } else if (!User.schema.path('type').enumValues.includes(req.body.type)) {
-    return res.send('invalid-type')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'invalid-type'
+      })
   }
   User
     .findByIdAndUpdate(req.body.id, { type: req.body.type })
     .exec((err) => {
       if (err) {
-        res.send(err)
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-error'
+          })
       }
-      res.status(200).send('ok')
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
 
@@ -402,16 +548,28 @@ module.exports.list = (req, res) => {
     })
     .exec((err, users) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
       }
-      res.status(200).json(users)
+      return res
+        .status(200)
+        .json(users)
     })
 }
 
 module.exports.delete = (req, res) => {
   if (req.body.id === undefined) {
-    return res.send('not-send-id')
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
   }
   User
     .deleteOne({
@@ -419,10 +577,19 @@ module.exports.delete = (req, res) => {
     })
     .exec((err) => {
       if (err) {
-        res.send(err)
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
       }
-      res.send('ok')
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
 
@@ -488,11 +655,12 @@ module.exports.parseXlsx = (req, res) => {
           }
         }
 
-        res.json({
-          status: 'ok',
-          error: null,
-          users: students
-        })
+        return res
+          .status(200)
+          .json({
+            status: 'ok',
+            users: students
+          })
       })
   }
 }
@@ -584,14 +752,20 @@ module.exports.import = async (req, res) => {
             })
           } catch (err) {
             console.error(err)
-            return res.status(400).json({
-              status: 'error',
-              error: err.errmsg,
-              student: student
-            })
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err.errmsg,
+                student: student
+              })
           }
         }
-        return res.json({ status: 'ok', error: null })
+        return res
+          .status(200)
+          .json({
+            status: 'ok'
+          })
       })
   }
 }

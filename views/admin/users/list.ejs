@@ -61,8 +61,7 @@
 							id,
 						},
 						success: function (response) {
-							console.log(response);
-							switch (response) {
+							switch (response.status) {
 								case 'ok':
 									swal({
 										title: 'Uživatel(ka) je smazán(a)!',
@@ -75,9 +74,10 @@
 									break
 
 								default:
+									console.error(response)
 									swal({
 										title: 'Něco se pokazilo!',
-										text: response,
+										text: response.error,
 										icon: 'error'
 									})
 									break
@@ -91,7 +91,7 @@
 		$(document).ready(function () {
 			API.user
 				.list()
-				.done((dataFromServer) => {
+				.then((dataFromServer) => {
 					$('table#users').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'
@@ -152,13 +152,13 @@
 									$(nTd).html('')
 									for (let i = 0; i < oData.years.length; i++) {
 										let badgeColor = 'default'
-										console.log(oData.years[i])
+										// console.log(oData.years[i])
 										if (oData.years[i].permissions.includes('edit')) {
 											badgeColor = 'primary'
 										} else if (oData.years[i].permissions.includes('read')) {
 											badgeColor = 'info'
 										}
-										$('<a>', { href: '/admin/years/detail/' + oData.years[i].year._id, class: ('badge badge-pill badge-' + badgeColor) })
+										$('<a>', { href: '/admin/years/edit/' + oData.years[i].year._id, class: ('badge badge-pill badge-' + badgeColor) })
 											.text(oData.years[i].year.name)
 											.appendTo($(nTd))
 									}

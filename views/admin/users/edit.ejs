@@ -263,7 +263,7 @@
 			let $selectUsersYear = $(`select#user-year-${i}`).select2()
 			$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
 			$selectUsersYear.prop("disabled", true);
-			API.year.list().done((listOfYears) => {
+			API.year.list().then((listOfYears) => {
 				$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
 				listOfYears.forEach((year) => {
 					$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
@@ -300,10 +300,10 @@
 					specialization: $('#specialization').val(),
 					years: getYearsForRequest()
 				})
-				.done(function (data) {
+				.then(function (data) {
 					console.log(data)
 					let $status = $('div#edit-user-status')
-					if (data === 'ok') {
+					if (data.status === 'ok') {
 						$status
 							.empty()
 							.append(
@@ -325,7 +325,7 @@
 								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
 									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 									$('<strong>').text('Ach ne! '),
-									data
+									data.error
 								)
 							)
 							.show()
@@ -407,8 +407,7 @@
 		}
 
 		$(document).ready(function () {
-			API.specialization.list().done(function (specializations) {
-				// console.log(specializations)
+			API.specialization.list().then(function (specializations) {
 				specializations.forEach(specialization => {
 					$('select#specialization').append(
 						$('<option>', getSpecializationParameters(specialization)).text(specialization.name)

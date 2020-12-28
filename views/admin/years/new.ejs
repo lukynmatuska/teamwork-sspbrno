@@ -102,8 +102,8 @@
 						$('#name').val(),
 						$('#description').val(),
 						$('#year-status').val()
-					).done(function (responseFromServer) {
-						if (responseFromServer === 'ok') {
+					).then(function (responseFromServer) {
+						if (responseFromServer.status === 'ok') {
 							$status
 								.empty()
 								.append(
@@ -126,7 +126,7 @@
 									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
 										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 										$('<strong>').text('Ach ne! '),
-										responseFromServer
+										responseFromServer.error
 									)
 								)
 								.show()

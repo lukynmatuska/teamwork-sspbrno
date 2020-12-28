@@ -52,20 +52,18 @@
 				if (confirm) {
 					API.specialization
 						.delete(id)
-						.done(function (response) {
-							console.log(response);
-							switch (response) {
-								case 'ok':
-									swal({
-										title: 'Zaměření je smazáno!',
-										text: 'Už ji nikdy neuvidíme.',
-										icon: 'success',
-										timer: 5000
-									}).then((value) => {
-										location.reload()
-									})
-									break
-
+						.then(function (response) {
+							if (response.status === 'ok') {
+								return swal({
+									title: 'Zaměření je smazáno!',
+									text: 'Už ji nikdy neuvidíme.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
 								case 'not-sent-id':
 									swal({
 										title: 'Zaměření se nesmazalo!',
@@ -75,6 +73,7 @@
 									break
 
 								default:
+									console.error(response)
 									swal({
 										title: 'Něco se pokazilo!',
 										text: response,
@@ -94,7 +93,7 @@
 						year: '<%= req.session.year._id %>'
 					}
 				)
-				.done((responseFromServer) => {
+				.then((responseFromServer) => {
 					$('table#specializations').DataTable({
 						language: {
 							url: '/js/dataTables/myCzech.json'

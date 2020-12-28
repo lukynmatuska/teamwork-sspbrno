@@ -95,8 +95,8 @@ router.get('/years/edit/:id', adminPageController.years.edit)
  * Error pages (for testing)
  */
 router.get('/403', adminPageController.error.accessDenied)
-router.get('/404', adminPageController.error.notFound)
+router.get('/404', (req, res) => { adminPageController.error.notFound(req, res)})
 router.get('/500', adminPageController.error.internalError)
-router.get('*', adminPageController.error.notFound)
+router.get('*', (req, res) => { adminPageController.error.notFound(req, res)})
 
 module.exports = router

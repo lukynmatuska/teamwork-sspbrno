@@ -167,7 +167,7 @@ module.exports.specializations = {
             'Hledáte zaměření, které se tu nenachází, přeji Vám příjmenou hru na schovávanou.'
           )
         }
-        res.render('admin/specializations/edit', { req, res, active: 'years', title: 'Editace zaměření', specialization })
+        res.render('admin/specializations/edit', { req, res, active: 'specializations', title: 'Editace zaměření', specialization })
       })
   }
 }
