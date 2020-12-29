@@ -30,47 +30,44 @@ function createNewUserInMongoDB(req, res, userType) {
     password: bcrypt.hashSync(req.body.password, 15),
     email: req.body.email,
     type: userType
-  }).save((err, user) => {
-    if (err) {
-      console.error(err)
-      return res
-        .status(500)
-        .json({
-          status: 'error',
-          error: 'err-mongo-save-user'
-        })
-    }
-
-    // Send email
-    const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-    const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
-    const message = {
-      from: global.CONFIG.nodemailer.sender,
-      to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
-      subject: 'Váš nový účet 👤🔑',
-      text
-    }
-
-    transporter.sendMail(message, (err, info, response) => {
-      if (err) {
-        console.error(err.message)
-        return res
-          .status(500)
-          .json({
-            status: 'error',
-            error: 'err-sending-email'
-          })
-      }
-      if (req.session.user === undefined) {
-        req.session.user = user
-      }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
-        })
-    })
   })
+    .save()
+    .then(u => u
+      .populate('specialization')
+      .populate('years.year')
+      .execPopulate()
+    )
+    .then(user => {
+      // Send email
+      const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
+      const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
+      const message = {
+        from: global.CONFIG.nodemailer.sender,
+        to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
+        subject: 'Váš nový účet 👤🔑',
+        text
+      }
+
+      transporter.sendMail(message, (err, info, response) => {
+        if (err) {
+          console.error(err.message)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: 'err-sending-email'
+            })
+        }
+        if (req.session.user === undefined) {
+          req.session.user = user
+        }
+        return res
+          .status(200)
+          .json({
+            status: 'ok'
+          })
+      })
+    })
 }
 
 module.exports.new = (req, res) => {

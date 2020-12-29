@@ -119,16 +119,15 @@ module.exports.setYearForUser = (req, res, next) => {
                 email: 'admin@admin.net',
                 type: 'admin',
                 password: bcrypt.hashSync('purkynkaIsHappy', 15)
-              }).save((err, user) => {
-                if (err) {
-                  console.error(err)
-                  return res
-                    .status(500)
-                    .json({
-                      status: 'error',
-                      error: err
-                    })                  
-                }
+              })
+              .save()
+              .then(u => u
+                .populate('specialization')
+                .populate('years.year')
+                .execPopulate()
+              )
+              .then(user => {
+                console.log('The first user was successfully created!')
                 req.session.user = user
                 return next()
               })
