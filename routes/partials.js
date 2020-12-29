@@ -17,6 +17,7 @@ const moment = require('moment')
 moment.locale('cs')
 const osloveni = require('../libs/osloveni')
 const mongoose = require('../libs/db')
+const bcrypt = require('bcrypt')
 
 /**
  * Controllers
@@ -45,6 +46,7 @@ module.exports.hasUserGivenYear = (user, year) => {
 
 module.exports.setYearForUser = (req, res, next) => {
   const Year = require('../models/Year')
+  const User = require('../models/User')
   let yearFilter
 
   if (req.session.user !== undefined && req.session.year !== undefined) {
@@ -78,8 +80,13 @@ module.exports.setYearForUser = (req, res, next) => {
       } else if (year === null) {
         Year.countDocuments((err, count) => {
           if (err) {
-            res.send('err')
-            return console.error(err)
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: 'mongo-err'
+              })
           }
           if (count === 0) {
             new Year({
@@ -89,21 +96,61 @@ module.exports.setYearForUser = (req, res, next) => {
               created: moment()
             }).save((err, year) => {
               if (err) {
-                res.send('err')
-                return console.error(err)
+                console.error(err)
+                return res
+                  .status(500)
+                  .json({
+                    status: 'error',
+                    error: 'mongo-err'
+                  })
               }
               console.log('The first year was successfully created!')
               req.session.year = year
-              next()
+              new User({
+                name: {
+                  first: 'First',
+                  middle: 'user',
+                  last: 'Administrator'
+                },
+                years: [{
+                  year: year._id,
+                  permissions: 'edit'
+                }],
+                email: 'admin@admin.net',
+                type: 'admin',
+                password: bcrypt.hashSync('purkynkaIsHappy', 15)
+              }).save((err, user) => {
+                if (err) {
+                  console.error(err)
+                  return res
+                    .status(500)
+                    .json({
+                      status: 'error',
+                      error: err
+                    })                  
+                }
+                req.session.user = user
+                return next()
+              })
             })
           } else {
             console.error('Year not found')
-            res.send('year-not-found')
+            return res
+              .status(404)
+              .json({
+                status: 'error',
+                error: 'year-not-found'
+              })
           }
         })
       } else {
         console.error(`Error while setting year!\n${err}`)
-        res.send('err-set-year')
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'err-set-year'
+          })
       }
     })
 }
@@ -112,9 +159,14 @@ router.all('*', this.setYearForUser)
 module.exports.onlyLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
     if (req.originalUrl.includes('api')) {
-      res.send('please-login')
+      return res
+        .status(403)
+        .json({
+          status: 'error',
+          error: 'please-login'
+        })
     } else {
-      res.redirect('/login')
+      return res.redirect('/login')
     }
   } else {
     next()
@@ -125,37 +177,72 @@ module.exports.onlyNonLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
     next()
   } else {
-    res.status(200).send('only-for-non-logged-in')
+    return res
+      .status(200)
+      .json({
+        status: 'error',
+        error: 'only-for-non-logged-in'
+      })
   }
 }
 
 module.exports.onlyGuarantor = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor'
+      })
   } else if (req.session.user.type === 'guarantor') {
-    next()
+    return next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor'
+      })
   }
 }
 
 module.exports.onlyGuarantorAndAdmin = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor-or-admin'
+      })
   } else if (req.session.user.type === 'guarantor' || req.session.user.type === 'admin') {
-    next()
+    return next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor-or-admin'
+      })
   }
 }
 
 module.exports.onlyAdmin = (req, res, next) => {
   if (req.session.user === undefined) {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-admin'
+      })
   } else if (req.session.user.type === 'admin') {
     next()
   } else {
-    res.status(403).send('403')
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-admin'
+      })
   }
 }
 
