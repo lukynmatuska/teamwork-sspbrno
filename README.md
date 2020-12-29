@@ -28,6 +28,10 @@ Edit settings in your `config.js` or in ENV variables (see `app.js`)
 ### Windows
 Not supported, but you can try it...
 
+## Default user
+- Email: ```admin@admin.net```
+- Password: ```purkynkaIsHappy```
+
 ## Description of file structure
 .  
 ├── app.js (Entry point of app)  
