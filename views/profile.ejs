@@ -170,9 +170,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <button type="button" id="edit-profile" class="btn btn-dark">Upravit profil</button>
+                        <button type="button" id="edit-profile" class="btn btn-dark m-auto">Upravit profil</button>
+                        <div class="form-group mx-auto mt-4" id="edit-profile-status" style="display: none;"></div>
                     </div>
-                    <div class="form-group" id="edit-profile-status" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -206,6 +206,17 @@
                     setTimeout(function () {
                         window.location.href = window.location.href;
                     }, 3500)
+                } else if (data.error === 'email-exists') {
+                    $('div#edit-profile-status')
+                        .empty()
+                        .append(
+                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                $('<strong>').text('Ouha! '),
+                                'Tento email už používá někdo před tebou.'
+                            )
+                        )
+                        .show()
                 } else {
                     $('div#edit-profile-status')
                         .empty()
