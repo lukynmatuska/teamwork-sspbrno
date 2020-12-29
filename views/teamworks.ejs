@@ -88,11 +88,11 @@
     function isGivenSpecializationMine(specializationId) {
         <% if (req.session.user === undefined) { %>
             return false
-        <% } else if (req.session.user.specialization === undefined) { %>
+                <% } else if (req.session.user.specialization === undefined) { %>
 			return false
-        <% } else { %>
+                        <% } else { %>
             return (specializationId == '<%= req.session.user.specialization._id %>')
-        <% } %>
+                <% } %>
     }
 
     $(document).ready(function () {
@@ -132,7 +132,7 @@
                                         $('<strong>', { class: 'text-dark' }).text(`${teamworks[i].students[ii].position.name}: `),
                                         $('<span>', { class: 'text-dark' }).text(teamworks[i].students[ii].task),
                                         $('<span>', { class: 'text-secondary' }).text(' - '),
-                                        (user === undefined ?
+                                        (user === undefined || user === null ?
                                             (hasStudentBeenAsignedToTeamWork ? (
                                                 $('<span>', { class: 'text-success' }).text(` Volná pozice`)
                                             ) : (
@@ -173,6 +173,19 @@
                                 )
                             }
 
+                            let consultantsDOMs = $('<ul>', { class: 'list-group list-group-flush' })
+                            for (let ii = 0; ii < teamworks[i].consultants.length; ii++) {
+                                let name = teamworks[i].consultants[ii].user.name
+                                consultantsDOMs.append(
+                                    $('<li>', { class: 'list-group-item' }).append(
+                                        $('<strong>', { class: 'text-dark' }).text(
+                                            `${name.first} ${name.middle === undefined ? ' ' : ` ${name.middle} `} ${name.last}: `
+                                        ),
+                                        $('<span>', { class: 'text-secondary' }).text(teamworks[i].consultants[ii].task)
+                                    )
+                                )
+                            }
+
                             $('div#teamworks').append(
                                 $('<div>', { class: 'row mb-4' }).append(
                                     $('<div>', { class: 'col' }).append(
@@ -184,7 +197,9 @@
                                             $('<h4>', { class: 'card-title text-dark' }).text('Pozice'),
                                             studentsDOMs,
                                             $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
-                                            guarantorsDOMs
+                                            guarantorsDOMs,
+                                            $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti'),
+                                            consultantsDOMs
                                         )
                                     )
                                 )
