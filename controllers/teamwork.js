@@ -352,7 +352,7 @@ module.exports.select = (req, res) => {
           }
           return res
             .status(200)
-            .josn({
+            .json({
               status: 'ok'
             })
         })
