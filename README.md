@@ -1,30 +1,29 @@
 # Team work at SSPBRNO
-NodeJS webapp for administration of Team works at SSPBRNO
+Node.js webapp for administration of Team works at [SSPBRNO](https://sspbrno.cz)
 
 ## Instalation on-premise
+### Docker
+```docker run -d --network host --restart=always --env COOKIE_MAX_AGE=86400000 --env PORT=3000 --env PROTOCOL=http --env URL="teamwork.local" --env REDIS_URL="redis://localhost:6379" --env SESSION_SECRET="randomString" --env SMTP_HOST="mail.local" --env SMTP_PASS="strongPass" --env SMTP_PORT="465" --env SMTP_SECURE=true --env SMTP_USER="teamworks@mail.local" --env MONGODB_PORT=27017 --env MONGODB_HOST="localhost" --env MONGODB_NAME="teamworks" --env MONGODB_USER="teamworks" --env MONGODB_PASS="strongPass" --env MONGODB_OPTIONS="" index.dockerlukynmatuska/sspbrnoprojectsweb:master```
+
 ### Linux
 #### Debian based
-##### Install system utilites
-- ```curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -```
-- ```sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4```
-- ```echo "deb http://repo.mongodb.org/apt/debian "$(lsb_release -sc)"/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb.list```
-- ```sudo apt install node npm mongodb-org redis-server -y```  
-https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-debian-9
-##### Start Mongo DB on startup & now
-- ```sudo systemctl enable mongod.service --now```
-##### Install packages for NodeJS
-- ```npm i```
+##### Install packages
+- [MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/)
+- [Redis](https://redis.io/download)
+- [Node.js](https://nodejs.org/en/download/package-manager/)
 ##### Clone the repo
-Clone with SSH
-- ```git clone git@gitlab.com:matuska.lukas/teamworkadmin.git```
-Clone with HTTPS
-- ```https://gitlab.com/matuska.lukas/teamworkadmin.git```
+###### Clone with SSH
+- ```git clone git@gitlab.com:matuska.lukas/teamwork-sspbrno.git```
+###### Clone with HTTPS
+- ```https://gitlab.com/matuska.lukas/teamwork-sspbrno.git```
+##### Install packages for NodeJS
+- ```cd teamwork-sspbrno && npm i```
 ##### Config MongoDB
 ##### Create database and user
 - ```use teamwork; db.createUser({user: 'teamwork', pwd: 'veryStrongPassword', roles: [{role: 'readWrite', db: 'teamwork'}]});```
-##### Get ready config file:
+##### Prepare config file:
 - ```cp config.sample.js config.js```  
-Edit settings of your MongoDB database and user in your `config.js`
+Edit settings in your `config.js` or in ENV variables (see `app.js`)
 
 ### Windows
 Not supported, but you can try it...
