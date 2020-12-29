@@ -206,7 +206,13 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="text-dark"><%= req.session.user.specialization.name %></label>
+                            <label class="text-dark">
+                                <% if (req.session.user.specialization !== null || req.session.user.specialization !== undefined) { %>
+                                <%= req.session.user.specialization.name %>
+                                <% } else { %>
+                                    Žádná
+                                <% } %>
+                            </label>
                         </div>
                     </div>
                 </div>
