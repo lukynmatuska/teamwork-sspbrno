@@ -308,6 +308,14 @@ module.exports.edit = (req, res) => {
     .exec((err, user) => {
       if (err) {
         console.error(err)
+        if (err.code == 11000) {
+          return res
+            .status(422)
+            .json({
+              status: 'error',
+              error: 'email-exists'
+            })
+        }
         return res
           .status(500)
           .json({
@@ -371,7 +379,7 @@ module.exports.enableRescue = (req, res) => {
         } else {
           // Send email
           const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-          const text = `Dobrý den ${osloveni(user.name.first)},\n\njelikož máte účet v týmových pracích a požádal jste o změnu hesla, zde je možnost: ${global.CONFIG.publicUrl}/forgot-password/${user._id}/\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
+          const text = `Dobrý den ${osloveni(user.name.first)},\n\njelikož máte účet v týmových pracích a požádal jste o změnu hesla, zde je možnost: ${global.CONFIG.url}/forgot-password/${user._id}/\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
           const message = {
             from: global.CONFIG.nodemailer.sender,
             to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
