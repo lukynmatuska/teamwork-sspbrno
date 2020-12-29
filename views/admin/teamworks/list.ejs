@@ -69,7 +69,57 @@
 								case 'not-sent-id':
 									swal({
 										title: 'Týmová práce se nesmazala!',
-										text: 'Nastala chyba, protože jste(a) neposlal na server ID týmové práce, kterou chcete smazat.',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete smazat.',
+										icon: 'error'
+									})
+									break
+
+								default:
+									console.error(response)
+									swal({
+										title: 'Něco se pokazilo!',
+										text: response.error,
+										icon: 'error'
+									})
+									break
+							}
+						}
+						)
+				}
+			})
+		}
+
+		function copyTeamWorkById(id) {
+			swal({
+				title: 'Opravdu chcete duplikovat tuto týmovou práci?',
+				text: 'Radši si to dvakrát rozmyslete.',
+				icon: 'warning',
+				timer: 5000,
+				dangerMode: true,
+				buttons: {
+					cancel: "Byl to omyl",
+					confirm: 'Duplikovat!',
+				},
+			}).then((confirm) => {
+				if (confirm) {
+					API.teamwork
+						.copy(id)
+						.then(function (response) {
+							if (response.status === 'ok') {
+							 	return swal({
+									title: 'Týmová práce byla zduplikována!',
+									text: 'Nyní ji uvidíme dvakrát.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
+								case 'not-sent-id':
+									swal({
+										title: 'Týmová práce se nezduplikovala!',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete duplikovat.',
 										icon: 'error'
 									})
 									break
@@ -210,6 +260,12 @@
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									$(nTd).html(
 										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$('<button>', {
+												onclick: `copyTeamWorkById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-copy text-gray" }),
+											),
 											$("<a>", { href: `/admin/teamworks/edit/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
 												$("<i>", { class: "fas fa-pen text-primary" }),
 											),

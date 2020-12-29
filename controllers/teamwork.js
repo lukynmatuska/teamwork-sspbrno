@@ -178,6 +178,60 @@ module.exports.delete = (req, res) => {
     })
 }
 
+module.exports.copy = (req, res) => {
+  if (req.body.id === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  TeamWork
+    .findById(req.body.id)
+    .exec((err, teamWork) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      teamWork = teamWork.toObject()
+      for (let i = 0; i < teamWork.students.length; i++) {
+        delete teamWork.students[i]._id
+        delete teamWork.students[i].user
+      }
+      for (let i = 0; i < teamWork.guarantors.length; i++) {
+        delete teamWork.guarantors[i]._id
+      }
+      for (let i = 0; i < teamWork.consultants.length; i++) {
+        delete teamWork.consultants[i]._id
+      }
+      teamWork._id = mongoose.Types.ObjectId()
+      teamWork = new TeamWork(teamWork)
+      teamWork.isNew = true
+      teamWork.save((err) => {
+        if (err) {
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err
+            })
+        }
+        return res
+          .status(200)
+          .json({
+            status: 'ok'
+          })
+      })
+    })
+}
+
 module.exports.list = (req, res) => {
   let filter = { year: req.session.year._id }
   if (req.query.filter !== undefined) {

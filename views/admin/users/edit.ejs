@@ -238,44 +238,44 @@
 	<%- include('../partials/scripts-file-end') %>
 	<%- include('../partials/select2') %>
 	<script>
+		function addYearRow(i = $('div#user-years .row').length, motherDOM = $('div#user-years')) {
+			$('<div>', { class: 'row' }).append(
+				$('<div>', { class: 'col-md-6 col-sm-12' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `user-year-${i}` }).text('Ročník'),
+						$('<select>', { class: 'form-control', id: `user-year-${i}`, required: 'required' })
+					)
+				),
+				$('<div>', { class: 'col-md-5 col-sm-12' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `user-year-permissions-${i}` }).text('Práva'),
+						$('<select>', { class: 'form-control', id: `user-year-permissions-${i}`, required: 'required' }).append(
+							$('<option>', { value: 'read' }).text('Čtení'),
+							$('<option>', { value: 'edit' }).text('Editace'),
+						)
+					)
+				),
+				$('<div>', { class: 'col-1 m-auto' }).append(
+					$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+				)
+			).appendTo(motherDOM)
+			$(`select#user-year-permissions-${i}`).select2()
+			let $selectUsersYear = $(`select#user-year-${i}`).select2()
+			$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
+			$selectUsersYear.prop("disabled", true);
+			API.year.list().then((listOfYears) => {
+				$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
+				listOfYears.forEach((year) => {
+					$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
+				})
+				$selectUsersYear.prop("disabled", false);
+			})
+		}
+
 		$(document).ready(function () {
 			let specialization
 			const $specializationSelect = $('select#specialization')
 			const $userTypeSelect = $('select#user-type')
-
-			function addYearRow(i = $('div#user-years .row').length, motherDOM = $('div#user-years')) {
-				$('<div>', { class: 'row' }).append(
-					$('<div>', { class: 'col-md-6 col-sm-12' }).append(
-						$('<div>', { class: 'form-group' }).append(
-							$('<label>', { class: 'form-control-label', for: `user-year-${i}` }).text('Ročník'),
-							$('<select>', { class: 'form-control', id: `user-year-${i}`, required: 'required' })
-						)
-					),
-					$('<div>', { class: 'col-md-5 col-sm-12' }).append(
-						$('<div>', { class: 'form-group' }).append(
-							$('<label>', { class: 'form-control-label', for: `user-year-permissions-${i}` }).text('Práva'),
-							$('<select>', { class: 'form-control', id: `user-year-permissions-${i}`, required: 'required' }).append(
-								$('<option>', { value: 'read' }).text('Čtení'),
-								$('<option>', { value: 'edit' }).text('Editace'),
-							)
-						)
-					),
-					$('<div>', { class: 'col-1 m-auto' }).append(
-						$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-					)
-				).appendTo(motherDOM)
-				$(`select#user-year-permissions-${i}`).select2()
-				let $selectUsersYear = $(`select#user-year-${i}`).select2()
-				$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
-				$selectUsersYear.prop("disabled", true);
-				API.year.list().then((listOfYears) => {
-					$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
-					listOfYears.forEach((year) => {
-						$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
-					})
-					$selectUsersYear.prop("disabled", false);
-				})
-			}
 
 			function getYearsForRequest() {
 				let years = []

@@ -324,8 +324,12 @@ var API = {
       return getData('/teamwork/find-by-id/' + id)
     },
 
+    copy: function (id) {
+      return postData('/teamwork/copy', { id })
+    },
+
     delete: function (id) {
-      return postData('/teamwork/delete', { id: id })
+      return postData('/teamwork/delete', { id })
     },
 
     list: function (filter) {

@@ -7,7 +7,7 @@
 			$('<div>', { class: 'col-2' }).append(
 				$('<div>', { class: 'form-group' }).append(
 					$('<label>', { class: 'form-control-label', for: `student-${i}-position` }).text('Zaměření (Pozice)'),
-					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required', value: (student === undefined ? '' : student.position._id) })
+					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required', value: (student == undefined || student == null ? '' : student.position._id) })
 				)
 			),
 			$('<div>', { class: 'col' }).append(
@@ -16,13 +16,13 @@
 					$('<textarea>', {
 						class: 'form-control', id: `student-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o studentově úkolu'
-					}).text(student === undefined ? '' : student.task)
+					}).text(student == undefined || student == null ? '' : student.task)
 				)
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
 					$('<label>', { class: 'form-control-label', for: `student-${i}-user` }).text('Student'),
-					$('<select>', { class: 'form-control', id: `student-${i}-user`, value: (student === undefined ? '' : (student.user === undefined ? '' : student.user._id)) })
+					$('<select>', { class: 'form-control', id: `student-${i}-user`, value: (student == undefined || student == null ? '' : (student.user == undefined || student.user == null ? '' : student.user._id)) })
 				)
 			),
 			$('<div>', { class: 'col-1 m-auto' }).append(
@@ -39,30 +39,30 @@
 			listOfSpecializations.forEach((specialization) => {
 				$selectPosition.append(`<option value="${specialization._id}">${specialization.name}</option>`)
 			})
-			if (student !== undefined) {
-				if (student.position !== undefined) {
-					$selectPosition.val(student.position._id) // Select the option with a value of '1'
-					$selectPosition.trigger('change'); // Notify any JS components that the value changed
+			if (student !== undefined || student != null) {
+				if (student.position !== undefined || student.position != null) {
+					$selectPosition.val(student.position._id)
+					$selectPosition.trigger('change')
 				}
 			}
-			$selectPosition.prop("disabled", false);
-		})
+			$selectPosition.prop("disabled", false)
 
-		let $selectStudent = $(`select#student-${i}-user`).select2()
-		$selectStudent.html(`<option selected="selected" value>Načítání...</option>`)
-		$selectStudent.prop("disabled", true);
-		API.user.list().then((listOfUsers) => {
-			$selectStudent.html(`<option selected="selected" value="">Vyberte uživatele / Žádný uživatel</option>`)
-			listOfUsers.forEach((user) => {
-				$selectStudent.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
-			})
-			if (student !== undefined) {
-				if (student.user !== undefined) {
-					$selectStudent.val(student.user._id) // Select the option with a value of '1'
-					$selectStudent.trigger('change'); // Notify any JS components that the value changed
+			let $selectStudent = $(`select#student-${i}-user`).select2()
+			$selectStudent.html(`<option selected="selected" value>Načítání...</option>`)
+			$selectStudent.prop("disabled", true);
+			API.user.list({ specialization: $selectPosition.val() }).then((listOfUsers) => {
+				$selectStudent.html(`<option selected="selected" value="">Vyberte uživatele / Žádný uživatel</option>`)
+				listOfUsers.forEach((user) => {
+					$selectStudent.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+				})
+				if (student != undefined || student != null) {
+					if (student.user != undefined || student.user != null) {
+						$selectStudent.val(student.user._id)
+						$selectStudent.trigger('change')
+					}
 				}
-			}
-			$selectStudent.prop("disabled", false);
+				$selectStudent.prop("disabled", false);
+			})
 		})
 	}
 
@@ -74,13 +74,13 @@
 					$('<textarea>', {
 						class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o garantově zadaní'
-					}).text(guarantor === undefined ? '' : guarantor.task)
+					}).text(guarantor == undefined || guarantor == null ? '' : guarantor.task)
 				)
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
 					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-user` }).text('Učitel'),
-					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor === undefined ? '' : (guarantor.user === undefined ? '' : guarantor.user._id)) })
+					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor == undefined || guarantor == null ? '' : (guarantor.user == undefined || guarantor.user == null ? '' : guarantor.user._id)) })
 				)
 			),
 			$('<div>', { class: 'col-1 m-auto' }).append(
@@ -90,15 +90,15 @@
 		let $selectGuarantor = $(`select#guarantor-${i}-user`).select2()
 		$selectGuarantor.html(`<option selected="selected" value>Načítání...</option>`)
 		$selectGuarantor.prop("disabled", true);
-		API.user.list().then((listOfUsers) => {
+		API.user.list({ type: 'guarantor' }).then((listOfUsers) => {
 			$selectGuarantor.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
 			listOfUsers.forEach((user) => {
-				$selectGuarantor.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+				$selectGuarantor.append(`<option value="${user._id}">${user.name.first} ${user.name.middle != undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
 			})
-			if (guarantor !== undefined) {
-				if (guarantor.user !== undefined) {
-					$selectGuarantor.val(guarantor.user._id) // Select the option with a value of '1'
-					$selectGuarantor.trigger('change'); // Notify any JS components that the value changed
+			if (guarantor != undefined || guarantor != null) {
+				if (guarantor.user != undefined || guarantor != null) {
+					$selectGuarantor.val(guarantor.user._id)
+					$selectGuarantor.trigger('change')
 				}
 			}
 			$selectGuarantor.prop("disabled", false);
@@ -113,13 +113,13 @@
 					$('<textarea>', {
 						class: 'form-control', id: `consultant-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o zadání konzultanta'
-					}).text(consultant === undefined ? '' : consultant.task)
+					}).text(consultant == undefined || consultant == null ? '' : consultant.task)
 				)
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
 					$('<label>', { class: 'form-control-label', for: `consultant-${i}-user` }).text('Externista'),
-					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant === undefined ? '' : (consultant.user === undefined ? '' : consultant.user._id)) })
+					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant == undefined || consultant == null ? '' : (consultant.user == undefined || consultant.user == null ? '' : consultant.user._id)) })
 				)
 			),
 			$('<div>', { class: 'col-1 m-auto' }).append(
@@ -129,15 +129,15 @@
 		let $selectConsultant = $(`select#consultant-${i}-user`).select2()
 		$selectConsultant.html(`<option selected="selected" value>Načítání...</option>`)
 		$selectConsultant.prop("disabled", true);
-		API.user.list().then((listOfUsers) => {
+		API.user.list({ type: 'consultant' }).then((listOfUsers) => {
 			$selectConsultant.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
 			listOfUsers.forEach((user) => {
 				$selectConsultant.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
 			})
-			if (consultant !== undefined) {
-				if (consultant.user !== undefined) {
-					$selectConsultant.val(consultant.user._id) // Select the option with a value of '1'
-					$selectConsultant.trigger('change'); // Notify any JS components that the value changed
+			if (consultant != undefined || consultant != null) {
+				if (consultant.user != undefined || consultant.user != null) {
+					$selectConsultant.val(consultant.user._id)
+					$selectConsultant.trigger('change')
 				}
 			}
 			$selectConsultant.prop("disabled", false);
