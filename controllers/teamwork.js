@@ -179,8 +179,9 @@ module.exports.delete = (req, res) => {
 }
 
 module.exports.list = (req, res) => {
-  let filter = {}
+  let filter = { year: req.session.year._id }
   if (req.query.filter !== undefined) {
+    req.query.filter = JSON.parse(req.query.filter)
     if (typeof req.query.filter === 'object') {
       filter = req.query.filter
     } else {

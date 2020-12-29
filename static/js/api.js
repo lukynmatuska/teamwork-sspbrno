@@ -17,8 +17,14 @@ async function postData(url = '', data = {}) {
   return response.json() // parses JSON response into native JavaScript objects
 }
 
-async function getData(url = '', data = {}) {
-  const response = await fetch((API.endpoint + url), {
+async function getData(path = '', data = {}) {
+  const url = new URL(window.location.origin + API.endpoint + path)
+  const keys = Object.keys(data)
+  const values = Object.values(data)
+  for (let i = 0; i < values.length; i++) {
+    url.searchParams.set(keys[i], JSON.stringify(values[i]))
+  }
+  const response = await fetch(url, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -236,10 +242,11 @@ var API = {
     },
 
     list: function (filter) {
-      if (filter === undefined) {
-        filter = {}
+      const data = {}
+      if (filter !== undefined) {
+        data.filter = filter
       }
-      return getData('/teamwork/list', { filter })
+      return getData('/teamwork/list', data)
     },
 
     select: function (
