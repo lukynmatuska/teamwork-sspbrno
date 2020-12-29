@@ -59,6 +59,16 @@ function createNewUserInMongoDB(req, res, userType) {
             })
         }
         if (req.session.user === undefined) {
+          // Sort years by name
+          user.years.sort((a, b) => {
+            if (Number(a.year.name) > Number(b.year.name)) {
+              return -1
+            }
+            if (Number(a.year.name) < Number(b.year.name)) {
+              return 1
+            }
+            return 0
+          })
           req.session.user = user
         }
         return res
@@ -222,6 +232,16 @@ module.exports.login = (req, res) => {
                 error: 'wrong-password'
               })
           } else {
+            // Sort years by name
+            user.years.sort((a, b) => {
+              if (Number(a.year.name) > Number(b.year.name)) {
+                return -1
+              }
+              if (Number(a.year.name) < Number(b.year.name)) {
+                return 1
+              }
+              return 0
+            })
             req.session.user = user
             return res
               .status(200)
@@ -295,6 +315,16 @@ module.exports.edit = (req, res) => {
             error: 'mongo-error'
           })
       } else if (id === req.session.user._id) {
+        // Sort years by name
+        user.years.sort((a, b) => {
+          if (Number(a.year.name) > Number(b.year.name)) {
+            return -1
+          }
+          if (Number(a.year.name) < Number(b.year.name)) {
+            return 1
+          }
+          return 0
+        })
         req.session.user = user
       }
       return res
@@ -439,6 +469,16 @@ module.exports.setNewPassword = (req, res) => {
             } else {
               if (req.session.user !== undefined) {
                 if (req.session.user._id === user._id) {
+                  // Sort years by name
+                  user.years.sort((a, b) => {
+                    if (Number(a.year.name) > Number(b.year.name)) {
+                      return -1
+                    }
+                    if (Number(a.year.name) < Number(b.year.name)) {
+                      return 1
+                    }
+                    return 0
+                  })
                   req.session.user = user
                 }
               }

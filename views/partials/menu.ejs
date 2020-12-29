@@ -2,21 +2,36 @@
 <header class="masthead">
     <div class="inner">
         <h3 class="masthead-brand">Týmové práce</h3>
-        <nav class="nav nav-masthead justify-content-center">
+        <nav class="nav nav-masthead justify-content-center dropdown show">
             <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Domů</a>
             <a class="nav-link <%= active === 'teamworks' ? 'active' : '' %>" href="/teamworks">Seznam</a>
             <% if (active === 'error') { %>
             <a class="nav-link active" href="#">Chybová stránka</a>
             <% } %>
             <% if (req.session.user !== undefined) { %>
+            <a class="nav-link <%= active === 'profile' ? 'active' : '' %>" href="/profile">Profil</a>
             <% if (req.session.user.type === 'admin' ) { %>
             <a class="nav-link" href="/admin/">Administrace</a>
             <% } %>
-            <a class="nav-link <%= active === 'profile' ? 'active' : '' %>" href="/profile">Profil</a>
+            <% if (req.session.user.type !== 'student') { %>
+            <a class="nav-link dropdown-toggle mr-2" href="#" role="button" id="switchYearsLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Ročník <%= req.session.year.name %>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="switchYearsLink">
+                <% req.session.user.years.forEach((obj) => { %>
+                <button type="button" onclick="switchYear('<%= obj.year._id %>')"
+                    class="dropdown-item <%= req.session.year._id == obj.year._id ? 'active' : '' %>">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><%= obj.year.name %></span>
+                </button>
+                <% }) %>
+            </div>
+            <% } %>
             <a class="nav-link" href="/logout">Odhlásit se</a>
             <% } else { %>
             <a class="nav-link <%= active === 'login' ? 'active' : '' %>" href="/login">Přihlášení</a>
-            <% } %> 
+            <% } %>
         </nav>
     </div>
 </header>

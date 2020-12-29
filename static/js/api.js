@@ -39,6 +39,89 @@ async function getData(path = '', data = {}) {
   return response.json()
 }
 
+
+function switchYear(yearId) {
+  swal({
+    title: "Přepíná se rok ...",
+    text: "Vydržte prosím moment ...",
+    icon: "warning",
+    timer: 1500,
+  }).then((value) => {
+    API.year
+      .switch(yearId)
+      .then(function (response) {
+        if (response.status === 'ok') {
+          return swal({
+            title: 'Rok se změnil!',
+            text: 'Jaká byla cesta časem?',
+            icon: 'success',
+            timer: 3000,
+          }).then((value) => {
+            location.reload()
+          })
+        }
+
+        console.error(response)
+        switch (response.error) {
+          case 'not-permissions-for-this-year':
+            swal({
+              title: 'Rok se nezměnil!',
+              text: 'Nastala chyba, protože nemáte práva na ročník, na který se chcete přepnout.',
+              icon: 'error',
+            })
+            break
+
+          case 'not-found-year-bad-id':
+            swal({
+              title: 'Rok se nezměnil!',
+              text: 'Nastala chyba, protože jste na server poslal(a) špatné id ročníku, na který se chcete přepnout.',
+              icon: 'error',
+            })
+            break
+
+          case 'not-sent-id':
+            swal({
+              title: 'Rok se nezměnil!',
+              text: 'Nastala chyba, protože jste neposlal(a) na server id ročníku, na který se chcete přepnout.',
+              icon: 'error',
+            })
+            break
+        }
+      })
+  })
+}
+
+function updateSession() {
+  swal({
+    title: "Sezení se aktualizuje!",
+    text: "Vydržte prosím ...",
+    icon: "warning",
+    timer: 2000,
+  }).then((value) => {
+    API.user
+      .updateSession()
+      .then(function (response) {
+        if (response.status === 'ok') {
+          swal({
+            title: 'Gratuluji!',
+            text: 'Sezení bylo aktualizováno.',
+            icon: 'success',
+            timer: 3000,
+          }).then(() => {
+            location.reload()
+          })
+        } else {
+          console.error(response)
+          swal({
+            title: 'Chyba!',
+            text: `Kontaktuj správce prosím tě a vzkaž mu: '${response.error}'`,
+            icon: 'error',
+          })
+        }
+      })
+  })
+}
+
 var API = {
   endpoint: '/api',
   user: {
@@ -230,11 +313,11 @@ var API = {
 
   teamwork: {
     new: function (name, description, students, guarantors, consultants) {
-      return postData( '/teamwork/new', { name, description, students, guarantors, consultants })
+      return postData('/teamwork/new', { name, description, students, guarantors, consultants })
     },
 
     edit: function (id, name, description, students, guarantors, consultants) {
-      return postData( '/teamwork/edit', { id, name, description, students, guarantors, consultants })
+      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants })
     },
 
     findById: function (id) {

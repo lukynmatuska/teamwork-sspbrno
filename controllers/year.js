@@ -77,6 +77,16 @@ module.exports.new = (req, res) => {
               error: err
             })
         }
+        // Sort years by name
+        user.years.sort((a, b) => {
+          if (Number(a.year.name) > Number(b.year.name)) {
+            return -1
+          }
+          if (Number(a.year.name) < Number(b.year.name)) {
+            return 1
+          }
+          return 0
+        })
         req.session.user = user
         return res
           .status(200)
