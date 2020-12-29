@@ -14,7 +14,6 @@ try {
     protocol: process.env.PROTOCOL,
     url: process.env.URL,
     port: process.env.PORT,
-    fullUrl: this.protocol + '://' + this.url + (String(this.port).length > 0 ? ':' + this.port : ''),
 
     session: {
       secret: process.env.SESSION_SECRET || 'secret',

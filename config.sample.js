@@ -4,16 +4,14 @@ module.exports = {
   url: 'localhost',
   port: 3000,
 
-  // full url
-  fullUrl: this.protocol + '://' + this.url + (String(this.port).length > 0 ? ':' + this.port : ''),
-
   // database credentials
   db: {
     port: 27017,
     host: 'localhost',
     name: 'teamwork',
     user: 'teamwork',
-    password: 'password'
+    password: 'password',
+    options: ''
   },
 
   session: {
