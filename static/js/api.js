@@ -126,8 +126,12 @@ var API = {
       )
     },
 
-    list: function () {
-      return getData('/user/list')
+    list: function (filter) {
+      const data = {}
+      if (filter !== undefined) {
+        data.filter = filter
+      }
+      return getData('/user/list', data)
     },
 
     logout: function () {

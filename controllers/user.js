@@ -531,8 +531,22 @@ module.exports.changeType = (req, res) => {
 }
 
 module.exports.list = (req, res) => {
+  let filter = {}
+  if (req.query.filter !== undefined) {
+    req.query.filter = JSON.parse(req.query.filter)
+    if (typeof req.query.filter === 'object') {
+      filter = req.query.filter
+    } else {
+      return res
+        .status(422)
+        .json({
+          status: 'error',
+          error: 'bad-type-of-filter'
+        })
+    }
+  }
   User
-    .find({})
+    .find(filter)
     .populate('specialization')
     .populate('years.year')
     .select({
