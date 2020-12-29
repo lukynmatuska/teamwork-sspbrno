@@ -88,7 +88,7 @@
     function isGivenSpecializationMine(specializationId) {
         <% if (req.session.user === undefined) { %>
             return false
-                <% } else if (req.session.user.specialization === undefined) { %>
+                <% } else if (req.session.user.specialization === undefined || req.session.user.specialization == null) { %>
 			return false
                         <% } else { %>
             return (specializationId == '<%= req.session.user.specialization._id %>')
@@ -198,7 +198,7 @@
                                             studentsDOMs,
                                             $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
                                             guarantorsDOMs,
-                                            $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti'),
+                                            consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : null,
                                             consultantsDOMs
                                         )
                                     )

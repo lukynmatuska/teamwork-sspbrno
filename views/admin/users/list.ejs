@@ -131,6 +131,10 @@
 											text = 'Garant(ka)'
 											break;
 
+										case 'consultant':
+											text = 'Konzultant(ka)'
+											break;
+
 										default:
 											text = 'Student(ka)'
 											break;
@@ -140,7 +144,7 @@
 							}, {
 								data: 'name',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-									if (oData.specialization !== undefined) {
+									if (oData.specialization != undefined || oData.specialization != null) {
 										$(nTd).html(oData.specialization.name)
 									} else {
 										$(nTd).html('')
@@ -152,7 +156,6 @@
 									$(nTd).html('')
 									for (let i = 0; i < oData.years.length; i++) {
 										let badgeColor = 'default'
-										// console.log(oData.years[i])
 										if (oData.years[i].permissions.includes('edit')) {
 											badgeColor = 'primary'
 										} else if (oData.years[i].permissions.includes('read')) {

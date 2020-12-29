@@ -271,7 +271,7 @@ module.exports.edit = (req, res) => {
 
     if (req.body.type !== undefined) {
       update.type = req.body.type
-      if (['admin'].includes(update.type)) {
+      if (update.type !== 'student') {
         update.specialization = undefined
       }
     }

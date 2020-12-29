@@ -12,8 +12,6 @@
 			<div class="row">
 				<div class="col-xl-4 order-xl-2">
 					<div class="card card-profile">
-						<!-- <img src="../assets/img/theme/img-1-1000x600.jpg" alt="Default image background"
-							class="card-img-top"> -->
 						<img src="../../../images/sspbrno-school.jpg" alt="Default image background"
 							class="card-img-top">
 						<div class="row justify-content-center">
@@ -116,7 +114,10 @@
 													<option <%= user.type === 'student' ? 'selected="selected"' : '' %>
 														value="student">Student(ka)</option>
 													<option <%= user.type === 'guarant' ? 'selected="selected"' : '' %>
-														value="guarant">Garant(ka)</option>
+														value="guarantor">Garant(ka)</option>
+													<option
+														<%= user.type === 'consultant' ? 'selected="selected"' : '' %>
+														value="consultant">Konzultant(ka)</option>
 													<option <%= user.type === 'admin' ? 'selected="selected"' : '' %>
 														value="admin">Administrátor(ka)</option>
 												</select>
@@ -129,8 +130,7 @@
 												<label class="form-control-label"
 													for="specialization">Specializace</label>
 												<select class="form-control" id="specialization">
-													<option value="null" selected>Garant(ka) / Administrátor(ka)
-													</option>
+													<option value="null" selected>Uživatel není student</option>
 												</select>
 											</div>
 										</div>
@@ -238,188 +238,210 @@
 	<%- include('../partials/scripts-file-end') %>
 	<%- include('../partials/select2') %>
 	<script>
-		function addYearRow(i = $('div#user-years .row').length, motherDOM = $('div#user-years')) {
-			$('<div>', { class: 'row' }).append(
-				$('<div>', { class: 'col-md-6 col-sm-12' }).append(
-					$('<div>', { class: 'form-group' }).append(
-						$('<label>', { class: 'form-control-label', for: `user-year-${i}` }).text('Ročník'),
-						$('<select>', { class: 'form-control', id: `user-year-${i}`, required: 'required' })
-					)
-				),
-				$('<div>', { class: 'col-md-5 col-sm-12' }).append(
-					$('<div>', { class: 'form-group' }).append(
-						$('<label>', { class: 'form-control-label', for: `user-year-permissions-${i}` }).text('Práva'),
-						$('<select>', { class: 'form-control', id: `user-year-permissions-${i}`, required: 'required' }).append(
-							$('<option>', { value: 'read' }).text('Čtení'),
-							$('<option>', { value: 'edit' }).text('Editace'),
+		$(document).ready(function () {
+			let specialization
+			const $specializationSelect = $('select#specialization')
+			const $userTypeSelect = $('select#user-type')
+
+			function addYearRow(i = $('div#user-years .row').length, motherDOM = $('div#user-years')) {
+				$('<div>', { class: 'row' }).append(
+					$('<div>', { class: 'col-md-6 col-sm-12' }).append(
+						$('<div>', { class: 'form-group' }).append(
+							$('<label>', { class: 'form-control-label', for: `user-year-${i}` }).text('Ročník'),
+							$('<select>', { class: 'form-control', id: `user-year-${i}`, required: 'required' })
 						)
+					),
+					$('<div>', { class: 'col-md-5 col-sm-12' }).append(
+						$('<div>', { class: 'form-group' }).append(
+							$('<label>', { class: 'form-control-label', for: `user-year-permissions-${i}` }).text('Práva'),
+							$('<select>', { class: 'form-control', id: `user-year-permissions-${i}`, required: 'required' }).append(
+								$('<option>', { value: 'read' }).text('Čtení'),
+								$('<option>', { value: 'edit' }).text('Editace'),
+							)
+						)
+					),
+					$('<div>', { class: 'col-1 m-auto' }).append(
+						$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
 					)
-				),
-				$('<div>', { class: 'col-1 m-auto' }).append(
-					$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-				)
-			).appendTo(motherDOM)
-			$(`select#user-year-permissions-${i}`).select2()
-			let $selectUsersYear = $(`select#user-year-${i}`).select2()
-			$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
-			$selectUsersYear.prop("disabled", true);
-			API.year.list().then((listOfYears) => {
-				$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
-				listOfYears.forEach((year) => {
-					$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
+				).appendTo(motherDOM)
+				$(`select#user-year-permissions-${i}`).select2()
+				let $selectUsersYear = $(`select#user-year-${i}`).select2()
+				$selectUsersYear.html(`<option selected="selected" value>Načítání...</option>`)
+				$selectUsersYear.prop("disabled", true);
+				API.year.list().then((listOfYears) => {
+					$selectUsersYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
+					listOfYears.forEach((year) => {
+						$selectUsersYear.append(`<option value="${year._id}">${year.name}</option>`)
+					})
+					$selectUsersYear.prop("disabled", false);
 				})
-				$selectUsersYear.prop("disabled", false);
-			})
-		}
-
-		function getYearsForRequest() {
-			let years = []
-
-			for (let i = 0; i < $('div#user-years .row').length; i++) {
-				let year = {
-					permissions: ['read'],
-					year: $(`select#user-year-${i}`).val()
-				}
-
-				if ($(`select#user-year-permissions-${i}`).val() === 'edit') {
-					year.permissions.push('edit')
-				}
-				years.push(year)
 			}
 
-			return years
-		}
-		function editProfile() {
-			API.user
-				.edit({
-					id: '<%= user._id %>',
-					firstname: $('#firstname').val(),
-					middlename: $('#middlename').val(),
-					lastname: $('#lastname').val(),
-					email: $('#email').val(),
-					specialization: $('#specialization').val(),
-					years: getYearsForRequest()
-				})
-				.then(function (data) {
-					console.log(data)
-					let $status = $('div#edit-user-status')
-					if (data.status === 'ok') {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste si upravil(a) uživatele'
+			function getYearsForRequest() {
+				let years = []
+
+				for (let i = 0; i < $('div#user-years .row').length; i++) {
+					let year = {
+						permissions: ['read'],
+						year: $(`select#user-year-${i}`).val()
+					}
+
+					if ($(`select#user-year-permissions-${i}`).val() === 'edit') {
+						year.permissions.push('edit')
+					}
+					years.push(year)
+				}
+
+				return years
+			}
+			function editProfile() {
+				API.user
+					.edit({
+						id: '<%= user._id %>',
+						firstname: $('#firstname').val(),
+						middlename: $('#middlename').val(),
+						lastname: $('#lastname').val(),
+						email: $('#email').val(),
+						type: $userTypeSelect.val(),
+						specialization,
+						years: getYearsForRequest()
+					})
+					.then(function (data) {
+						console.log(data)
+						let $status = $('div#edit-user-status')
+						if (data.status === 'ok') {
+							$status
+								.empty()
+								.append(
+									$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+										$('<strong>').text('Gratuluji!'),
+										' Úspěšně jste si upravil(a) uživatele'
+									)
 								)
-							)
-							.show()
-						// Refresh the page
-						setTimeout(function () {
-							window.location.href = window.location.href;
-						}, 3500)
-					} else {
-						$status
+								.show()
+							// Refresh the page
+							setTimeout(function () {
+								window.location.href = window.location.href;
+							}, 3500)
+						} else {
+							$status
+								.empty()
+								.append(
+									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+										$('<strong>').text('Ach ne! '),
+										data.error
+									)
+								)
+								.show()
+						}
+					})
+			}
+
+			function changePassword() {
+				let password = $('#new-password').val()
+				let alert = {
+					dom: $('#change-password-status'),
+					strongText: 'Vyhodnocuji',
+					text: 'Vyčkejte prosím',
+					status: 'info',
+					icon: 'fas fa-circle-notch fa-spin',
+					show: function () {
+						this.dom
 							.empty()
 							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+								$('<div>', { class: `alert alert-${this.status} alert-dismissible` }).append(
+									$('<i>', { class: this.icon, 'aria-hidden': 'true' }),
 									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									data.error
+									$('<strong>').text(' ' + this.strongText),
+									' ' + this.text
 								)
 							)
 							.show()
 					}
+				}
+				alert.show()
+
+				if (password === '') {
+					alert.status = 'danger'
+					alert.icon = 'fas fa-exclamation-triangle'
+					alert.strongText = 'Ach ne!'
+					alert.text = 'Heslo nemůže být prázdné'
+					return alert.show()
+				}
+
+				API.user.setNewPassword('<%= user._id %>', password).then(function (responseFromServer) {
+					if (responseFromServer.status === 'ok') {
+						alert.status = 'success'
+						alert.icon = 'fas fa-check'
+						alert.strongText = 'Výborně!'
+						alert.text = 'Uživatelovo heslo bylo změněno'
+						setTimeout(function () {
+							window.location.href = window.location.href
+						}, 5555)
+					} else if (responseFromServer.error === 'wrong-email') {
+						alert.status = 'danger'
+						alert.icon = 'fas fa-exclamation-triangle'
+						alert.strongText = 'Ach ne!'
+						alert.text = 'Uživatel neexistuje'
+					} else {
+						alert.status = 'danger'
+						alert.icon = 'fas fa-exclamation-triangle'
+						alert.strongText = 'Ach ne!'
+						alert.text = 'Vnitřní chyba serveru'
+					}
+					alert.show()
+					alert.dom.delay(5000).fadeOut('slow')
 				})
-		}
-
-		function changePassword() {
-			let password = $('#new-password').val()
-            let alert = {
-                dom: $('#change-password-status'),
-                strongText: 'Vyhodnocuji',
-                text: 'Vyčkejte prosím',
-                status: 'info',
-                icon: 'fas fa-circle-notch fa-spin',
-                show: function() {
-                    this.dom
-                    .empty()
-                    .append(
-                        $('<div>', { class: `alert alert-${this.status} alert-dismissible` }).append(
-                            $('<i>', { class: this.icon, 'aria-hidden': 'true' }),
-                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                            $('<strong>').text(' ' + this.strongText),
-                            ' ' + this.text
-                        )
-                    )
-                    .show()
-                }
-            }
-            alert.show()
-
-            if (password === '') {
-                alert.status = 'danger'
-                alert.icon = 'fas fa-exclamation-triangle'
-                alert.strongText = 'Ach ne!'
-                alert.text = 'Heslo nemůže být prázdné'
-                return alert.show()
-            }
-
-            API.user.setNewPassword('<%= user._id %>', password).then(function (responseFromServer) {
-                if (responseFromServer.status === 'ok') {
-                    alert.status = 'success'
-                    alert.icon = 'fas fa-check'
-                    alert.strongText = 'Výborně!'
-                    alert.text = 'Uživatelovo heslo bylo změněno'
-                    setTimeout(function() {
-                        window.location.href = window.location.href
-                    }, 5555)
-                } else if (responseFromServer.error === 'wrong-email') {
-                    alert.status = 'danger'
-                    alert.icon = 'fas fa-exclamation-triangle'
-                    alert.strongText = 'Ach ne!'
-                    alert.text = 'Uživatel neexistuje'
-                } else {
-                    alert.status = 'danger'
-                    alert.icon = 'fas fa-exclamation-triangle'
-                    alert.strongText = 'Ach ne!'
-                    alert.text = 'Vnitřní chyba serveru'
-                }
-                alert.show()
-                alert.dom.delay(5000).fadeOut('slow')
-            })
-		}
-
-		function hasUserGivenSpecialization(specialization) {
-			<% if (user.specialization === undefined) { %>
-			return false
-					<% } else { %>
-			return '<%= user.specialization._id %>' === specialization._id
-					<% } %>
-		}
-
-		function getSpecializationParameters(specialization) {
-			let parameters = { value: specialization._id }
-			if (hasUserGivenSpecialization(specialization)) {
-				parameters.selected = 'selected'
 			}
-			return parameters
+
+			function hasUserGivenSpecialization(specialization) {
+			<% if (user.specialization === undefined || user.specialization === null) { %>
+			return false
+						<% } else { %>
+			return '<%= user.specialization._id %>' === specialization._id
+						<% } %>
 		}
 
-		$(document).ready(function () {
+			function getSpecializationParameters(specialization) {
+				let parameters = { value: specialization._id }
+				if (hasUserGivenSpecialization(specialization)) {
+					parameters.selected = 'selected'
+				}
+				return parameters
+			}
+
 			API.specialization.list().then(function (specializations) {
 				specializations.forEach(specialization => {
-					$('select#specialization').append(
+					$specializationSelect.append(
 						$('<option>', getSpecializationParameters(specialization)).text(specialization.name)
 					)
 				})
-				$('select#specialization').select2({
+				$specializationSelect.select2({
 					minimumResultsForSearch: -1
 				})
+				if ($userTypeSelect.val() !== 'student') {
+					$specializationSelect.prop('disabled', true)
+				}
 			})
 
 			$('select').select2({
 				minimumResultsForSearch: -1
+			})
+
+			$userTypeSelect.on('select2:select', function (e) {
+				if ($userTypeSelect.val() === 'student') {
+					$specializationSelect.prop('disabled', false)
+					specialization = $specializationSelect.val()
+				} else {
+					$specializationSelect.prop('disabled', true)
+					specialization = null
+				}
+			})
+
+			$specializationSelect.on('select2:select', function (e) {
+				specialization = $specializationSelect.val()
 			})
 
 			$('#edit-user-button').click(editProfile)

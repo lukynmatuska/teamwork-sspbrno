@@ -140,7 +140,9 @@
                         <% if (req.session.user.type === 'student') { %>
                         Student(ka)
                         <% } else if (req.session.user.type === 'guarantor') { %>
-                        Garant(ka)
+                            Garant(ka)
+                        <% } else if (req.session.user.type === 'consultant') { %>
+                            Konzultant(ka)
                         <% } else if (req.session.user.type === 'admin') { %>
                         Administrátor(ka)
                         <% }%>
