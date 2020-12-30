@@ -21,6 +21,11 @@ module.exports = {
     maxAge: 86400000
   },
 
+  cors_options: {
+    credentials: true,
+    origin: 'http://localhost:3000'
+  },
+
   nodemailer: {
     sender: 'Adolf <adolf@exmaple.com>',
     settings: {
