@@ -19,6 +19,8 @@ docker-deploy:
   stage: deploy
   tags:
     - production
+  only:
+    - master
   script:
     - docker rm --force $(docker ps -a -f ancestor="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" -q) || echo $?
     - docker image rm "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
