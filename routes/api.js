@@ -64,6 +64,7 @@ router.all('/session/destroy', (req, res) => {
 /**
  * User's login, etc.
  */
+router.get('/users', partials.onlyLoggedIn, userController.list)
 router.post('/user/new', userController.new)
 router.post('/user/login', userController.login)
 router.post('/user/edit', partials.onlyLoggedIn, userController.edit)
@@ -107,6 +108,7 @@ router.get('/specialization/list', specializationController.list)
 /**
  * TeamWork
  */
+router.get('/teamworks', teamworkController.list)
 router.post('/teamwork/new', partials.onlyAdmin, teamworkController.new)
 router.post('/teamwork/edit', partials.onlyAdmin, teamworkController.edit)
 router.get('/teamwork/list', teamworkController.list)

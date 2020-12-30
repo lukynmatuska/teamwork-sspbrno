@@ -122,6 +122,9 @@ module.exports.delete = (req, res) => {
 module.exports.list = (req, res) => {
   let filter = {}
   if (req.query.filter !== undefined) {
+    if (typeof req.query.filter == 'string') {
+      req.query.filter = JSON.parse(req.query.filter)
+    }
     if (typeof req.query.filter === 'object') {
       filter = req.query.filter
     } else {
@@ -152,8 +155,8 @@ module.exports.list = (req, res) => {
 
       res.header("x-total-count", teamWorks.length - 1)
       res.header('Access-Control-Expose-Headers', 'X-Total-Count')
-      res.header('Content-Range', `teamworks 0-1/${teamWorks.length - 1}`)
       res.header('Access-Control-Expose-Headers', 'Content-Range')
+      res.header('Content-Range', `teamworks 0-1/${teamWorks.length - 1}`)
       return res.status(200).json(teamWorks)
     })
 }
