@@ -15,6 +15,8 @@ try {
     url: process.env.URL,
     port: process.env.PORT,
 
+    cors_options: process.env.CORS_OPTIONS || {},
+
     session: {
       secret: process.env.SESSION_SECRET || 'secret',
       maxAge: process.env.COOKIE_MAX_AGE || 86400000
@@ -70,7 +72,7 @@ const path = require('path')
 const bodyparser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const cors = require('cors')
-app.use(cors())
+app.use(cors(global.CONFIG.cors_options))
 app.use(fileUpload())
 
 // Session handling
