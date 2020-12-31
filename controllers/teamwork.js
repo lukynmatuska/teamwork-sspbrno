@@ -277,10 +277,10 @@ module.exports.list = (req, res) => {
             error: err
           })
       }
-      res.header("x-total-count", teamWorks.length - 1)
+      res.header("x-total-count", teamWorks.length)
       res.header('Access-Control-Expose-Headers', 'X-Total-Count')
       res.header('Access-Control-Expose-Headers', 'Content-Range')
-      res.header('Content-Range', `teamWorks 0-1/${teamWorks.length - 1}`)
+      res.header('Content-Range', `teamWorks 0-1/${teamWorks.length}`)
       return res
         .status(200)
         .json(teamWorks)

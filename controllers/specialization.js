@@ -146,10 +146,10 @@ module.exports.list = (req, res) => {
             error: err
           })
       }
-      res.header("x-total-count", specializations.length - 1)
+      res.header("x-total-count", specializations.length)
       res.header('Access-Control-Expose-Headers', 'X-Total-Count')
       res.header('Access-Control-Expose-Headers', 'Content-Range')
-      res.header('Content-Range', `specializations 0-1/${specializations.length - 1}`)
+      res.header('Content-Range', `specializations 0-1/${specializations.length}`)
       return res
         .status(200)
         .json(specializations)

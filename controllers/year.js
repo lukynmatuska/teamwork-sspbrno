@@ -328,10 +328,10 @@ module.exports.list = (req, res) => {
             error: 'mongo-err'
           })
       }
-      res.header("x-total-count", years.length - 1)
+      res.header("x-total-count", years.length)
       res.header('Access-Control-Expose-Headers', 'X-Total-Count')
       res.header('Access-Control-Expose-Headers', 'Content-Range')
-      res.header('Content-Range', `years 0-1/${years.length - 1}`)
+      res.header('Content-Range', `years 0-1/${years.length}`)
       return res
         .status(200)
         .json(years)
