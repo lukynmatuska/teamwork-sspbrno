@@ -19,5 +19,15 @@ var yearSchema = new mongoose.Schema({
   created: Date
 })
 
+// Duplicate the ID field.
+yearSchema.virtual('id').get(function(){
+  return this._id.toHexString()
+})
+
+// Ensure virtual fields are serialised.
+yearSchema.set('toJSON', {
+  virtuals: true
+})
+
 // export
 module.exports = mongoose.model('Year', yearSchema, 'year')

@@ -51,7 +51,13 @@ router.get('/500', (req, res) => {
  * Sessions
  */
 router.get('/session', (req, res) => {
-  res.status(200).json(req.session)
+  let session = req.session
+  if (session.user) {
+    if (session.user.password) {
+      delete session.user.password
+    }
+  }
+  res.status(200).json(session)
 })
 
 router.all('/session/destroy', (req, res) => {
@@ -64,6 +70,7 @@ router.all('/session/destroy', (req, res) => {
 /**
  * User's login, etc.
  */
+router.get('/users', partials.onlyLoggedIn, userController.list)
 router.post('/user/new', userController.new)
 router.post('/user/login', userController.login)
 router.post('/user/edit', partials.onlyLoggedIn, userController.edit)
@@ -89,6 +96,12 @@ router.get('/user/am-i-logged-in', (req, res) => {
 /**
  * Years
  */
+router.get('/years', partials.onlyAdmin, yearController.list)
+router.post('/years', partials.onlyAdmin, yearController.new)
+router.get('/years/:id', yearController.findById)
+router.put('/years/:id', partials.onlyAdmin, yearController.edit)
+router.delete('/years/:id', partials.onlyAdmin, yearController.delete)
+//
 router.post('/year/new', partials.onlyAdmin, yearController.new)
 router.post('/year/edit', partials.onlyAdmin, yearController.edit)
 router.post('/year/delete', partials.onlyAdmin, yearController.delete)
@@ -99,6 +112,11 @@ router.get('/year/list', partials.onlyAdmin, yearController.list)
 /**
  * Specialization
  */
+router.get('/specializations', specializationController.list)
+router.get('/specializations/:id', specializationController.findById)
+router.put('/specializations/:id', partials.onlyAdmin, specializationController.edit)
+router.delete('/specializations/:id', partials.onlyAdmin, specializationController.delete)
+router.post('/specializations', partials.onlyAdmin, specializationController.new)
 router.post('/specialization/new', partials.onlyAdmin, specializationController.new)
 router.post('/specialization/edit', partials.onlyAdmin, specializationController.edit)
 router.post('/specialization/delete', partials.onlyAdmin, specializationController.delete)
@@ -107,6 +125,7 @@ router.get('/specialization/list', specializationController.list)
 /**
  * TeamWork
  */
+router.get('/teamworks', teamworkController.list)
 router.post('/teamwork/new', partials.onlyAdmin, teamworkController.new)
 router.post('/teamwork/edit', partials.onlyAdmin, teamworkController.edit)
 router.get('/teamwork/list', teamworkController.list)

@@ -24,10 +24,18 @@ module.exports.new = (req, res) => {
         error: 'not-send-name'
       })
   }
+  if (req.body.short === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-short'
+      })
+  }
   new Specialization({
     name: req.body.name,
     short: req.body.short
-  }).save((err) => {
+  }).save((err, specialization) => {
     if (err) {
       console.error(err)
       return res
@@ -39,12 +47,9 @@ module.exports.new = (req, res) => {
     }
     return res
       .status(200)
-      .json({
-        status: 'ok'
-      })
+      .json(specialization)
   })
 }
-
 
 module.exports.edit = (req, res) => {
   if (req.body.id === undefined) {
@@ -54,22 +59,17 @@ module.exports.edit = (req, res) => {
         status: 'error',
         error: 'not-send-id'
       })
-  } if (req.body.short === undefined) {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-send-short'
-      })
+  }
+  let update = {}
+  if (req.body.short !== undefined) {
+    update.short = req.body.short
+  }
+  if (req.body.name !== undefined) {
+    update.name = req.body.name
   }
   Specialization
-    .findByIdAndUpdate(
-      req.body.id,
-      {
-        name: req.body.name,
-        short: req.body.short
-      })
-    .exec((err) => {
+    .findByIdAndUpdate(req.body.id, update)
+    .exec((err, specialization) => {
       if (err) {
         console.error(err)
         return res
@@ -79,6 +79,11 @@ module.exports.edit = (req, res) => {
             error: err
           })
       }
+      if (req.method === 'PUT') {
+        return res
+          .status(200)
+          .json(specialization)
+      }
       return res
         .status(200)
         .json({
@@ -87,34 +92,42 @@ module.exports.edit = (req, res) => {
     })
 }
 
-module.exports.delete = (req, res) => {
-  if (req.body.id === undefined) {
+module.exports.delete = async (req, res) => {
+  let id = req.body.id
+  if (req.method === 'DELETE') {
+    id = req.params.id
+  }
+  if (id === undefined) {
     return res
       .status(422)
       .json({
         status: 'error',
         error: 'not-send-id'
       })
-  } else {
-    Specialization
-      .deleteOne({ _id: req.body.id })
-      .exec((err) => {
-        if (err) {
-          console.error(err)
-          return res
-            .status(500)
-            .json({
-              status: 'error',
-              error: err
-            })
-        }
+  }
+  Specialization
+    .findByIdAndRemove(id)
+    .exec((err, specialization) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      if (req.method === 'DELETE') {
         return res
           .status(200)
-          .json({
-            status: 'ok'
-          })
-      })
-  }
+          .json(specialization)
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
+    })
 }
 
 module.exports.list = (req, res) => {
@@ -133,8 +146,39 @@ module.exports.list = (req, res) => {
             error: err
           })
       }
+      res.header("x-total-count", specializations.length - 1)
+      res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+      res.header('Access-Control-Expose-Headers', 'Content-Range')
+      res.header('Content-Range', `specializations 0-1/${specializations.length - 1}`)
       return res
         .status(200)
         .json(specializations)
+    })
+}
+
+module.exports.findById = (req, res) => {
+  if (!req.params.id) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  Specialization
+    .findOne({ _id: req.params.id })
+    .exec((err, specialization) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      return res
+        .status(200)
+        .json(specialization)
     })
 }

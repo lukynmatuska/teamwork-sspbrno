@@ -234,6 +234,9 @@ module.exports.login = (req, res) => {
           } else {
             // Sort years by name
             user.years.sort((a, b) => {
+              if (a.year == undefined || a.year == null) {
+                return 1
+              }
               if (Number(a.year.name) > Number(b.year.name)) {
                 return -1
               }
@@ -615,6 +618,10 @@ module.exports.list = (req, res) => {
             error: 'mongo-err'
           })
       }
+      res.header("x-total-count", users.length - 1)
+      res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+      res.header('Access-Control-Expose-Headers', 'Content-Range')
+      res.header('Content-Range', `users 0-1/${users.length - 1}`)
       return res
         .status(200)
         .json(users)

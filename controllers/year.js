@@ -90,15 +90,17 @@ module.exports.new = (req, res) => {
         req.session.user = user
         return res
           .status(200)
-          .json({
-            status: 'ok'
-          })
+          .json(year)
       })
   })
 }
 
 module.exports.delete = (req, res) => {
-  if (req.body.id === undefined) {
+  let id = req.body.id
+  if (req.method === 'DELETE') {
+    id = req.params.id
+  }
+  if (id === undefined) {
     return res
       .status(422)
       .json({
@@ -107,7 +109,8 @@ module.exports.delete = (req, res) => {
       })
   }
   Year
-    .findByIdAndRemove(req.body.id, (err, year) => {
+    .findByIdAndRemove(id)
+    .exec((err, year) => {
       if (err) {
         console.error(err)
         return res
@@ -137,13 +140,17 @@ module.exports.delete = (req, res) => {
                 error: err
               })
           }
+          if (req.method === 'DELETE') {
+            return res
+              .status(200)
+              .json(year)
+          }
           return userController.updateSession(req, res)
         })
     })
 }
 
 module.exports.edit = (req, res) => {
-  const update = {}
   if (req.body.id === undefined) {
     return res
       .status(422)
@@ -152,7 +159,7 @@ module.exports.edit = (req, res) => {
         error: 'not-send-id'
       })
   }
-
+  const update = {}
   if (req.body.name !== undefined) {
     update.name = req.body.name
   }
@@ -188,6 +195,11 @@ module.exports.edit = (req, res) => {
       }
       if (year.status === 'active') {
         req.session.year = year
+      }
+      if (req.method === 'PUT') {
+        return res
+          .status(200)
+          .json(year)
       }
       return res
         .status(200)
@@ -316,6 +328,39 @@ module.exports.list = (req, res) => {
             error: 'mongo-err'
           })
       }
-      return res.json(years)
+      res.header("x-total-count", years.length - 1)
+      res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+      res.header('Access-Control-Expose-Headers', 'Content-Range')
+      res.header('Content-Range', `years 0-1/${years.length - 1}`)
+      return res
+        .status(200)
+        .json(years)
+    })
+}
+
+module.exports.findById = (req, res) => {
+  if (!req.params.id) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  Year
+    .findOne({ _id: req.params.id })
+    .exec((err, year) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+      return res
+        .status(200)
+        .json(year)
     })
 }

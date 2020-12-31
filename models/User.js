@@ -62,5 +62,29 @@ var userSchema = new mongoose.Schema({
   ]
 })
 
+// Duplicate the ID field.
+userSchema.virtual('id').get(function(){
+  return this._id.toHexString()
+})
+
+userSchema.virtual('avatar').get(function(){
+  return this.photo
+})
+
+function fullName(){
+  if (this.name.middle === undefined) {
+    return `${this.name.first} ${this.name.last}`
+  } else {
+    return `${this.name.first} ${this.name.middle} ${this.name.last}`
+  }
+}
+userSchema.virtual('fullName').get(fullName)
+userSchema.virtual('name.full').get(fullName)
+
+// Ensure virtual fields are serialised.
+userSchema.set('toJSON', {
+  virtuals: true
+})
+
 // export
 module.exports = mongoose.model('User', userSchema, 'user')
