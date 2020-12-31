@@ -15,7 +15,7 @@ try {
     url: process.env.URL,
     port: process.env.PORT,
 
-    cors_options: process.env.CORS_OPTIONS || {},
+    cors_options: JSON.parse(process.env.CORS_OPTIONS) || {},
 
     session: {
       secret: process.env.SESSION_SECRET || 'secret',
