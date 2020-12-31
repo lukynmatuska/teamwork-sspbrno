@@ -86,7 +86,9 @@ router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
   res.cookie('toast-logout', 'true', { maxAge: 60000, httpOnly: false })
-  res.send('ok')
+  res.json({
+    status: 'ok'
+  })
 })
 
 router.get('/user/am-i-logged-in', (req, res) => {
