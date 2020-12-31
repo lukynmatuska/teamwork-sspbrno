@@ -72,6 +72,7 @@ const path = require('path')
 const bodyparser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const cors = require('cors')
+console.log(`CORS_OPTIONS: ${JSON.stringify(global.CONFIG.cors_options)}`)
 app.use(cors(global.CONFIG.cors_options))
 app.use(fileUpload())
 
