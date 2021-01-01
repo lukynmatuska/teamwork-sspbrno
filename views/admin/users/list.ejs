@@ -161,9 +161,11 @@
 										} else if (oData.years[i].permissions.includes('read')) {
 											badgeColor = 'info'
 										}
-										$('<a>', { href: '/admin/years/edit/' + oData.years[i].year._id, class: ('badge badge-pill badge-' + badgeColor) })
-											.text(oData.years[i].year.name)
-											.appendTo($(nTd))
+										if (oData.years[i].year != undefined || oData.years[i].year != null) {
+											$('<a>', { href: '/admin/years/edit/' + oData.years[i].year._id, class: ('badge badge-pill badge-' + badgeColor) })
+												.text(oData.years[i].year.name)
+												.appendTo($(nTd))
+										}
 									}
 								}
 							}, {

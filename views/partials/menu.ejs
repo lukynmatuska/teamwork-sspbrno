@@ -1,4 +1,3 @@
-<!-- <header class="masthead mb-auto"> -->
 <header class="masthead">
     <div class="inner">
         <h3 class="masthead-brand">Týmové práce</h3>
@@ -20,11 +19,13 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="switchYearsLink">
                 <% req.session.user.years.forEach((obj) => { %>
+                <% if (obj.year != undefined || obj.year != null) { %>
                 <button type="button" onclick="switchYear('<%= obj.year._id %>')"
                     class="dropdown-item <%= req.session.year._id == obj.year._id ? 'active' : '' %>">
                     <i class="fas fa-calendar-alt"></i>
                     <span><%= obj.year.name %></span>
                 </button>
+                <% } %>
                 <% }) %>
             </div>
             <% } %>

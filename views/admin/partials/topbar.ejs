@@ -34,12 +34,14 @@
                         <div class=" dropdown-header noti-title">
                             <h6 class="text-overflow m-0">Vyberte si ročník:</h6>
                         </div>
-                        <% req.session.user.years.forEach((object) => { %>
-                        <button type="button" onclick="switchYear('<%= object.year._id %>')"
-                            class="dropdown-item <%= req.session.year._id == object.year._id ? 'active' : '' %>">
+                        <% req.session.user.years.forEach((obj) => { %>
+                        <% if (obj.year != undefined || obj.year != null) { %>
+                        <button type="button" onclick="switchYear('<%= obj.year._id %>')"
+                            class="dropdown-item <%= req.session.year._id == obj.year._id ? 'active' : '' %>">
                             <i class="fas fa-calendar-alt"></i>
-                            <span><%= object.year.name %></span>
+                            <span><%= obj.year.name %></span>
                         </button>
+                        <% } %>
                         <% }) %>
                     </div>
                 </li>
