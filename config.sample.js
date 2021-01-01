@@ -19,6 +19,8 @@ module.exports = {
     maxAge: 86400000
   },
 
+  devMode: false,
+
   nodemailer: {
     sender: 'Adolf <adolf@exmaple.com>',
     settings: {

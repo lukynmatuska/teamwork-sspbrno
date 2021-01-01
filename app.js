@@ -111,6 +111,11 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 app.set('trust proxy', true)
 
+if (!global.CONFIG.devMode) {
+  const htmlMinifier = require('./libs/minify-html')
+  app.use(htmlMinifier)
+}
+
 // set serving static files from the static dir
 app.use(express.static(path.join(__dirname, 'static')))
 
