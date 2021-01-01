@@ -79,6 +79,9 @@ module.exports.new = (req, res) => {
         }
         // Sort years by name
         user.years.sort((a, b) => {
+          if (a.year == undefined || a.year == null) {
+            return 1
+          }
           if (Number(a.year.name) > Number(b.year.name)) {
             return -1
           }

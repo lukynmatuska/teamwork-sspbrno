@@ -61,6 +61,9 @@ function createNewUserInMongoDB(req, res, userType) {
         if (req.session.user === undefined) {
           // Sort years by name
           user.years.sort((a, b) => {
+            if (a.year == undefined || a.year == null) {
+              return 1
+            }
             if (Number(a.year.name) > Number(b.year.name)) {
               return -1
             }
@@ -328,6 +331,9 @@ module.exports.edit = (req, res) => {
       } else if (id === req.session.user._id) {
         // Sort years by name
         user.years.sort((a, b) => {
+          if (a.year == undefined || a.year == null) {
+            return 1
+          }
           if (Number(a.year.name) > Number(b.year.name)) {
             return -1
           }
@@ -482,6 +488,9 @@ module.exports.setNewPassword = (req, res) => {
                 if (req.session.user._id === user._id) {
                   // Sort years by name
                   user.years.sort((a, b) => {
+                    if (a.year == undefined || a.year == null) {
+                      return 1
+                    }
                     if (Number(a.year.name) > Number(b.year.name)) {
                       return -1
                     }
@@ -521,6 +530,9 @@ module.exports.updateSession = (req, res) => {
       }
       // Sort years by name
       user.years.sort((a, b) => {
+        if (a.year == undefined || a.year == null) {
+          return 1
+        }
         if (Number(a.year.name) > Number(b.year.name)) {
           return -1
         }
