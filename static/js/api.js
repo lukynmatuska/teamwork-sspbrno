@@ -148,13 +148,7 @@ var API = {
     },
 
     login: function (email, password) {
-      return postData(
-        '/user/login',
-        {
-          email: email,
-          password: password
-        }
-      )
+      return postData('/user/login', { email, password })
     },
 
     parseXlsx: function (file, userType) {
@@ -200,13 +194,7 @@ var API = {
     },
 
     changeType: function (userId, type) {
-      return postData(
-        '/user/change-type',
-        {
-          id: userId,
-          type: type
-        }
-      )
+      return postData('/user/change-type', { id: userId, type })
     },
 
     list: function (filter) {
@@ -232,81 +220,40 @@ var API = {
 
   year: {
     new: function (name, description, status) {
-      return postData(
-        '/year/new',
-        {
-          name: name,
-          description: description,
-          status: status
-        }
-      )
+      return postData('/year/new', { name, description, status })
     },
 
     edit: function (yearId, name, description, status) {
-      return postData(
-        '/year/edit',
-        {
-          id: yearId,
-          name: name,
-          description: description,
-          status: status
-        }
-      )
+      return postData('/year/edit', { id: yearId, name, description, status })
     },
 
-    list: function () {
-      return getData('/year/list')
+    list: function (filter = {}) {
+      return getData('/year/list', filter)
     },
 
     delete: function (yearId) {
-      return postData(
-        '/year/delete',
-        {
-          id: yearId
-        }
-      )
+      return postData('/year/delete', { id: yearId })
     },
 
     switch: function (yearId) {
-      return postData(
-        '/year/switch',
-        {
-          id: yearId
-        }
-      )
+      return postData('/year/switch', { id: yearId })
     }
   },
 
   specialization: {
     new: function (name, shortName) {
-      return postData(
-        '/specialization/new',
-        {
-          name: name,
-          short: shortName
-        }
-      )
+      return postData('/specialization/new', { name, short: shortName })
     },
 
     edit: function (id, name, shortName) {
-      return postData(
-        '/specialization/edit',
-        {
-          id: id,
-          name: name,
-          short: shortName
-        }
-      )
+      return postData('/specialization/edit', { endOfSelectionOfTeamWorks, id, name, short: shortName })
     },
 
     delete: function (id) {
       return postData('/specialization/delete', { id })
     },
 
-    list: function (filter) {
-      if (filter === undefined) {
-        filter = {}
-      }
+    list: function (filter = {}) {
       return getData('/specialization/list', filter)
     }
   },
@@ -332,38 +279,16 @@ var API = {
       return postData('/teamwork/delete', { id })
     },
 
-    list: function (filter) {
-      const data = {}
-      if (filter !== undefined) {
-        data.filter = filter
-      }
-      return getData('/teamwork/list', data)
+    list: function (filter = {}) {
+      return getData('/teamwork/list', filter)
     },
 
-    select: function (
-      teamWorkId,
-      positionId
-    ) {
-      return postData(
-        '/teamwork/select',
-        {
-          id: teamWorkId,
-          position: positionId
-        }
-      )
+    select: function (teamWorkId, positionId) {
+      return postData('/teamwork/select', { id: teamWorkId, position: positionId })
     },
 
-    leave: function (
-      teamWorkId,
-      positionId
-    ) {
-      return postData(
-        '/teamwork/leave',
-        {
-          id: teamWorkId,
-          position: positionId
-        }
-      )
+    leave: function (teamWorkId, positionId) {
+      return postData('/teamwork/leave', { id: teamWorkId, position: positionId })
     },
 
     hasStudentBeenAsignedToTeamWork: function () {
