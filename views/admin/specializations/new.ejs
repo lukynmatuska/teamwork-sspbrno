@@ -21,7 +21,7 @@
 				$('input#name').val(),
 				$('input#shortname').val()
 			).then(function (responseFromServer) {
-				if (responseFromServer.status === 'ok') {
+				if (responseFromServer.error == undefined) {
 					$status
 						.empty()
 						.append(

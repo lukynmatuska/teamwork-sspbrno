@@ -103,7 +103,7 @@
 						$('#description').val(),
 						$('#year-status').val()
 					).then(function (responseFromServer) {
-						if (responseFromServer.status === 'ok') {
+						if (responseFromServer.error == undefined) {
 							$status
 								.empty()
 								.append(
