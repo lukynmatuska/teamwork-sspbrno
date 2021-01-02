@@ -250,7 +250,7 @@
 										}
 									})
 							})
-						} else if (resFromServer.error === 'specialization-from-table-is-not-in-db') {
+						} else if (responseFromServer.error === 'specialization-from-table-is-not-in-db') {
 							$status
 								.empty()
 								.append(
@@ -258,7 +258,7 @@
 										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 										$('<strong>').text('Ach ne! '),
 										'Specializace ',
-										$('<i>').text(resFromServer.specialization),
+										$('<i>').text(responseFromServer.specialization),
 										' se bohužel nenachází v databázi'
 									)
 								)
@@ -270,7 +270,7 @@
 									$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
 										$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
 										$('<strong>').text('Ach ne! '),
-										String(resFromServer.error)
+										String(responseFromServer.error)
 									)
 								)
 								.show()
