@@ -9,8 +9,15 @@ const mongoose = require('../libs/db')
 
 // the schema itself
 var yearSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true
+  },
   description: String,
+  endOfSelectionOfTeamWorks: {
+    type: Date,
+    required: true
+  },
   status: {
     type: String,
     enum: ['active', 'archived', 'prepared'],

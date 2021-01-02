@@ -38,10 +38,19 @@ module.exports.new = (req, res) => {
         })
     }
   }
+  if (req.body.endOfSelectionOfTeamWorks === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-endOfSelectionOfTeamWorks'
+      })
+  }
   new Year({
     name: req.body.name,
     description: req.body.description,
     status: (req.body.status === undefined ? 'prepared' : req.body.status),
+    endOfSelectionOfTeamWorks: moment(req.body.endOfSelectionOfTeamWorks, 'MM/DD/YYYY'),
     created: moment()
   }).save((err, year) => {
     if (err) {
@@ -182,6 +191,10 @@ module.exports.edit = (req, res) => {
     } else {
       update.status = req.body.status
     }
+  }
+
+  if (req.body.endOfSelectionOfTeamWorks !== undefined) {
+    update.endOfSelectionOfTeamWorks = moment(req.body.endOfSelectionOfTeamWorks)
   }
 
   Year

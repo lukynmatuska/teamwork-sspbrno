@@ -1,5 +1,6 @@
 <%- include('../partials/header') %>
 <%- include('../partials/scripts') %>
+<%- include('../partials/datepicker') %>
 <%- include('../partials/select2') %>
 </head>
 
@@ -41,20 +42,31 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-lg-6">
+										<div class="col">
 											<div class="form-group">
 												<label for="year-status">Stav</label>
 												<select class="form-control" id="year-status">
 													<option value="prepared"
 														<%= year.status === 'prepared' ? 'selected="selected' : '' %>>
 														Připravený</option>
-													<option value="active" disabled="disabled"
+													<option value="active"
 														<%= year.status === 'active' ? 'selected="selected' : '' %>>
 														Aktivní</option>
 													<option value="archived"
 														<%= year.status === 'archived' ? 'selected="selected' : '' %>>
 														Archivovaný</option>
 												</select>
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label for="endOfSelectionOfTeamWorks">Datum ukončení svobodné volby týmových prací</label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text"><i class="fas fa-calendar"></i></span>
+													</div>
+													<input id="endOfSelectionOfTeamWorks" class="form-control datepicker" placeholder="Select date" type="text" value="<%= moment(year.endOfSelectionOfTeamWorks).format('MM/DD/YYYY') %>">
+												</div>
 											</div>
 										</div>
 									</div>
@@ -109,7 +121,8 @@
 						'<%= year._id %>',
 						$('#name').val(),
 						$('#description').val(),
-						$('#year-status').val()
+						$('#year-status').val(),
+						$('#endOfSelectionOfTeamWorks').val()
 					).then(function (responseFromServer) {
 						if (responseFromServer.status === 'ok') {
 							$status

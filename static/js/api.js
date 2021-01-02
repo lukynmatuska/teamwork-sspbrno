@@ -219,12 +219,12 @@ var API = {
   },
 
   year: {
-    new: function (name, description, status) {
-      return postData('/year/new', { name, description, status })
+    new: function (name, description, status, endOfSelectionOfTeamWorks) {
+      return postData('/year/new', { name, description, status, endOfSelectionOfTeamWorks })
     },
 
-    edit: function (yearId, name, description, status) {
-      return postData('/year/edit', { id: yearId, name, description, status })
+    edit: function (yearId, name, description, status, endOfSelectionOfTeamWorks) {
+      return postData('/year/edit', { id: yearId, name, description, status, endOfSelectionOfTeamWorks })
     },
 
     list: function (filter = {}) {

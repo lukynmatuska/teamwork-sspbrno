@@ -1,5 +1,6 @@
 <%- include('../partials/header') %>
 <%- include('../partials/scripts') %>
+<%- include('../partials/datepicker') %>
 <%- include('../partials/select2') %>
 </head>
 
@@ -40,7 +41,7 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-lg-6">
+										<div class="col">
 											<div class="form-group">
 												<label for="year-status">Stav</label>
 												<select class="form-control" id="year-status">
@@ -48,6 +49,17 @@
 													<option value="active" disabled="disabled">Aktivní</option>
 													<option value="archived">Archivovaný</option>
 												</select>
+											</div>
+										</div>
+										<div class="col">
+											<div class="form-group">
+												<label for="endOfSelectionOfTeamWorks">Datum ukončení svobodné volby týmových prací</label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text"><i class="fas fa-calendar"></i></span>
+													</div>
+													<input id="endOfSelectionOfTeamWorks" class="form-control datepicker" placeholder="MM/DD/YYYY" type="text">
+												</div>
 											</div>
 										</div>
 									</div>
@@ -101,7 +113,8 @@
 					.new(
 						$('#name').val(),
 						$('#description').val(),
-						$('#year-status').val()
+						$('#year-status').val(),
+						$('#endOfSelectionOfTeamWorks').val()
 					).then(function (responseFromServer) {
 						if (responseFromServer.error == undefined) {
 							$status
