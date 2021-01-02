@@ -501,7 +501,7 @@ module.exports.leave = (req, res) => {
 }
 
 module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
-  if (req.session.user === undefined) {
+  if (req.session.user === undefined || req.session.user == null) {
     return res.send(true)
   } else if (req.session.user.type !== 'student') {
     return res.send(true)

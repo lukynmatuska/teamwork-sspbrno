@@ -86,7 +86,7 @@
     }
 
     function isGivenSpecializationMine(specializationId) {
-        <% if (req.session.user === undefined) { %>
+        <% if (req.session.user == undefined || req.session.user == null) { %>
             return false
                 <% } else if (req.session.user.specialization === undefined || req.session.user.specialization == null) { %>
 			return false
@@ -146,7 +146,7 @@
                                                         )
                                                 )
                                             ) : (
-                                                ('<%= req.session.user === undefined ? "" : req.session.user._id %>' === String(user._id)) ? (
+                                                ('<%= req.session.user == undefined || req.session.user == null ? "" : req.session.user._id %>' === String(user._id)) ? (
                                                     $('<button>', {
                                                         class: 'btn btn-sm bg-danger text-light ml-2', type: 'button',
                                                         onclick: `leaveTeamWork($(this), '${teamworks[i]._id}', '${teamworks[i].students[ii]._id}')`

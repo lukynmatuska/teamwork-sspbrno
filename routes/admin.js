@@ -28,7 +28,7 @@ const errorController = require('../controllers/error')
  * Make admin section a little bit secret
  */
 router.get('/*', (req, res, next) => {
-  if (req.session.user !== undefined) {
+  if (req.session.user != undefined || req.session.user != null) {
     if (req.session.user.type === 'admin') {
       return next()
     }
@@ -95,8 +95,8 @@ router.get('/years/edit/:id', adminPageController.years.edit)
  * Error pages (for testing)
  */
 router.get('/403', adminPageController.error.accessDenied)
-router.get('/404', (req, res) => { adminPageController.error.notFound(req, res)})
+router.get('/404', (req, res) => { adminPageController.error.notFound(req, res) })
 router.get('/500', adminPageController.error.internalError)
-router.get('*', (req, res) => { adminPageController.error.notFound(req, res)})
+router.get('*', (req, res) => { adminPageController.error.notFound(req, res) })
 
 module.exports = router

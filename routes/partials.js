@@ -48,14 +48,13 @@ module.exports.setYearForUser = (req, res, next) => {
   const Year = require('../models/Year')
   const User = require('../models/User')
   let yearFilter
-
-  if (req.session.user !== undefined && req.session.year !== undefined) {
+  if ((req.session.user != undefined || req.session.user != null ) && req.session.year != undefined) {
     if (req.session.user.type === 'admin') {
       return next()
     }
   }
 
-  if (req.session.year === undefined || req.session.user === undefined) {
+  if (req.session.year === undefined || req.session.user === undefined || req.session.user == null) {
     yearFilter = {
       status: 'active'
     }
@@ -67,7 +66,6 @@ module.exports.setYearForUser = (req, res, next) => {
 
   Year
     .findOne(yearFilter)
-    // .populate('author')
     .exec((err, year) => {
       if (err) {
         return console.error(err)
@@ -93,6 +91,7 @@ module.exports.setYearForUser = (req, res, next) => {
               name: moment().format('YYYY'),
               description: 'Automaticly created (first) year',
               status: 'active',
+              endOfSelectionOfTeamWorks: moment('01/01/3000', 'MM/DD/YYYY'),
               created: moment()
             }).save((err, year) => {
               if (err) {

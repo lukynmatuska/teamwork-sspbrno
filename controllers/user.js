@@ -528,19 +528,21 @@ module.exports.updateSession = (req, res) => {
             error: 'mongo-error'
           })
       }
-      // Sort years by name
-      user.years.sort((a, b) => {
-        if (a.year == undefined || a.year == null) {
-          return 1
-        }
-        if (Number(a.year.name) > Number(b.year.name)) {
-          return -1
-        }
-        if (Number(a.year.name) < Number(b.year.name)) {
-          return 1
-        }
-        return 0
-      })
+      if (user != undefined || user != null) {
+        // Sort years by name
+        user.years.sort((a, b) => {
+          if (a.year == undefined || a.year == null) {
+            return 1
+          }
+          if (Number(a.year.name) > Number(b.year.name)) {
+            return -1
+          }
+          if (Number(a.year.name) < Number(b.year.name)) {
+            return 1
+          }
+          return 0
+        })
+      }
       req.session.user = user
       return res
         .status(200)

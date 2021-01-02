@@ -7,7 +7,7 @@
             <% if (active === 'error') { %>
             <a class="nav-link active" href="#">Chybová stránka</a>
             <% } %>
-            <% if (req.session.user !== undefined) { %>
+            <% if (req.session.user != undefined || req.session.user != null) { %>
             <a class="nav-link <%= active === 'profile' ? 'active' : '' %>" href="/profile">Profil</a>
             <% if (req.session.user.type === 'admin' ) { %>
             <a class="nav-link" href="/admin/">Administrace</a>
