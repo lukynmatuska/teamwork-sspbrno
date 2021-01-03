@@ -248,6 +248,10 @@ var API = {
 
     switch: function (yearId) {
       return postData('/year/switch', { id: yearId })
+    },
+
+    canStudentsJoinOrLeaveTeamwork: function () {
+      return getData('/year/can-students-join-or-leave-teamwork')
     }
   },
 

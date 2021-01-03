@@ -7,7 +7,8 @@
 /**
  * Libs
  */
-// const moment = require('moment')
+const moment = require('moment')
+moment.locale('cs')
 // const nodemailer = require('nodemailer')
 const mongoose = require('../libs/db')
 
@@ -351,6 +352,14 @@ module.exports.select = (req, res) => {
         error: 'not-send-position'
       })
   }
+  if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
+    return res
+      // .status(422)
+      .json({
+        status: 'error',
+        error: 'end-of-selection-of-teamworks'
+      })
+  }
   TeamWork
     .findById(req.body.id)
     .populate({
@@ -434,6 +443,14 @@ module.exports.leave = (req, res) => {
       .json({
         status: 'error',
         error: 'not-send-position'
+      })
+  }
+  if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
+    return res
+      // .status(422)
+      .json({
+        status: 'error',
+        error: 'end-of-selection-of-teamworks'
       })
   }
 
@@ -565,7 +582,6 @@ module.exports.isGivenTeamworkMine = (req, res) => {
             error: 'mongo-err'
           })
       }
-      console.log(teamWork)
       if (teamWork == undefined || teamWork == null) {
         return res
           .status(200)

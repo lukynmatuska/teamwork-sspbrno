@@ -194,7 +194,7 @@ module.exports.edit = (req, res) => {
   }
 
   if (req.body.endOfSelectionOfTeamWorks !== undefined) {
-    update.endOfSelectionOfTeamWorks = moment(req.body.endOfSelectionOfTeamWorks)
+    update.endOfSelectionOfTeamWorks = moment(req.body.endOfSelectionOfTeamWorks, 'MM/DD/YYYY')
   }
 
   Year
@@ -379,4 +379,12 @@ module.exports.findById = (req, res) => {
         .status(200)
         .json(year)
     })
+}
+
+module.exports.canStudentsJoinOrLeaveTeamwork = (req, res) => {
+  if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
+    return res.json(false)
+  } else {
+    return res.send(true)
+  }
 }
