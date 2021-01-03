@@ -230,6 +230,13 @@ var API = {
     
     isGivenUserIdMine: function (UserId) {
       return getData('/user/is-given-id-mine', { id: UserId })
+    },
+
+    updateProfilePhoto: async function (file) {
+      let body = new FormData()
+      body.append('photo', file)
+      const request = await fetch(API.endpoint + '/user/update-profile-photo', { method: 'POST', body })
+      return request.json()
     }
   },
 

@@ -85,6 +85,7 @@ router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
 router.get('/user/is-given-specialization-mine', partials.onlyLoggedIn, userController.isGivenSpecializationMine)
 router.get('/user/has-user-given-specialization', partials.onlyLoggedIn, userController.hasUserGivenSpecialization)
 router.get('/user/is-given-id-mine', userController.isGivenIdMine)
+router.post('/user/update-profile-photo', userController.updateProfilePhoto)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()

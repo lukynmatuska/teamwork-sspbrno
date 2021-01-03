@@ -12,6 +12,7 @@ const osloveni = require('../libs/osloveni')
 const nodemailer = require('nodemailer')
 const xlsx = require('node-xlsx').default
 const randomstring = require("randomstring")
+const imageDataURI = require('image-data-uri')
 
 /**
  * Models
@@ -947,5 +948,36 @@ module.exports.isGivenIdMine = (req, res) => {
     .json({
       status: 'ok',
       data: (String(req.session.user._id) == String(req.query.id))
+    })
+}
+
+module.exports.updateProfilePhoto = (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res
+      .status(400)
+      .json({
+        status: 'error',
+        error: 'No files were uploaded.'
+      })
+  }
+  let dataBuffer = new Buffer.alloc(req.files.photo.size, req.files.photo.data)
+  const photo = imageDataURI.encode(dataBuffer, req.files.photo.mimetype)
+  User
+    .findByIdAndUpdate(req.session.user._id, { photo })
+    .exec((err) => {
+      if (err) {
+        console.log(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
     })
 }
