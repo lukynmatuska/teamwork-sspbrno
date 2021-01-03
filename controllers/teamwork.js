@@ -430,11 +430,11 @@ module.exports.leave = (req, res) => {
       })
   } else if (req.body.position === undefined) {
     return res
-    .status(422)
-    .json({
-      status: 'error',
-      error: 'not-send-position'
-    })
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-position'
+      })
   }
 
   TeamWork
@@ -459,21 +459,34 @@ module.exports.leave = (req, res) => {
     })
     .exec((err, teamWork) => {
       if (err) {
-        res.send('err')
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
       }
 
       for (let i = 0; i < teamWork.students.length; i++) {
         if (String(teamWork.students[i]._id) === String(req.body.position)) {
+          if (teamWork.students[i].user == undefined) {
+            return res
+              .status(422)
+              .json({
+                status: 'error',
+                error: 'already-free'
+              })
+          }
           if (String(teamWork.students[i].user._id) === String(req.session.user._id)) {
             teamWork.students[i].user = undefined
           } else {
             return res
-            .status(422)
-            .json({
-              status: 'error',
-              error: 'already-free'
-            })
+              .status(422)
+              .json({
+                status: 'error',
+                error: 'already-free'
+              })
           }
           break
         }
@@ -518,4 +531,55 @@ module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
         return res.send(countOfTeamWorkWhereStudentIs > 0)
       })
   }
+}
+
+module.exports.isGivenTeamworkMine = (req, res) => {
+  if (req.query.id === undefined || req.query == null) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  if (req.session.user === undefined || req.session.user === null) {
+    return res
+      .status(200)
+      .json({
+        status: 'ok',
+        data: false
+      })
+  }
+  TeamWork
+    .findOne({
+      _id: req.query.id,
+      'students.user': mongoose.Types.ObjectId(req.session.user._id)
+    })
+    .exec((err, teamWork) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+      console.log(teamWork)
+      if (teamWork == undefined || teamWork == null) {
+        return res
+          .status(200)
+          .json({
+            status: 'ok',
+            data: false
+          })
+      }
+
+      return res
+        .status(200)
+        .json({
+          status: 'ok',
+          data: true
+        })
+    })
 }

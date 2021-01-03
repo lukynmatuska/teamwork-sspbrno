@@ -22,7 +22,11 @@ async function getData(path = '', data = {}) {
   const keys = Object.keys(data)
   const values = Object.values(data)
   for (let i = 0; i < values.length; i++) {
-    url.searchParams.set(keys[i], JSON.stringify(values[i]))
+    let value = values[i]
+    if (typeof value == 'object') {
+      value = JSON.stringify(value)
+    }
+    url.searchParams.set(keys[i], value)
   }
   const response = await fetch(url, {
     method: 'GET',
@@ -33,8 +37,7 @@ async function getData(path = '', data = {}) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-    // body: JSON.stringify(data)
+    referrerPolicy: 'no-referrer'
   })
   return response.json()
 }
@@ -215,6 +218,14 @@ var API = {
 
     loggedIn: function () {
       return getData('/user/am-i-logged-in')
+    },
+
+    isGivenSpecializationMine: function (specializationId) {
+      return getData('/user/is-given-specialization-mine', { id: specializationId })
+    },
+    
+    isGivenUserIdMine: function (UserId) {
+      return getData('/user/is-given-id-mine', { id: UserId })
     }
   },
 
@@ -293,6 +304,10 @@ var API = {
 
     hasStudentBeenAsignedToTeamWork: function () {
       return getData('/teamwork/has-student-been-asigned-to-teamwork')
+    },
+    
+    isGivenTeamworkMine: function (UserId) {
+      return getData('/teamwork/is-given-teamwork-mine', { id: UserId })
     }
   }
 }

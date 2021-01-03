@@ -82,6 +82,8 @@ router.post('/user/delete', partials.onlyAdmin, userController.delete)
 router.get('/user/list', partials.onlyLoggedIn, userController.list)
 router.post('/user/import', partials.onlyAdmin, userController.import)
 router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
+router.get('/user/is-given-specialization-mine', partials.onlyLoggedIn, userController.isGivenSpecializationMine)
+router.get('/user/is-given-id-mine', userController.isGivenIdMine)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
@@ -137,6 +139,7 @@ router.post('/teamwork/copy', partials.onlyAdmin, teamworkController.copy)
 router.post('/teamwork/select', partials.onlyLoggedIn, teamworkController.select)
 router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
 router.get('/teamwork/has-student-been-asigned-to-teamwork', teamworkController.hasStudentBeenAsignedToTeamWork)
+router.get('/teamwork/is-given-teamwork-mine', teamworkController.isGivenTeamworkMine)
 
 /**
  * Not found route

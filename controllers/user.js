@@ -849,3 +849,53 @@ module.exports.import = async (req, res) => {
       })
   }
 }
+
+module.exports.isGivenSpecializationMine = (req, res) => {
+  if (req.query.id === undefined || req.query == null) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  let data
+  if (req.session.user == undefined || req.session.user == null) {
+    data = false
+  } else if (req.session.user.specialization == undefined) {
+    data = false
+  } else {
+    data = String(req.session.user.specialization._id) == String(req.query.id)
+  }
+  return res
+    .status(200)
+    .json({
+      status: 'ok',
+      data
+    })
+}
+
+module.exports.isGivenIdMine = (req, res) => {
+  if (req.query.id === undefined || req.query == null) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  if (req.session.user === undefined || req.session.user === null) {
+    return res
+      .status(200)
+      .json({
+        status: 'ok',
+        data: false
+      })
+  }
+  return res
+    .status(200)
+    .json({
+      status: 'ok',
+      data: (String(req.session.user._id) == String(req.query.id))
+    })
+}
