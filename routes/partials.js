@@ -155,7 +155,7 @@ module.exports.setYearForUser = (req, res, next) => {
 router.all('*', this.setYearForUser)
 
 module.exports.onlyLoggedIn = (req, res, next) => {
-  if (req.session.user === undefined) {
+  if (req.session.user === undefined || req.session.user == null) {
     if (req.originalUrl.includes('api')) {
       return res
         .status(403)
