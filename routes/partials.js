@@ -48,7 +48,7 @@ module.exports.setYearForUser = (req, res, next) => {
   const Year = require('../models/Year')
   const User = require('../models/User')
   let yearFilter
-  if ((req.session.user != undefined || req.session.user != null ) && req.session.year != undefined) {
+  if ((req.session.user != undefined || req.session.user != null) && req.session.year != undefined) {
     if (req.session.user.type === 'admin') {
       return next()
     }
@@ -119,17 +119,17 @@ module.exports.setYearForUser = (req, res, next) => {
                 type: 'admin',
                 password: bcrypt.hashSync('purkynkaIsHappy', 15)
               })
-              .save()
-              .then(u => u
-                .populate('specialization')
-                .populate('years.year')
-                .execPopulate()
-              )
-              .then(user => {
-                console.log('The first user was successfully created!')
-                req.session.user = user
-                return next()
-              })
+                .save()
+                .then(u => u
+                  .populate('specialization')
+                  .populate('years.year')
+                  .execPopulate()
+                )
+                .then(user => {
+                  console.log('The first user was successfully created!')
+                  req.session.user = user
+                  return next()
+                })
             })
           } else {
             console.error('Year not found')
@@ -175,12 +175,16 @@ module.exports.onlyNonLoggedIn = (req, res, next) => {
   if (req.session.user === undefined) {
     next()
   } else {
-    return res
-      .status(200)
-      .json({
-        status: 'error',
-        error: 'only-for-non-logged-in'
-      })
+    if (req.originalUrl.includes('api')) {
+      return res
+        .status(200)
+        .json({
+          status: 'error',
+          error: 'only-for-non-logged-in'
+        })
+    } else {
+      return res.redirect('/')
+    }
   }
 }
 
