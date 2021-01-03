@@ -109,17 +109,12 @@
 										</div>
 										<div class="col-md-6 col-sm-12">
 											<div class="form-group">
-												<label class="form-control-label" for="user-type">Role</label>
+												<label class="form-control-label" for="user-type">Typ účtu</label>
 												<select class="form-control" id="user-type">
-													<option <%= user.type === 'student' ? 'selected="selected"' : '' %>
-														value="student">Student(ka)</option>
-													<option <%= user.type === 'guarant' ? 'selected="selected"' : '' %>
-														value="guarantor">Garant(ka)</option>
-													<option
-														<%= user.type === 'consultant' ? 'selected="selected"' : '' %>
-														value="consultant">Konzultant(ka)</option>
-													<option <%= user.type === 'admin' ? 'selected="selected"' : '' %>
-														value="admin">Administrátor(ka)</option>
+													<option value="student">Student(ka)</option>
+													<option value="guarantor">Garant(ka)</option>
+													<option value="consultant">Konzultant(ka)</option>
+													<option value="admin">Administrátor(ka)</option>
 												</select>
 											</div>
 										</div>
@@ -130,7 +125,7 @@
 												<label class="form-control-label"
 													for="specialization">Specializace</label>
 												<select class="form-control" id="specialization">
-													<option value="null" selected>Uživatel není student</option>
+													<option value="null" id="specialization-null" selected>Uživatel není student | Žádná</option>
 												</select>
 											</div>
 										</div>
@@ -274,8 +269,34 @@
 
 		$(document).ready(function () {
 			let specialization
+			let oldSpecialization
+
 			const $specializationSelect = $('select#specialization')
+			$specializationSelect.select2({
+				minimumResultsForSearch: -1
+			})
+			$specializationSelect.on('select2:select', function (e) {
+				specialization = $specializationSelect.val()
+				console.log(specialization)
+			})
+
 			const $userTypeSelect = $('select#user-type')
+			$userTypeSelect.select2({
+				minimumResultsForSearch: -1
+			})
+			$userTypeSelect.on('select2:select', function (e) {
+				if ($userTypeSelect.val() === 'student') {
+					$specializationSelect.prop('disabled', false)
+					$('#specialization-null').prop('disabled', true)
+					$specializationSelect.val(oldSpecialization).trigger('change')
+					specialization = $specializationSelect.val()
+				} else {
+					$specializationSelect.prop('disabled', true)
+					$specializationSelect.val('null').trigger('change')
+					oldSpecialization = specialization
+					specialization = null
+				}
+			})
 
 			function getYearsForRequest() {
 				let years = []
@@ -396,52 +417,25 @@
 				})
 			}
 
-			function hasUserGivenSpecialization(specialization) {
-			<% if (user.specialization === undefined || user.specialization === null) { %>
-			return false
-						<% } else { %>
-			return '<%= user.specialization._id %>' === specialization._id
-						<% } %>
-		}
-
-			function getSpecializationParameters(specialization) {
+			async function getSpecializationParameters(specialization) {
 				let parameters = { value: specialization._id }
-				if (hasUserGivenSpecialization(specialization)) {
+				const res = await API.user.hasUserGivenSpecialization('<%= user._id %>', specialization._id)
+				if (res.data) {
 					parameters.selected = 'selected'
 				}
 				return parameters
 			}
 
 			API.specialization.list().then(function (specializations) {
-				specializations.forEach(specialization => {
+				specializations.forEach(async specialization => {
+					let params = await getSpecializationParameters(specialization)
 					$specializationSelect.append(
-						$('<option>', getSpecializationParameters(specialization)).text(specialization.name)
+						$('<option>', params).text(specialization.name)
 					)
-				})
-				$specializationSelect.select2({
-					minimumResultsForSearch: -1
 				})
 				if ($userTypeSelect.val() !== 'student') {
 					$specializationSelect.prop('disabled', true)
 				}
-			})
-
-			$('select').select2({
-				minimumResultsForSearch: -1
-			})
-
-			$userTypeSelect.on('select2:select', function (e) {
-				if ($userTypeSelect.val() === 'student') {
-					$specializationSelect.prop('disabled', false)
-					specialization = $specializationSelect.val()
-				} else {
-					$specializationSelect.prop('disabled', true)
-					specialization = null
-				}
-			})
-
-			$specializationSelect.on('select2:select', function (e) {
-				specialization = $specializationSelect.val()
 			})
 
 			$('#edit-user-button').click(editProfile)

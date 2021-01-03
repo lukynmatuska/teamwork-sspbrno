@@ -18,6 +18,7 @@ const randomstring = require("randomstring")
  */
 const User = require('../models/User')
 const Specialization = require('../models/Specialization')
+const { stat } = require('fs')
 
 function createNewUserInMongoDB(req, res, userType) {
   new User({
@@ -851,7 +852,7 @@ module.exports.import = async (req, res) => {
 }
 
 module.exports.isGivenSpecializationMine = (req, res) => {
-  if (req.query.id === undefined || req.query == null) {
+  if (req.query.id === undefined || req.query.id == null) {
     return res
       .status(422)
       .json({
@@ -872,6 +873,55 @@ module.exports.isGivenSpecializationMine = (req, res) => {
     .json({
       status: 'ok',
       data
+    })
+}
+
+module.exports.hasUserGivenSpecialization = (req, res) => {
+  if (req.query.id == undefined || req.query.id == null) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  }
+  if (req.query.specialization == undefined || req.query.specialization == null) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-specialization'
+      })
+  }
+  User
+    .countDocuments({
+      _id: req.query.id,
+      specialization: req.query.specialization
+    })
+    .exec((err, countOfUsers) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            'error': 'mongo-err'
+          })
+      }
+      let data
+      if (countOfUsers == undefined || countOfUsers == null) {
+        data = false
+      } else if (countOfUsers == 1) {
+        data = true
+      } else {
+        data = false
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok',
+          data
+        })
     })
 }
 

@@ -83,6 +83,7 @@ router.get('/user/list', partials.onlyLoggedIn, userController.list)
 router.post('/user/import', partials.onlyAdmin, userController.import)
 router.post('/user/parse-xlsx', partials.onlyAdmin, userController.parseXlsx)
 router.get('/user/is-given-specialization-mine', partials.onlyLoggedIn, userController.isGivenSpecializationMine)
+router.get('/user/has-user-given-specialization', partials.onlyLoggedIn, userController.hasUserGivenSpecialization)
 router.get('/user/is-given-id-mine', userController.isGivenIdMine)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {

@@ -223,6 +223,10 @@ var API = {
     isGivenSpecializationMine: function (specializationId) {
       return getData('/user/is-given-specialization-mine', { id: specializationId })
     },
+
+    hasUserGivenSpecialization: function (UserId, specializationId) {
+      return getData('/user/has-user-given-specialization', { id: UserId, specialization: specializationId })
+    },
     
     isGivenUserIdMine: function (UserId) {
       return getData('/user/is-given-id-mine', { id: UserId })
