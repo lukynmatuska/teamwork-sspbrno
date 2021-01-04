@@ -176,6 +176,7 @@
 											}
 										} else {
 											student.user.link = '/admin/users/detail/' + student.user._id + '/'
+											student.user.photo = generateAvatar(student.user.name.first + ' ' + student.user.name.last)
 										}
 										$('<a>', {
 											href: student.user.link,
@@ -217,7 +218,7 @@
 										}).tooltip().append(
 											$('<img>', {
 												alt: 'Garantův avatar',
-												src: guarantor.user.photo
+												src: generateAvatar(guarantor.user.fullName)
 											})
 										).appendTo(guarantorsDOMSs)
 									}
@@ -249,7 +250,7 @@
 										}).tooltip().append(
 											$('<img>', {
 												alt: 'Garantův avatar',
-												src: consultant.user.photo
+												src: generateAvatar(consultant.user.fullName)
 											})
 										).appendTo(consultantsDOMSs)
 									}
