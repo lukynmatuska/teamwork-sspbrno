@@ -35,10 +35,6 @@ var userSchema = new mongoose.Schema({
     enum: ['student', 'guarantor', 'admin', 'consultant'],
     default: 'student'
   },
-  photo: {
-    type: String,
-    default: '/images/users/_default.png'
-  },
   specialization: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Specialization'
@@ -67,12 +63,8 @@ userSchema.virtual('id').get(function(){
   return this._id.toHexString()
 })
 
-userSchema.virtual('avatar').get(function(){
-  return this.photo
-})
-
 function fullName(){
-  if (this.name.middle === undefined) {
+  if (this.name.middle == undefined) {
     return `${this.name.first} ${this.name.last}`
   } else {
     return `${this.name.first} ${this.name.middle} ${this.name.last}`
