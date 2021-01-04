@@ -20,7 +20,8 @@ Node.js webapp for administration of Team works at [SSPBRNO](https://sspbrno.cz)
 - ```cd teamwork-sspbrno && npm i```
 ##### Config MongoDB
 ##### Create database and user
-- ```use teamwork; db.createUser({user: 'teamwork', pwd: 'veryStrongPassword', roles: [{role: 'readWrite', db: 'teamwork'}]});```
+- ```use teamworks;```
+- ```db.createUser({user: 'teamworks', pwd: 'veryStrongPassword', roles: [{role: 'readWrite', db: 'teamworks'}]});```
 ##### Prepare config file:
 - ```cp config.sample.js config.js```  
 Edit settings in your `config.js` or in ENV variables (see `app.js`)
