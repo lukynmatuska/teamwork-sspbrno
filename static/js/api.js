@@ -1,3 +1,27 @@
+function generateAvatar(name){
+  name = name.split(' ')
+  var initials = name[name.length-1][0] + name[0][0]
+  var canvas = document.createElement('canvas');
+  var radius = 30;
+  var margin = 5;
+  canvas.width = radius*2+margin*2;
+  canvas.height = radius*2+margin*2;
+
+  // Get the drawing context
+  var ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(radius+margin,radius+margin,radius, 0, 2 * Math.PI, false);
+  ctx.closePath();
+  ctx.fillStyle = '#000000';
+  ctx.fill();
+  ctx.fillStyle = "white";
+  ctx.font = "bold 30px Open Sans,sans-serif";
+  ctx.textAlign = 'center';
+  ctx.fillText(initials, radius+5,radius*4/3+margin);
+  return canvas.toDataURL();
+  //The canvas will never be added to the document.
+}
+
 // Example POST method implementation:
 async function postData(url = '', data = {}) {
   // Default options are marked with *
