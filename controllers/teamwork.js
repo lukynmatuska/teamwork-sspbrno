@@ -272,7 +272,7 @@ module.exports.list = (req, res) => {
       if (err) {
         console.error(err)
         return res
-          .status(422)
+          .status(500)
           .json({
             status: 'error',
             error: err
