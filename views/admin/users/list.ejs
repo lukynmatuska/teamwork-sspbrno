@@ -21,7 +21,6 @@
 								<thead class="thead-light">
 									<tr>
 										<th scope="col" class="sort">ID</th>
-										<th scope="col" style="max-width: 35px;">Avatar</th>
 										<th scope="col" class="sort">Příjmení</th>
 										<th scope="col" class="sort">Křestní jméno</th>
 										<th scope="col">Email</th>
@@ -103,15 +102,6 @@
 							{
 								data: "_id",
 								visible: false,
-							}, {
-								data: "_id",
-								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-									$(nTd).html(
-										$('<a>', { href: '/admin/users/detail/' + oData._id, class: 'avatar avatar-sm rounded-circle m-auto' }).append(
-											$('<img>', { alt: 'Uživatelův avatar', src: oData.photo })
-										)
-									)
-								},
 							}, {
 								data: 'name.last',
 							}, {
