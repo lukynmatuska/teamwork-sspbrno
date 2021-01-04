@@ -156,6 +156,17 @@
                         setTimeout(function () {
                             updateSession()
                         }, 3500)
+                    } else if (data.error === 'file-photo-must-be-image') {
+                        $newProfilePhotoStatus
+                            .empty()
+                            .append(
+                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                                    $('<strong>').text('Ach ne! '),
+                                    'Nahraný soubour není obrázek, zkuste to znovu prosím.'
+                                )
+                            )
+                            .show()
                     } else {
                         $newProfilePhotoStatus
                             .empty()

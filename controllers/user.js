@@ -959,6 +959,20 @@ module.exports.updateProfilePhoto = (req, res) => {
         status: 'error',
         error: 'No files were uploaded.'
       })
+  } else if (req.files.photo == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-file-photo'
+      })
+  } else if (!req.files.photo.mimetype.includes('image')) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'file-photo-must-be-image'
+      })
   }
   let dataBuffer = new Buffer.alloc(req.files.photo.size, req.files.photo.data)
   const photo = imageDataURI.encode(dataBuffer, req.files.photo.mimetype)
