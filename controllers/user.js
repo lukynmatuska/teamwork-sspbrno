@@ -12,7 +12,6 @@ const osloveni = require('../libs/osloveni')
 const nodemailer = require('nodemailer')
 const xlsx = require('node-xlsx').default
 const randomstring = require("randomstring")
-const imageDataURI = require('image-data-uri')
 
 /**
  * Models

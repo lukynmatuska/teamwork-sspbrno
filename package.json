@@ -21,7 +21,6 @@
         "fs": "0.0.1-security",
         "generate-source-map": "0.0.5",
         "html-minifier": "^4.0.0",
-        "image-data-uri": "^2.0.1",
         "moment": "^2.24.0",
         "mongoose": "^5.9.11",
         "node-xlsx": "^0.15.0",
