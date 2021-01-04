@@ -7,28 +7,7 @@
     <h1 class="cover-heading"><%= title %></h1>
     <div class="container emp-profile">
         <div class="row mt-4 mr-2 mb-4">
-            <div class="col-md-4 d-flex flex-column justify-content-center">
-                <div class="profile-img mb-3">
-                    <img src="<%= req.session.user.photo %>" alt="Profile photo" />
-                </div>
-                <form action="#" id="update-profile-photo" method="post" class="d-flex flex-column justify-content-center">
-                    <div class="file btn btn-dark m-1" role="button" style="cursor: pointer">
-                        <i class="fas fa-upload"></i>
-                        Nahrát novou fotografii
-                        <input type="file" id="new-profile-photo" name="image" accept="image/*" role="button" style="cursor: pointer" />
-                    </div>
-                    <button type="submit" class="btn btn-dark m-1">
-                        <i class="fas fa-edit"></i>
-                        <span>Změnit profilovou fotografii</span>
-                    </button>
-                </form>
-                <button type="button" onclick="updateSession()" class="btn btn-dark m-1">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>Aktulizace sezení</span>
-                </button>
-                <div class="form-group mx-auto mt-4" id="new-profile-photo-status" style="display: none;"></div>
-            </div>
-            <div class="col-md-8">
+            <div class="col">
                 <div class="profile-head mb-3">
                     <h5>
                         <%= req.session.user.name.first %>
@@ -49,15 +28,15 @@
                 </div>
                 <hr>
                 <div class="row mt-3">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Uživatelské ID</label>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-left">
                         <p class="text-secondary"><%= req.session.user._id %></p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Email</label>
                     </div>
                     <div class="col-md-6">
@@ -68,7 +47,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Křestní jméno</label>
                     </div>
                     <div class="col-md-6">
@@ -79,7 +58,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Prostřední jméno</label>
                     </div>
                     <div class="col-md-6">
@@ -91,7 +70,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Příjmení</label>
                     </div>
                     <div class="col-md-6">
@@ -102,10 +81,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-right">
                         <label class="text-dark">Specializace</label>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-left">
                         <div class="form-group">
                             <label class="text-dark">
                                 <% if (req.session.user.specialization === null || req.session.user.specialization === undefined) { %>
@@ -118,7 +97,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col">
                         <button type="button" id="edit-profile" class="btn btn-dark m-auto">Upravit profil</button>
                         <div class="form-group mx-auto mt-4" id="edit-profile-status" style="display: none;"></div>
                     </div>
@@ -247,42 +226,44 @@
 
     $(document).ready(() => {
         $('#change-password-button').click(changePassword)
-        $('form#update-profile-photo').submit(function (event) {
-            event.preventDefault()
+        $('#edit-profile').click(function () {
             API.user
-                .updateProfilePhoto(document.getElementById("new-profile-photo").files[0])
+                .edit({
+                    firstname: $('#firstname').val(),
+                    middlename: $('#middlename').val(),
+                    lastname: $('#lastname').val(),
+                    email: $('#email').val()
+                })
                 .then(function (data) {
                     console.log(data)
-                    let $newProfilePhotoStatus = $('#new-profile-photo-status')
                     if (data.status === 'ok') {
-                        $newProfilePhotoStatus
+                        $('div#edit-profile-status')
                             .empty()
                             .append(
                                 $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
                                     $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
                                     $('<strong>').text('Gratuluji!'),
-                                    ' Úspěšně jste se upravil(a) svoji profilovou fotografii'
+                                    ' Úspěšně jste se upravil(a) svůj profil'
                                 )
                             )
                             .show()
-                            .delay(3000).fadeOut('slow')
                         // Refresh the page
                         setTimeout(function () {
-                            updateSession()
+                            window.location.href = window.location.href;
                         }, 3500)
-                    } else if (data.error === 'file-photo-must-be-image') {
-                        $newProfilePhotoStatus
+                    } else if (data.error === 'email-exists') {
+                        $('div#edit-profile-status')
                             .empty()
                             .append(
                                 $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
                                     $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Ach ne! '),
-                                    'Nahraný soubour není obrázek, zkuste to znovu prosím.'
+                                    $('<strong>').text('Ouha! '),
+                                    'Tento email už používá někdo před tebou.'
                                 )
                             )
                             .show()
                     } else {
-                        $newProfilePhotoStatus
+                        $('div#edit-profile-status')
                             .empty()
                             .append(
                                 $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
@@ -294,56 +275,6 @@
                             .show()
                     }
                 })
-        })
-    })
-    $('#edit-profile').click(function () {
-        API.user
-            .edit({
-                firstname: $('#firstname').val(),
-                middlename: $('#middlename').val(),
-                lastname: $('#lastname').val(),
-                email: $('#email').val()
-            })
-            .then(function (data) {
-                console.log(data)
-                if (data.status === 'ok') {
-                    $('div#edit-profile-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Gratuluji!'),
-                                ' Úspěšně jste se upravil(a) svůj profil'
-                            )
-                        )
-                        .show()
-                    // Refresh the page
-                    setTimeout(function () {
-                        window.location.href = window.location.href;
-                    }, 3500)
-                } else if (data.error === 'email-exists') {
-                    $('div#edit-profile-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ouha! '),
-                                'Tento email už používá někdo před tebou.'
-                            )
-                        )
-                        .show()
-                } else {
-                    $('div#edit-profile-status')
-                        .empty()
-                        .append(
-                            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                $('<strong>').text('Ach ne! '),
-                                data.error
-                            )
-                        )
-                        .show()
-                }
             })
     })
 </script>
