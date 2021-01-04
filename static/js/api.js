@@ -192,6 +192,10 @@ var API = {
       return postData('/user/set-new-password', { id: userId, password })
     },
 
+    updatePassword: function (oldPassword, newPassword, newPasswordRepeat) {
+      return postData('/user/update-password', { oldPassword, newPassword, newPasswordRepeat })
+    },
+
     updateSession: function () {
       return getData('/user/update-session')
     },

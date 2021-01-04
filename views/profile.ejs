@@ -5,8 +5,6 @@
 <%- include('./partials/menu') %>
 <main role="main" class="inner cover mt-5">
     <h1 class="cover-heading"><%= title %></h1>
-    <span class="underline"></span>
-
     <div class="container emp-profile">
         <div class="row mt-4 mr-2 mb-4">
             <div class="col-md-4 d-flex flex-column justify-content-center">
@@ -128,11 +126,127 @@
             </div>
         </div>
     </div>
+    <h1 class="cover-heading">Změna hesla</h1>
+    <div class="container emp-profile text-center">
+        <div class="row">
+            <form action="" class="col" id="change-password-form">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-control-label text-dark" for="old-password">Staré heslo</label>
+                            <input type="password" id="old-password" class="form-control" required
+                                placeholder="Vyplňte prosím toto povinné pole">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-control-label text-dark" for="new-password">Nové heslo</label>
+                            <input type="password" id="new-password" class="form-control" required
+                                placeholder="Vyplňte prosím toto povinné pole">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-control-label text-dark" for="new-password-repeat">Nové heslo znovu</label>
+                            <input type="password" id="new-password-repeat" class="form-control" required
+                                placeholder="Vyplňte prosím toto povinné pole">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-dark"
+                            id="change-password-button">Editovat</button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" id="change-password-status" style="display: none;"></div>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
 <%- include('./partials/scripts-file-end') %>
 <script src="/js/select2.min.js"></script>
 <script>
+    function changePassword() {
+        let oldPassword = $('#old-password').val()
+        let password = $('#new-password').val()
+        let passwordRepeat = $('#new-password-repeat').val()
+        let alert = {
+            dom: $('#change-password-status'),
+            strongText: 'Vyhodnocuji',
+            text: 'Vyčkejte prosím',
+            status: 'info',
+            icon: 'fas fa-circle-notch fa-spin',
+            show: function() {
+                this.dom
+                .empty()
+                .append(
+                    $('<div>', { class: `alert alert-${this.status} alert-dismissible` }).append(
+                        $('<i>', { class: this.icon, 'aria-hidden': 'true' }),
+                        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+                        $('<strong>').text(' ' + this.strongText),
+                        ' ' + this.text
+                    )
+                )
+                .show()
+            }
+        }
+        alert.show()
+
+        if (password === '') {
+            alert.status = 'danger'
+            alert.icon = 'fas fa-exclamation-triangle'
+            alert.strongText = 'Ach ne!'
+            alert.text = 'Heslo nemůže být prázdné'
+            return alert.show().delay(3000).fadeOut('slow')
+        } else if (password != passwordRepeat) {
+            alert.status = 'danger'
+            alert.icon = 'fas fa-exclamation-triangle'
+            alert.strongText = 'Ach ne!'
+            alert.text = 'Heslo musí být stejná'
+            return alert.show().delay(3000).fadeOut('slow')
+        } else if (password === oldPassword) {
+            alert.status = 'danger'
+            alert.icon = 'fas fa-exclamation-triangle'
+            alert.strongText = 'Ach ne!'
+            alert.text = 'Nové heslo se nesmí rovnat starému'
+            return alert.show().delay(3000).fadeOut('slow')
+        }
+
+        API.user.updatePassword(oldPassword, password, passwordRepeat).then(function (responseFromServer) {
+            if (responseFromServer.status === 'ok') {
+                alert.status = 'success'
+                alert.icon = 'fas fa-check'
+                alert.strongText = 'Výborně!'
+                alert.text = 'Vaše heslo bylo změněno'
+                setTimeout(function() {
+                    window.location.href = window.location.href
+                }, 5555)
+            } else if (responseFromServer.error === 'bad-old-password') {
+                alert.status = 'danger'
+                alert.icon = 'fas fa-exclamation-triangle'
+                alert.strongText = 'Ouha!'
+                alert.text = 'Staré heslo je špatně'
+            } else {
+                console.error(responseFromServer)
+                alert.status = 'danger'
+                alert.icon = 'fas fa-exclamation-triangle'
+                alert.strongText = 'Ach ne!'
+                alert.text = 'Vnitřní chyba serveru'
+            }
+            alert.show()
+            alert.dom.delay(5000).fadeOut('slow')
+        })
+    }
+
     $(document).ready(() => {
+        $('#change-password-button').click(changePassword)
         $('form#update-profile-photo').submit(function (event) {
             event.preventDefault()
             API.user

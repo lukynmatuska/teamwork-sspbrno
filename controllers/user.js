@@ -19,7 +19,6 @@ const imageDataURI = require('image-data-uri')
  */
 const User = require('../models/User')
 const Specialization = require('../models/Specialization')
-const { stat } = require('fs')
 
 function createNewUserInMongoDB(req, res, userType) {
   new User({
@@ -513,6 +512,90 @@ module.exports.setNewPassword = (req, res) => {
           })
       })
   }
+}
+
+module.exports.updatePassword = async (req, res) => {
+  if (req.body.newPassword === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-new-password'
+      })
+  } else if (req.body.newPasswordRepeat === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-new-password-repeat'
+      })
+  } else if (req.body.oldPassword === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-old-password'
+      })
+  } else if (req.body.newPassword != req.body.newPasswordRepeat) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'passwords-not-match'
+      })
+  }
+  let newPassword = bcrypt.hashSync(req.body.newPassword, 15)
+  let match = await bcrypt.compare(req.body.oldPassword, req.session.user.password)
+  if (!match) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'bad-old-password'
+      })
+  }
+  User
+    .findByIdAndUpdate(
+      req.session.user._id,
+      {
+        password: newPassword
+      },
+      {
+        new: true
+      }
+    )
+    .populate('specialization')
+    .populate('years.year')
+    .exec((err, user) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      // Sort years by name
+      user.years.sort((a, b) => {
+        if (a.year == undefined || a.year == null) {
+          return 1
+        }
+        if (Number(a.year.name) > Number(b.year.name)) {
+          return -1
+        }
+        if (Number(a.year.name) < Number(b.year.name)) {
+          return 1
+        }
+        return 0
+      })
+      req.session.user = user
+      return res
+        .status(200)
+        .send({
+          status: 'ok'
+        })
+    })
 }
 
 module.exports.updateSession = (req, res) => {
