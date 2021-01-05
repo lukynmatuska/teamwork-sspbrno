@@ -18,6 +18,7 @@ const partials = require('../routes/partials')
  */
 const Year = require('../models/Year')
 const User = require('../models/User')
+const TeamWork = require('../models/TeamWork')
 
 module.exports.new = (req, res) => {
   if (req.body.name === undefined) {
@@ -120,9 +121,8 @@ module.exports.delete = (req, res) => {
         error: 'not-send-id'
       })
   }
-  Year
-    .findByIdAndRemove(id)
-    .exec((err, year) => {
+  TeamWork
+    .countDocuments({ year: id }, (err, count) => {
       if (err) {
         console.error(err)
         return res
@@ -132,17 +132,17 @@ module.exports.delete = (req, res) => {
             error: err
           })
       }
-      User
-        .updateMany({
-          'years.year': mongoose.Types.ObjectId(req.body.id)
-        }, {
-          $pull: {
-            years: {
-              year: mongoose.Types.ObjectId(req.body.id)
-            }
-          }
-        })
-        .exec((err) => {
+      if (count > 0) {
+        return res
+          .status(200)
+          .json({
+            status: 'error',
+            error: 'can-not-delete-year-have-teamworks'
+          })
+      }
+      Year
+        .findByIdAndRemove(id)
+        .exec((err, year) => {
           if (err) {
             console.error(err)
             return res
@@ -152,12 +152,33 @@ module.exports.delete = (req, res) => {
                 error: err
               })
           }
-          if (req.method === 'DELETE') {
-            return res
-              .status(200)
-              .json(year)
-          }
-          return userController.updateSession(req, res)
+          User
+            .updateMany({
+              'years.year': mongoose.Types.ObjectId(req.body.id)
+            }, {
+              $pull: {
+                years: {
+                  year: mongoose.Types.ObjectId(req.body.id)
+                }
+              }
+            })
+            .exec((err) => {
+              if (err) {
+                console.error(err)
+                return res
+                  .status(500)
+                  .json({
+                    status: 'error',
+                    error: err
+                  })
+              }
+              if (req.method === 'DELETE') {
+                return res
+                  .status(200)
+                  .json(year)
+              }
+              return userController.updateSession(req, res)
+            })
         })
     })
 }
