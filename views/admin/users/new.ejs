@@ -50,20 +50,32 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-lg-6">
+										<div class="col">
 											<div class="form-group">
 												<label class="form-control-label" for="email">Email</label>
 												<input type="email" id="email" class="form-control" required
 													placeholder="Vyplňte prosím toto prázdné povinné pole">
 											</div>
 										</div>
-										<div class="col-lg-6">
+									</div>
+									<div class="row">
+										<div class="col-md-6 col-sm-12">
 											<div class="form-group">
-												<label for="user-type">Typ uživatele</label>
+												<label class="form-control-label" for="user-type">Typ účtu</label>
 												<select class="form-control" id="user-type">
 													<option value="student">Student(ka)</option>
 													<option value="guarantor">Garant(ka)</option>
+													<option value="consultant">Konzultant(ka)</option>
 													<option value="admin">Administrátor(ka)</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-control-label"
+													for="specialization">Specializace</label>
+												<select class="form-control" id="specialization">
+													<option value="null" id="specialization-null" disabled="disabled">Uživatel není student | Žádná</option>
 												</select>
 											</div>
 										</div>
@@ -107,8 +119,45 @@
 	<%- include('../partials/scripts-file-end') %>
 	<script>
 		$(document).ready(() => {
-			$('select#user-type').select2({
+			let specialization
+			let oldSpecialization
+
+			const $specializationSelect = $('select#specialization')
+			$specializationSelect.select2({
 				minimumResultsForSearch: -1
+			})
+			$specializationSelect.on('select2:select', function (e) {
+				specialization = $specializationSelect.val()
+				console.log(specialization)
+			})
+
+			const $userTypeSelect = $('select#user-type')
+			$userTypeSelect.select2({
+				minimumResultsForSearch: -1
+			})
+			$userTypeSelect.on('select2:select', function (e) {
+				if ($userTypeSelect.val() === 'student') {
+					$specializationSelect.prop('disabled', false)
+					$('#specialization-null').prop('disabled', true)
+					$specializationSelect.val(oldSpecialization).trigger('change')
+					specialization = $specializationSelect.val()
+				} else {
+					$specializationSelect.prop('disabled', true)
+					$specializationSelect.val('null').trigger('change')
+					oldSpecialization = specialization
+					specialization = null
+				}
+			})
+
+			API.specialization.list().then(function (specializations) {
+				specializations.forEach(async specialization => {
+					$specializationSelect.append(
+						$('<option>', { value: specialization._id }).text(specialization.name)
+					)
+				})
+				if ($userTypeSelect.val() !== 'student') {
+					$specializationSelect.prop('disabled', true)
+				}
 			})
 
 			$('form#new-user').submit(function (event) {
@@ -137,7 +186,8 @@
 					$('#firstname').val(),
 					$('#lastname').val(),
 					$('#middlename').val(),
-					$('#user-type').val()
+					$userTypeSelect.val(),
+					$specializationSelect.val()
 				).then(function (responseFromServer) {
 					if (responseFromServer.error === undefined) {
 						$status

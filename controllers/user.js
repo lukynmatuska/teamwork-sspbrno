@@ -20,6 +20,13 @@ const User = require('../models/User')
 const Specialization = require('../models/Specialization')
 
 function createNewUserInMongoDB(req, res, userType) {
+  let years = []
+  if (['admin', 'guarantor', 'consultant'].includes(userType)) {
+    years.push({
+      year: req.session.year._id,
+      permissions: 'edit'
+    })
+  }
   new User({
     name: {
       first: (req.body.firstname !== undefined ? req.body.firstname.trim() : undefined),
@@ -29,7 +36,8 @@ function createNewUserInMongoDB(req, res, userType) {
     specialization: req.body.specialization,
     password: bcrypt.hashSync(req.body.password, 15),
     email: req.body.email,
-    type: userType
+    type: userType,
+    years: years
   })
     .save()
     .then(u => u
@@ -110,7 +118,7 @@ module.exports.new = (req, res) => {
     }
   } else if (req.body.usertype === undefined) {
     userType = 'student'
-  } else if (req.body.usertype !== undefined && (req.session.user !== undefined ? (req.session.user.type === 'admin') : false)) {
+  } else if (req.body.usertype != undefined && (req.session.user == undefined ? false : (req.session.user.type == 'admin'))) {
     userType = req.body.usertype
   }
   req.body.email = req.body.email.trim().toLowerCase()
