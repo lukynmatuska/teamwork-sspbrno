@@ -236,6 +236,8 @@
 			$userTypeSelect.select2({
 				minimumResultsForSearch: -1
 			})
+			$userTypeSelect.val('<%= user.type %>').trigger('change')
+
 			$userTypeSelect.on('select2:select', function (e) {
 				if ($userTypeSelect.val() === 'student') {
 					$specializationSelect.prop('disabled', false)
