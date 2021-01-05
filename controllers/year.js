@@ -219,8 +219,8 @@ module.exports.edit = (req, res) => {
   }
 
   Year
-    .findByIdAndUpdate(req.body.id, update, { new: true })
-    .exec((err, year) => {
+    .findOneAndUpdate({ status: 'active' }, { status: 'archived' })
+    .exec((err) => {
       if (err) {
         console.error(err)
         return res
@@ -230,18 +230,31 @@ module.exports.edit = (req, res) => {
             error: err
           })
       }
-      if (year.status === 'active') {
-        req.session.year = year
-      }
-      if (req.method === 'PUT') {
-        return res
-          .status(200)
-          .json(year)
-      }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
+      Year
+        .findByIdAndUpdate(req.body.id, update, { new: true })
+        .exec((err, year) => {
+          if (err) {
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          if (year.status === 'active') {
+            req.session.year = year
+          }
+          if (req.method === 'PUT') {
+            return res
+              .status(200)
+              .json(year)
+          }
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
         })
     })
 }
