@@ -45,7 +45,6 @@
 		})
 
 		$selectPosition.on('select2:select', function (e) {
-			console.log({ specialization: $selectPosition.val() })
 			let $selectStudent = $(`select#student-${i}-user`).select2()
 			$selectStudent.html(`<option selected="selected" value>Načítání...</option>`)
 			$selectStudent.prop("disabled", true)
@@ -178,18 +177,43 @@
 				.append(
 					$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
 						$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-						// $('<strong>').text('Gratuluji!'),
 						'Zpracovávám'
 					)
 				)
 				.show()
+			
+			const dataForRequest = getDataForRequest()
+			if (dataForRequest.students.length < 2) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet studentů u týmové práce je 2'
+						)
+					)
+					.show()
+			}
+			if (dataForRequest.guarantors.length < 1) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet garantů u týmové práce je 1'
+						)
+					)
+					.show()
+			}
 
 			API.teamwork.new(
-				getDataForRequest().name,
-				getDataForRequest().description,
-				getDataForRequest().students,
-				getDataForRequest().guarantors,
-				getDataForRequest().consultants
+				dataForRequest.name,
+				dataForRequest.description,
+				dataForRequest.students,
+				dataForRequest.guarantors,
+				dataForRequest.consultants
 			).then(function (responseFromServer) {
 				if (responseFromServer.status === 'ok') {
 					$status

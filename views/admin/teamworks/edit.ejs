@@ -224,6 +224,30 @@
 				)
 				.show()
 			let dataForRequest = getDataForRequest()
+			if (dataForRequest.students.length < 2) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet studentů u týmové práce je 2'
+						)
+					)
+					.show()
+			}
+			if (dataForRequest.guarantors.length < 1) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet garantů u týmové práce je 1'
+						)
+					)
+					.show()
+			}
 			API.teamwork
 				.edit(
 					'<%= req.params.id %>',

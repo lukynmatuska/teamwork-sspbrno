@@ -26,10 +26,14 @@ module.exports.new = (req, res) => {
     return res.send('not-send-students')
   } else if (typeof req.body.students !== 'object') {
     return res.send('not-object-students')
+  } else if (req.body.students.length < 2 ) {
+    return res.send('few-students')
   } else if (req.body.guarantors === undefined) {
     return res.send('not-send-guarantors')
   } else if (typeof req.body.guarantors !== 'object') {
     return res.send('not-object-guarantors')
+  } else if (req.body.guarantors.length < 2 ) {
+    return res.send('few-guarantors')
   } else {
     for (let i = 0; i < req.body.students.length; i++) {
       if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
@@ -87,6 +91,9 @@ module.exports.edit = (req, res) => {
       })
   } else if (req.body.students !== undefined) {
     update.students = req.body.students
+    if (update.students.length < 2 ) {
+      return res.send('few-students')
+    }
     for (let i = 0; i < update.students.length; i++) {
       if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
         update.students[i].user = undefined
@@ -103,6 +110,9 @@ module.exports.edit = (req, res) => {
       })
   } else if (req.body.guarantors !== undefined) {
     update.guarantors = req.body.guarantors
+    if (update.guarantors.length < 2 ) {
+      return res.send('few-guarantors')
+    }
   }
 
   if (typeof req.body.consultants !== 'object') {
