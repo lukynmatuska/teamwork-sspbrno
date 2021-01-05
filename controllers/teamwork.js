@@ -32,7 +32,7 @@ module.exports.new = (req, res) => {
     return res.send('not-send-guarantors')
   } else if (typeof req.body.guarantors !== 'object') {
     return res.send('not-object-guarantors')
-  } else if (req.body.guarantors.length < 2 ) {
+  } else if (req.body.guarantors.length < 1 ) {
     return res.send('few-guarantors')
   } else {
     for (let i = 0; i < req.body.students.length; i++) {
@@ -110,7 +110,7 @@ module.exports.edit = (req, res) => {
       })
   } else if (req.body.guarantors !== undefined) {
     update.guarantors = req.body.guarantors
-    if (update.guarantors.length < 2 ) {
+    if (update.guarantors.length < 1 ) {
       return res.send('few-guarantors')
     }
   }
