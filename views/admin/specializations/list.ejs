@@ -38,23 +38,21 @@
 	<%- include('../partials/datatables') %>
 	<script>
 		function deleteSpecializationById(id) {
-			swal({
+			Swal.fire({
 				title: 'Opravdu chcete smazat toto zaměření?',
 				text: 'Radši si to dvakrát rozmyslete.',
 				icon: 'warning',
 				timer: 5000,
-				dangerMode: true,
-				buttons: {
-					cancel: "Byl to omyl",
-					confirm: 'Smazat!',
-				},
-			}).then((confirm) => {
-				if (confirm) {
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if (result.value) {
 					API.specialization
 						.delete(id)
 						.then(function (response) {
 							if (response.status === 'ok') {
-								return swal({
+								return Swal.fire({
 									title: 'Zaměření je smazáno!',
 									text: 'Už ji nikdy neuvidíme.',
 									icon: 'success',
@@ -65,7 +63,7 @@
 							}
 							switch (response.error) {
 								case 'not-sent-id':
-									swal({
+									Swal.fire({
 										title: 'Zaměření se nesmazalo!',
 										text: 'Nastala chyba, protože jste neposlal(a) na server ID specializace, kterou chcete smazat.',
 										icon: 'error'
@@ -74,25 +72,20 @@
 
 								default:
 									console.error(response)
-									swal({
+									Swal.fire({
 										title: 'Něco se pokazilo!',
 										text: response,
 										icon: 'error'
 									})
 									break
 							}
-						}
-						)
+						})
 				}
 			})
 		}
 		$(document).ready(function () {
 			API.specialization
-				.list(
-					{
-						year: '<%= req.session.year._id %>'
-					}
-				)
+				.list()
 				.then((responseFromServer) => {
 					$('table#specializations').DataTable({
 						language: {

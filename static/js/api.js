@@ -68,68 +68,70 @@ async function getData(path = '', data = {}) {
 
 
 function switchYear(yearId) {
-  swal({
-    title: "Přepíná se rok ...",
-    text: "Vydržte prosím moment ...",
-    icon: "warning",
-    timer: 1500,
-  }).then((value) => {
-    API.year
-      .switch(yearId)
-      .then(function (response) {
-        if (response.status === 'ok') {
-          return swal({
-            title: 'Rok se změnil!',
-            text: 'Jaká byla cesta časem?',
-            icon: 'success',
-            timer: 3000,
-          }).then((value) => {
-            location.reload()
+  API.year
+    .switch(yearId)
+    .then(function (response) {
+      /* if (response.status === 'ok') {
+        return Swal.fire({
+          title: 'Rok se změnil!',
+          text: 'Jaká byla cesta časem?',
+          icon: 'success',
+          timer: 1500,
+        }).then((value) => {
+          location.reload()
+        })
+      } */
+      location.reload()
+
+      console.error(response)
+      switch (response.error) {
+        case 'not-permissions-for-this-year':
+          Swal.fire({
+            title: 'Rok se nezměnil!',
+            text: 'Nastala chyba, protože nemáte práva na ročník, na který se chcete přepnout.',
+            icon: 'error',
           })
-        }
+          break
 
-        console.error(response)
-        switch (response.error) {
-          case 'not-permissions-for-this-year':
-            swal({
-              title: 'Rok se nezměnil!',
-              text: 'Nastala chyba, protože nemáte práva na ročník, na který se chcete přepnout.',
-              icon: 'error',
-            })
-            break
+        case 'not-found-year-bad-id':
+          Swal.fire({
+            title: 'Rok se nezměnil!',
+            text: 'Nastala chyba, protože jste na server poslal(a) špatné id ročníku, na který se chcete přepnout.',
+            icon: 'error',
+          })
+          break
 
-          case 'not-found-year-bad-id':
-            swal({
-              title: 'Rok se nezměnil!',
-              text: 'Nastala chyba, protože jste na server poslal(a) špatné id ročníku, na který se chcete přepnout.',
-              icon: 'error',
-            })
-            break
-
-          case 'not-sent-id':
-            swal({
-              title: 'Rok se nezměnil!',
-              text: 'Nastala chyba, protože jste neposlal(a) na server id ročníku, na který se chcete přepnout.',
-              icon: 'error',
-            })
-            break
-        }
-      })
-  })
+        case 'not-sent-id':
+          Swal.fire({
+            title: 'Rok se nezměnil!',
+            text: 'Nastala chyba, protože jste neposlal(a) na server id ročníku, na který se chcete přepnout.',
+            icon: 'error',
+          })
+          break
+        
+        default:
+          Swal.fire({
+            title: 'Rok se nezměnil!',
+            text: `Nastala chyba ${response.error}`,
+            icon: 'error',
+          })
+          break
+      }
+    })
 }
 
 function updateSession() {
-  swal({
+  Swal.fire({
     title: "Sezení se aktualizuje!",
     text: "Vydržte prosím ...",
     icon: "warning",
-    timer: 2000,
+    timer: 500,
   }).then((value) => {
     API.user
       .updateSession()
       .then(function (response) {
         if (response.status === 'ok') {
-          swal({
+          Swal.fire({
             title: 'Gratuluji!',
             text: 'Sezení bylo aktualizováno.',
             icon: 'success',
@@ -139,9 +141,9 @@ function updateSession() {
           })
         } else {
           console.error(response)
-          swal({
+          Swal.fire({
             title: 'Chyba!',
-            text: `Kontaktuj správce prosím tě a vzkaž mu: '${response.error}'`,
+            text: `Kontaktujte správce prosím Vás a vzkažte mu: '${response.error}'`,
             icon: 'error',
           })
         }
@@ -325,8 +327,8 @@ var API = {
       return getData('/teamwork/find-by-id/' + id)
     },
 
-    copy: function (id) {
-      return postData('/teamwork/copy', { id })
+    copy: function (id, year) {
+      return postData('/teamwork/copy', { id, year })
     },
 
     delete: function (id) {

@@ -40,33 +40,43 @@
 	<%- include('../partials/datatables') %>
 	<script>
 		function deleteYearById(id) {
-			swal({
+			Swal.fire({
 				title: 'Opravdu chcete smazat tento ročník?',
 				text: 'Radši si to dvakrát rozmyslete.',
 				icon: 'warning',
 				timer: 5000,
-				dangerMode: true,
-				buttons: {
-					cancel: "Byl to omyl",
-					confirm: 'Smazat!',
-				},
-			}).then((confirm) => {
-				if (confirm) {
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if(!result.value) {
+					Swal.fire({
+						title: 'Ročník se nesmazal!',
+						text: 'Jelikož jste tuto akci zrušil(a), tak se neprovedla.',
+						icon: 'error'
+					})
+				} else {
 					API.year
 						.delete(id)
 						.then((response) => {
 							if (response.status === 'ok') {
-								swal({
+								Swal.fire({
 									title: 'Ročník je smazán!',
 									text: 'Už ho / ji nikdy neuvidíme.',
 									icon: 'success',
-									timer: 5000
+									timer: 1000
 								}).then((value) => {
 									location.reload()
 								})
+							} else if (response.error === 'can-not-delete-year-have-teamworks') {
+								Swal.fire({
+									title: 'Ročník se nesmazal!',
+									text: 'Existují týmové práce s tímto ročníkem. Nejdříve smažte týmové práce a potom ročník, díky za pochopení.',
+									icon: 'error'
+								})
 							} else {
 								console.error(response)
-								swal({
+								Swal.fire({
 									title: 'Něco se pokazilo!',
 									text: response.error,
 									icon: 'error'
