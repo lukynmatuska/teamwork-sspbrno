@@ -126,6 +126,10 @@ module.exports.edit = (req, res) => {
     update.consultants = req.body.consultants
   }
 
+  if (req.body.year !== undefined) {
+    update.year = req.body.year
+  }
+
   TeamWork
     .findByIdAndUpdate(req.body.id, update)
     .populate({
@@ -211,6 +215,10 @@ module.exports.copy = (req, res) => {
           })
       }
       teamWork = teamWork.toObject()
+      if (req.body.year !== undefined) {
+        teamWork.year = req.body.year
+      }
+    
       for (let i = 0; i < teamWork.students.length; i++) {
         delete teamWork.students[i]._id
         delete teamWork.students[i].user

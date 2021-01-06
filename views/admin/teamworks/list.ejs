@@ -40,23 +40,27 @@
 	<%- include('../partials/datatables') %>
 	<script>
 		function deleteTeamWorkById(id) {
-			swal({
+			Swal.fire({
 				title: 'Opravdu chcete smazat tuto týmovou práci?',
 				text: 'Radši si to dvakrát rozmyslete.',
 				icon: 'warning',
 				timer: 5000,
-				dangerMode: true,
-				buttons: {
-					cancel: "Byl to omyl",
-					confirm: 'Smazat!',
-				},
-			}).then((confirm) => {
-				if (confirm) {
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if(!result.value) {
+					Swal.fire({
+						title: 'Týmová práce se nesmazala!',
+						text: 'Jelikož jste tuto akci zrušil(a), tak se neprovedla.',
+						icon: 'error'
+					})
+				} else {
 					API.teamwork
 						.delete(id)
 						.then(function (response) {
 							if (response.status === 'ok') {
-							 	return swal({
+							 	return Swal.fire({
 									title: 'Týmová práce je smazána!',
 									text: 'Už ji nikdy neuvidíme.',
 									icon: 'success',
@@ -66,8 +70,8 @@
 								})
 							}
 							switch (response.error) {
-								case 'not-sent-id':
-									swal({
+								case 'not-send-id':
+									Swal.fire({
 										title: 'Týmová práce se nesmazala!',
 										text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete smazat.',
 										icon: 'error'
@@ -76,66 +80,81 @@
 
 								default:
 									console.error(response)
-									swal({
+									Swal.fire({
 										title: 'Něco se pokazilo!',
 										text: response.error,
 										icon: 'error'
 									})
 									break
 							}
-						}
-						)
+						})
 				}
 			})
 		}
 
 		function copyTeamWorkById(id) {
-			swal({
-				title: 'Opravdu chcete duplikovat tuto týmovou práci?',
-				text: 'Radši si to dvakrát rozmyslete.',
-				icon: 'warning',
-				timer: 5000,
-				dangerMode: true,
-				buttons: {
-					cancel: "Byl to omyl",
-					confirm: 'Duplikovat!',
-				},
-			}).then((confirm) => {
-				if (confirm) {
-					API.teamwork
-						.copy(id)
-						.then(function (response) {
-							if (response.status === 'ok') {
-							 	return swal({
-									title: 'Týmová práce byla zduplikována!',
-									text: 'Nyní ji uvidíme dvakrát.',
-									icon: 'success',
-									timer: 5000
-								}).then((value) => {
-									location.reload()
-								})
-							}
-							switch (response.error) {
-								case 'not-sent-id':
-									swal({
-										title: 'Týmová práce se nezduplikovala!',
-										text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete duplikovat.',
-										icon: 'error'
-									})
-									break
-
-								default:
-									console.error(response)
-									swal({
-										title: 'Něco se pokazilo!',
-										text: response.error,
-										icon: 'error'
-									})
-									break
-							}
-						}
-						)
+			API.year.list().then(async (years) => {
+				let inputOptions = {}
+				for (const year of years) {
+					inputOptions[year._id] = year.name
 				}
+				const { value: year } = await Swal.fire({
+					title: 'Opravdu chcete duplikovat tuto týmovou práci?',
+					icon: 'warning',
+					input: 'select',
+					inputOptions,
+					inputPlaceholder: 'Vyberte ročník',
+					showCancelButton: true,
+					inputValidator: (value) => {
+						return new Promise((resolve) => {
+							if (value == undefined) {
+								resolve('Musíte vybrat ročník')
+							} else {
+								resolve()
+							}
+						})
+					}
+				})
+				
+				if (!year) {
+					return Swal
+						.fire({
+							title: `Nevybral(a) jste ročník!`,
+							icon: 'error',
+						})
+				}
+				API.teamwork
+					.copy(id, year)
+					.then(function (response) {
+						if (response.status === 'ok') {
+							return Swal.fire({
+								title: 'Týmová práce byla zduplikována!',
+								text: 'Nyní ji uvidíme dvakrát.',
+								icon: 'success',
+								timer: 5000
+							}).then(() => {
+								location.reload()
+							})
+						}
+						switch (response.error) {
+							case 'not-send-id':
+								Swal.fire({
+									title: 'Týmová práce se nezduplikovala!',
+									text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete duplikovat.',
+									icon: 'error'
+								})
+								break
+
+							default:
+								console.error(response)
+								Swal.fire({
+									title: 'Něco se pokazilo!',
+									text: response.error,
+									icon: 'error'
+								})
+								break
+						}
+					})
 			})
 		}
 
