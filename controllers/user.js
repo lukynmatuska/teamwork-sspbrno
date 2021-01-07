@@ -17,6 +17,7 @@ const randomstring = require("randomstring")
  * Models
  */
 const User = require('../models/User')
+const Teamwork = require('../models/TeamWork')
 const Specialization = require('../models/Specialization')
 
 function createNewUserInMongoDB(req, res, userType) {
@@ -743,24 +744,55 @@ module.exports.delete = (req, res) => {
         error: 'not-send-id'
       })
   }
-  User
-    .deleteOne({
-      _id: req.body.id
+  Teamwork
+    .findOne({
+      $or: [
+        {
+          'students.user': req.body.id
+        }, {
+          'guarantors.user': req.body.id
+        }, {
+          'consultants.user': req.body.id
+        }
+      ]
     })
-    .exec((err) => {
+    .exec((err, teamwork) => {
       if (err) {
         console.error(err)
         return res
           .status(500)
           .json({
             status: 'error',
-            error: 'mongo-err'
+            error: err
           })
       }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
+      if (teamwork != null) {
+        return res
+          .status(400)
+          .json({
+            status: 'error',
+            error: 'user-is-in-teamwork'
+          })
+      }
+      User
+        .deleteOne({
+          _id: req.body.id
+        })
+        .exec((err) => {
+          if (err) {
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: 'mongo-err'
+              })
+          }
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
         })
     })
 }

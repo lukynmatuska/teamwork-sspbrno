@@ -61,15 +61,22 @@
 					API.user
 						.delete(id)
 						.then(function (response) {
-							switch (response.status) {
-								case 'ok':
+							if (response.status == 'ok') {
+								return Swal.fire({
+									title: 'Uživatel(ka) je smazán(a)!',
+									text: 'Už ho / ji nikdy neuvidíme.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
+								case 'user-is-in-teamwork':
 									Swal.fire({
-										title: 'Uživatel(ka) je smazán(a)!',
-										text: 'Už ho / ji nikdy neuvidíme.',
-										icon: 'success',
-										timer: 5000
-									}).then((value) => {
-										location.reload()
+										title: 'Uživatel nebyl odstraněn!',
+										text: 'Uživatele nelze odstranit dokud má přiřazenou minimálně jednu týmovou práci.',
+										icon: 'error'
 									})
 									break
 
