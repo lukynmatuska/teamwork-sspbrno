@@ -70,6 +70,14 @@
 									})
 									break
 
+								case 'user-has-specialization':
+									Swal.fire({
+										title: 'Zaměření se nesmazalo!',
+										text: 'Zaměření nelze smazat, protože je má nějaký uživatel ještě přidělené.',
+										icon: 'error'
+									})
+									break
+
 								default:
 									console.error(response)
 									Swal.fire({

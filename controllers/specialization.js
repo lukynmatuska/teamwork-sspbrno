@@ -1,5 +1,5 @@
 /**
- * Year controller
+ * Specialization controller
  * @author Lukas Matuska (lukynmatuska@gmail.com)
  * @version 1.0
  */
@@ -7,13 +7,12 @@
 /**
  * Libs
  */
-// const moment = require('moment')
-// moment.locale('cs')
 
 /**
  * Models
  */
 const Specialization = require('../models/Specialization')
+const User = require('../models/User')
 
 module.exports.new = (req, res) => {
   if (req.body.name === undefined) {
@@ -105,9 +104,11 @@ module.exports.delete = async (req, res) => {
         error: 'not-send-id'
       })
   }
-  Specialization
-    .findByIdAndRemove(id)
-    .exec((err, specialization) => {
+  User
+    .findOne({
+      specialization: req.body.id
+    })
+    .exec((err, user) => {
       if (err) {
         console.error(err)
         return res
@@ -117,15 +118,36 @@ module.exports.delete = async (req, res) => {
             error: err
           })
       }
-      if (req.method === 'DELETE') {
+      if (user != null) {
         return res
-          .status(200)
-          .json(specialization)
+          .status(400)
+          .json({
+            status: 'error',
+            error: 'user-has-specialization'
+          })
       }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
+      Specialization
+        .findByIdAndRemove(id)
+        .exec((err, specialization) => {
+          if (err) {
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          if (req.method === 'DELETE') {
+            return res
+              .status(200)
+              .json(specialization)
+          }
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
         })
     })
 }
