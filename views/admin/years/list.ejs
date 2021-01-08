@@ -23,6 +23,7 @@
 										<th scope="col" class="sort">ID</th>
 										<th scope="col" class="sort">Název</th>
 										<th scope="col">Popisek</th>
+										<th scope="col">Začátek volby týmovek</th>
 										<th scope="col">Konec volby týmovek</th>
 										<th scope="col">Stav</th>
 										<th scope="col">Akce</th>
@@ -106,6 +107,13 @@
 								data: 'name',
 							}, {
 								data: 'description',
+							}, {
+								data: 'startOfSelectionOfTeamWorks',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										moment(oData.startOfSelectionOfTeamWorks).format('DD. MM. YYYY')
+									)
+								}
 							}, {
 								data: 'endOfSelectionOfTeamWorks',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {

@@ -271,12 +271,12 @@ var API = {
   },
 
   year: {
-    new: function (name, description, status, endOfSelectionOfTeamWorks) {
-      return postData('/year/new', { name, description, status, endOfSelectionOfTeamWorks })
+    new: function (name, description, status, startOfSelectionOfTeamWorks, endOfSelectionOfTeamWorks) {
+      return postData('/year/new', { name, description, status, startOfSelectionOfTeamWorks, endOfSelectionOfTeamWorks })
     },
 
-    edit: function (yearId, name, description, status, endOfSelectionOfTeamWorks) {
-      return postData('/year/edit', { id: yearId, name, description, status, endOfSelectionOfTeamWorks })
+    edit: function (yearId, name, description, status, startOfSelectionOfTeamWorks, endOfSelectionOfTeamWorks) {
+      return postData('/year/edit', { id: yearId, name, description, status, startOfSelectionOfTeamWorks, endOfSelectionOfTeamWorks })
     },
 
     list: function (filter = {}) {
@@ -302,7 +302,7 @@ var API = {
     },
 
     edit: function (id, name, shortName) {
-      return postData('/specialization/edit', { endOfSelectionOfTeamWorks, id, name, short: shortName })
+      return postData('/specialization/edit', { startOfSelectionOfTeamWorks, endOfSelectionOfTeamWorks, id, name, short: shortName })
     },
 
     delete: function (id) {

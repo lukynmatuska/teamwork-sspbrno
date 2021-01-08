@@ -39,6 +39,14 @@ module.exports.new = (req, res) => {
         })
     }
   }
+  if (req.body.startOfSelectionOfTeamWorks === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-startOfSelectionOfTeamWorks'
+      })
+  }
   if (req.body.endOfSelectionOfTeamWorks === undefined) {
     return res
       .status(422)
@@ -51,6 +59,7 @@ module.exports.new = (req, res) => {
     name: req.body.name,
     description: req.body.description,
     status: (req.body.status === undefined ? 'prepared' : req.body.status),
+    startOfSelectionOfTeamWorks: moment(req.body.startOfSelectionOfTeamWorks, 'MM/DD/YYYY'),
     endOfSelectionOfTeamWorks: moment(req.body.endOfSelectionOfTeamWorks, 'MM/DD/YYYY'),
     created: moment()
   }).save((err, year) => {
@@ -214,7 +223,11 @@ module.exports.edit = (req, res) => {
     }
   }
 
-  if (req.body.endOfSelectionOfTeamWorks !== undefined) {
+  if (req.body.startOfSelectionOfTeamWorks != undefined) {
+    update.startOfSelectionOfTeamWorks = moment(req.body.startOfSelectionOfTeamWorks, 'MM/DD/YYYY')
+  }
+
+  if (req.body.endOfSelectionOfTeamWorks != undefined) {
     update.endOfSelectionOfTeamWorks = moment(req.body.endOfSelectionOfTeamWorks, 'MM/DD/YYYY')
   }
 
@@ -416,7 +429,9 @@ module.exports.findById = (req, res) => {
 }
 
 module.exports.canStudentsJoinOrLeaveTeamwork = (req, res) => {
-  if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
+  if (moment().diff(moment(req.session.year.startOfSelectionOfTeamWorks)) < 0) {
+    return res.json(false)
+  } else if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
     return res.json(false)
   } else {
     return res.send(true)

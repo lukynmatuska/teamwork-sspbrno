@@ -91,7 +91,8 @@ module.exports.setYearForUser = (req, res, next) => {
               name: moment().format('YYYY'),
               description: 'Automaticly created (first) year',
               status: 'active',
-              endOfSelectionOfTeamWorks: moment('01/01/3000', 'MM/DD/YYYY'),
+              startOfSelectionOfTeamWorks: moment('03/03/3000', 'MM/DD/YYYY'),
+              endOfSelectionOfTeamWorks: moment('03/30/3000', 'MM/DD/YYYY'),
               created: moment()
             }).save((err, year) => {
               if (err) {

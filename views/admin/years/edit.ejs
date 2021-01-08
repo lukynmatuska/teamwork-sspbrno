@@ -25,7 +25,7 @@
 							<form action="./" method="POST" id="new-user">
 								<div class="pl-lg-4">
 									<div class="row">
-										<div class="col-4">
+										<div class="col-md-6">
 											<div class="form-group">
 												<label class="form-control-label" for="name">Název</label>
 												<input type="text" id="name" class="form-control" required
@@ -33,7 +33,7 @@
 													value="<%= year.name %>">
 											</div>
 										</div>
-										<div class="col">
+										<div class="col-md-6">
 											<div class="form-group">
 												<label class="form-control-label" for="description">Popisek</label>
 												<input type="text" id="description" class="form-control"
@@ -42,7 +42,7 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col">
+										<div class="col-md-2">
 											<div class="form-group">
 												<label for="year-status">Stav</label>
 												<select class="form-control" id="year-status">
@@ -58,7 +58,18 @@
 												</select>
 											</div>
 										</div>
-										<div class="col">
+										<div class="col-md-5">
+											<div class="form-group">
+												<label for="startOfSelectionOfTeamWorks">Datum začátku studentovy volby týmových prací</label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text"><i class="fas fa-calendar"></i></span>
+													</div>
+													<input id="startOfSelectionOfTeamWorks" class="form-control datepicker" placeholder="Select date" type="text" value="<%= moment(year.startOfSelectionOfTeamWorks).format('MM/DD/YYYY') %>">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-5">
 											<div class="form-group">
 												<label for="endOfSelectionOfTeamWorks">Datum ukončení studentovy volby týmových prací</label>
 												<div class="input-group">
@@ -106,7 +117,6 @@
 								$('<i>', { class: 'fas fa-circle-notch fa-spin' })
 							),
 							$('<span>', { class: 'alert-text' }).append(
-								// $('<strong>').text('Gratuluji!'),
 								'Zpracovávám'
 							),
 							$('<button>', { type: 'button', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'Close' }).append(
@@ -122,6 +132,7 @@
 						$('#name').val(),
 						$('#description').val(),
 						$('#year-status').val(),
+						$('#startOfSelectionOfTeamWorks').val(),
 						$('#endOfSelectionOfTeamWorks').val()
 					).then(function (responseFromServer) {
 						if (responseFromServer.status === 'ok') {

@@ -14,6 +14,11 @@ var yearSchema = new mongoose.Schema({
     required: true
   },
   description: String,
+  startOfSelectionOfTeamWorks: {
+    type: Date,
+    required: true
+  },
+  description: String,
   endOfSelectionOfTeamWorks: {
     type: Date,
     required: true
