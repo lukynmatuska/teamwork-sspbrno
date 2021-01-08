@@ -14,8 +14,14 @@ function selectTeamWork($DOM, teamWorkId, positionId) {
                 $DOM.text('Jejda! Někdo Vás předběhl')
                 $DOM.addClass('btn-danger')
                 location.reload()
+            } else if (response.error === 'start-of-selection-of-teamworks') {
+                $DOM.text('Jejda! Jste tu moc brzo. Volba týmových prácí ještě nezačala.')
+                $DOM.addClass('btn-danger')
+                setTimeout(function () {
+                    location.reload()
+                }, 10000)
             } else if (response.error === 'end-of-selection-of-teamworks') {
-                $DOM.text('Jejda! Promeškal jste svoji svobodnou volbu týmové práce')
+                $DOM.text('Jejda! Promeškal jste možnost volby týmové práce')
                 $DOM.addClass('btn-danger')
                 setTimeout(function () {
                     location.reload()

@@ -370,6 +370,14 @@ module.exports.select = (req, res) => {
         error: 'not-send-position'
       })
   }
+  if (moment().diff(moment(req.session.year.startOfSelectionOfTeamWorks)) < 0) {
+    return res
+      // .status(422)
+      .json({
+        status: 'error',
+        error: 'start-of-selection-of-teamworks'
+      })
+  }
   if (moment().diff(moment(req.session.year.endOfSelectionOfTeamWorks)) > 0) {
     return res
       // .status(422)
