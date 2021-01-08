@@ -144,6 +144,31 @@
 		})
 	}
 
+	function showYearSelect(year, motherDOM = $('div#year-section')) {
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col-sm-12' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `year` }).text('Ročník'),
+					$('<select>', { class: 'form-control', id: `year`, required: 'required' })
+				)
+			)
+		).appendTo(motherDOM)
+		let $selectYear = $(`select#year`).select2()
+		$selectYear.html(`<option selected="selected" value>Načítání...</option>`)
+		$selectYear.prop("disabled", true);
+		API.year.list().then((listOfYears) => {
+			$selectYear.html(`<option selected="selected" value disabled="disabled">Vyberte ročník</option>`)
+			listOfYears.forEach((yearFromDB) => {
+				$selectYear.append(`<option value="${yearFromDB._id}">${yearFromDB.name}</option>`)
+			})
+			if (year != undefined || year != null) {
+				$selectYear.val(year._id)
+				$selectYear.trigger('change')
+			}
+			$selectYear.prop("disabled", false);
+		})
+	}
+
 	function addMedia(media, i = $('div#media .row').length, motherDOM = $('div#media')) {
 		if (media == undefined ) {
 			media = {}
@@ -164,7 +189,7 @@
 					$('<textarea>', {
 						class: 'form-control', id: `meeting`, rows: '1',
 						placeholder: 'Zde prosím vložte odkaz na setkávací platformu'
-					}).text(media.meeting == undefined || media.meeting == null || media.meeting == '#' ? '' : media.kanban)
+					}).text(media.meeting == undefined || media.meeting == null || media.meeting == '#' ? '' : media.meeting)
 				)
 			),
 			$('<div>', { class: 'col', id: 'repositories' }),
@@ -256,7 +281,8 @@
 			consultants,
 			number: Number($('#number').val()),
 			media,
-			result: $('#result').val()
+			result: $('#result').val(),
+			year: $('#year').val()
 		}
 	}
 
@@ -300,6 +326,9 @@
 				}
 				if (responseFromServer.number != undefined) {
 					$number.val(responseFromServer.number)
+				}
+				if (responseFromServer.year != undefined) {
+					showYearSelect(responseFromServer.year)
 				}
 			})
 
@@ -351,6 +380,7 @@
 					dataForRequest.result,
 					dataForRequest.number,
 					dataForRequest.media,
+					dataForRequest.year,
 				)
 				.then(function (responseFromServer) {
 					console.log(responseFromServer)
@@ -488,6 +518,13 @@
 									</div>
 								</div>
 								<div class="pl-lg-4" id="media"></div>
+								<hr class="my-4">
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading text-muted mb-4">Pokročilé</h6>
+									</div>
+								</div>
+								<div class="pl-lg-4" id="year-section"></div>
 								<div class="pl-lg-4">
 									<div class="row">
 										<div class="col" id="edit-teamwork-status" style="display: none;"></div>

@@ -319,8 +319,8 @@ var API = {
       return postData('/teamwork/new', { name, description, students, guarantors, consultants, result })
     },
 
-    edit: function (id, name, description, students, guarantors, consultants, result, number, media) {
-      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants, result, number, media })
+    edit: function (id, name, description, students, guarantors, consultants, result, number, media, year) {
+      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants, result, number, media, year })
     },
 
     findById: function (id) {
