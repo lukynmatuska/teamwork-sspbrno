@@ -337,6 +337,13 @@ module.exports.deployTeamwork = (req, res) => {
         status: 'error',
         error: 'not-send-id'
       })
+  } else if (req.body.year === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-year'
+      })
   }
   TeamWorkTemplate
     .findById(req.body.id)
@@ -369,7 +376,7 @@ module.exports.deployTeamwork = (req, res) => {
         delete teamWorkTemplate.consultants[i]._id
       }
       teamWorkTemplate._id = mongoose.Types.ObjectId()
-      teamWorkTemplate.year = req.session.year._id
+      teamWorkTemplate.year = req.body.year
       teamWork = new TeamWork(teamWorkTemplate)
       teamWork.isNew = true
       teamWork.save((err, teamWork) => {

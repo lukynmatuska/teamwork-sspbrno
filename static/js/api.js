@@ -373,8 +373,8 @@ var API = {
       return postData('/teamworktemplate/copy', { id })
     },
 
-    deploy: function (id) {
-      return postData('/teamworktemplate/deploy', { id })
+    deploy: function (id, year) {
+      return postData('/teamworktemplate/deploy', { id, year })
     },
 
     delete: function (id) {
