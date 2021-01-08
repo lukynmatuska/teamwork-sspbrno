@@ -115,7 +115,7 @@
 		let $selectConsultant = $(`select#consultant-${i}-user`).select2()
 		$selectConsultant.html(`<option selected="selected" value>Načítání...</option>`)
 		$selectConsultant.prop("disabled", true);
-		API.user.list({ type: 'consultants' }).then((listOfUsers) => {
+		API.user.list({ type: 'consultant' }).then((listOfUsers) => {
 			$selectConsultant.html(`<option selected="selected" value>Žádný konzultant</option>`)
 			listOfUsers.forEach((user) => {
 				$selectConsultant.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
@@ -126,31 +126,35 @@
 
 	function getDataForRequest() {
 		let students = []
-		for (let i = 0; i < $('div#students .row').length; i++) {
-			let student = {}
-			student.position = $(`#student-${i}-position`).val()
-			student.task = $(`#student-${i}-task`).val()
-			let userId = $(`#student-${i}-user`).val()
-			if (userId !== null || userId !== '') {
-				student.user = userId
+		let $students = $('div#students .row')
+		for (let i = 0; i < $students.length; i++) {
+			let user = $($($($($students[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val()
+			if (user == '') {
+				user = null
 			}
-			students.push(student)
+			students.push({
+				position: $($($($($students[i]).children('div.col-2')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+				task: $($($($($students[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user,
+			})
 		}
 
 		let guarantors = []
-		for (let i = 0; i < $('div#guarantors .row').length; i++) {
-			let guarantor = {}
-			guarantor.task = $(`#guarantor-${i}-task`).val()
-			guarantor.user = $(`#guarantor-${i}-user`).val()
-			guarantors.push(guarantor)
+		let $guarantors = $('div#guarantors .row')
+		for (let i = 0; i < $guarantors.length; i++) {
+			guarantors.push({
+				task: $($($($($guarantors[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($guarantors[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
 		}
 
 		let consultants = []
-		for (let i = 0; i < $('div#consultants .row').length; i++) {
-			let consultant = {}
-			consultant.task = $(`#consultant-${i}-task`).val()
-			consultant.user = $(`#consultant-${i}-user`).val()
-			consultants.push(consultant)
+		let $consultants = $('div#consultants .row')
+		for (let i = 0; i < $consultants.length; i++) {
+			consultants.push({
+				task: $($($($($consultants[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($consultants[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
 		}
 
 		return {
