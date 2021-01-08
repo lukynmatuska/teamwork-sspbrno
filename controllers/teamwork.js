@@ -148,20 +148,6 @@ module.exports.edit = (req, res) => {
 
   TeamWork
     .findByIdAndUpdate(req.body.id, update)
-    .populate({
-      path: 'students.user',
-      select: 'name email photo type'
-    })
-    .populate('students.position')
-    .populate({
-      path: 'guarantors.user',
-      select: 'name email photo type'
-    })
-    .populate('year')
-    .populate({
-      path: 'author',
-      select: 'name email photo type'
-    })
     .exec((err) => {
       if (err) {
         console.error(err)
