@@ -122,7 +122,7 @@
 					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant == undefined || consultant == null ? '' : (consultant.user == undefined || consultant.user == null ? '' : consultant.user._id)) })
 				)
 			),
-			$('<div>', { class: 'col-1 m-auto' }).append(
+			$('<div>', { class: 'col-sm-1 m-auto' }).append(
 				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
 			)
 		).appendTo(motherDOM)
@@ -144,34 +144,108 @@
 		})
 	}
 
+	function addMedia(media, i = $('div#media .row').length, motherDOM = $('div#media')) {
+		if (media == undefined ) {
+			media = {}
+		}
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col-md-6' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `kanban` }).text('Kanban'),
+					$('<textarea>', {
+						class: 'form-control', id: `kanban`, rows: '1',
+						placeholder: 'Zde prosím vložte odkaz na kanban (nástěnku, např. Trello)'
+					}).text(media.kanban == undefined || media.kanban == null || media.kanban == '#' ? '' : media.kanban)
+				)
+			),
+			$('<div>', { class: 'col-md-6' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `meeting` }).text('Komunikační platforma'),
+					$('<textarea>', {
+						class: 'form-control', id: `meeting`, rows: '1',
+						placeholder: 'Zde prosím vložte odkaz na setkávací platformu'
+					}).text(media.meeting == undefined || media.meeting == null || media.meeting == '#' ? '' : media.kanban)
+				)
+			),
+			$('<div>', { class: 'col', id: 'repositories' }),
+		).appendTo(motherDOM)
+	}
+
+	function addRepositoryRowToMedia(repository, i = $('div#repositories .row ').length, motherDOM = $('div#repositories')) {
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col-sm-11' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `repository-${i}` }).text(`${i+1}. repozitář`),
+					$('<textarea>', {
+						class: 'form-control', id: `repository-${i}`, rows: '1', required: 'required',
+						placeholder: 'Zde prosím vložte odkaz na repozitář (např. GitLab, GitHub, Bitbucket, ...)'
+					}).text(repository == undefined || repository == null ? '' : repository)
+				),
+			),
+			$('<div>', { class: 'col-sm-1 m-auto' }).append(
+				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+			)
+		).appendTo(motherDOM)
+	}
 
 	function getDataForRequest() {
 		let students = []
-		for (let i = 0; i < $('div#students .row').length; i++) {
-			let student = {}
-			student.position = $(`#student-${i}-position`).val()
-			student.task = $(`#student-${i}-task`).val()
-			let userId = $(`#student-${i}-user`).val()
-			if (userId !== null || userId !== '') {
-				student.user = userId
+		let $students = $('div#students .row')
+		for (let i = 0; i < $students.length; i++) {
+			let user = $($($($($students[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val()
+			if (user == '') {
+				user = null
 			}
-			students.push(student)
+			students.push({
+				position: $($($($($students[i]).children('div.col-2')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+				task: $($($($($students[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user,
+			})
 		}
 
 		let guarantors = []
-		for (let i = 0; i < $('div#guarantors .row').length; i++) {
-			let guarantor = {}
-			guarantor.task = $(`#guarantor-${i}-task`).val()
-			guarantor.user = $(`#guarantor-${i}-user`).val()
-			guarantors.push(guarantor)
+		let $guarantors = $('div#guarantors .row')
+		for (let i = 0; i < $guarantors.length; i++) {
+			guarantors.push({
+				task: $($($($($guarantors[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($guarantors[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
 		}
 
 		let consultants = []
-		for (let i = 0; i < $('div#consultants .row').length; i++) {
-			let consultant = {}
-			consultant.task = $(`#consultant-${i}-task`).val()
-			consultant.user = $(`#consultant-${i}-user`).val()
-			consultants.push(consultant)
+		let $consultants = $('div#consultants .row')
+		for (let i = 0; i < $consultants.length; i++) {
+			consultants.push({
+				task: $($($($($consultants[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($consultants[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
+		}
+
+		let media = {}
+		let $kanban = $('#kanban')
+		if ($kanban.val() == '') {
+			media.kanban = '#'
+		} else {
+			media.kanban = $kanban.val()
+		}
+		
+		let $meeting = $('#meeting')
+		if ($meeting == '') {
+			media.meeting = '#'
+		} else {
+			media.meeting = $meeting.val()
+		}
+
+		let repositories = []
+		let $repositories = $('div#repositories .row')
+		for (let i = 0; i < $repositories.length; i++) {
+			let val = $($($($($repositories[i]).children('div.col-sm-11')[0]).children('div.form-group')[0]).children('textarea')[0]).val()
+			if (val != undefined || val != null || val != '') {
+				repositories.push(val)
+			}
+		}
+		if (repositories.length > 0) {
+			media.repositories = repositories
 		}
 
 		return {
@@ -179,19 +253,27 @@
 			description: $('#description').val(),
 			students,
 			guarantors,
-			consultants
+			consultants,
+			number: Number($('#number').val()),
+			media,
+			result: $('#result').val()
 		}
 	}
 
 	$(document).ready(() => {
+		let $number = $('#number')
 		API.teamwork
 			.findById('<%= req.params.id %>')
 			.then(function (responseFromServer) {
+				console.log(responseFromServer)
 				if (responseFromServer.name !== undefined) {
 					$('#name').val(responseFromServer.name)
 				}
 				if (responseFromServer.description !== undefined) {
 					$('#description').val(responseFromServer.description)
+				}
+				if (responseFromServer.result !== undefined) {
+					$('#result').val(responseFromServer.result)
 				}
 				if (responseFromServer.students !== undefined) {
 					for (let i = 0; i < responseFromServer.students.length; i++) {
@@ -208,6 +290,17 @@
 						addConsultantRow(responseFromServer.consultants[i])
 					}
 				}
+				addMedia(responseFromServer.media)
+				if (responseFromServer.media != undefined ) {
+					if (responseFromServer.media.repositories != undefined) {
+						for (i = 0; i < responseFromServer.media.repositories.length; i++) {
+							addRepositoryRowToMedia(responseFromServer.media.repositories[i])
+						}
+					}
+				}
+				if (responseFromServer.number != undefined) {
+					$number.val(responseFromServer.number)
+				}
 			})
 
 		$('form#edit-teamwork').submit(function (event) {
@@ -218,7 +311,6 @@
 				.append(
 					$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
 						$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-						// $('<strong>').text('Gratuluji!'),
 						'Zpracovávám'
 					)
 				)
@@ -255,7 +347,10 @@
 					dataForRequest.description,
 					dataForRequest.students,
 					dataForRequest.guarantors,
-					dataForRequest.consultants
+					dataForRequest.consultants,
+					dataForRequest.result,
+					dataForRequest.number,
+					dataForRequest.media,
 				)
 				.then(function (responseFromServer) {
 					console.log(responseFromServer)
@@ -315,10 +410,17 @@
 								<h6 class="heading text-muted mb-4">Základní údaje</h6>
 								<div class="pl-lg-4">
 									<div class="row">
-										<div class="col">
+										<div class="col-md-6">
 											<div class="form-group">
 												<label class="form-control-label" for="name">Název</label>
 												<input type="text" id="name" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="form-control-label" for="number">Číslo týmové práce</label>
+												<input type="number" id="number" class="form-control" required
 													placeholder="Vyplňte prosím toto povinné pole">
 											</div>
 										</div>
@@ -326,9 +428,18 @@
 									<div class="row">
 										<div class="col">
 											<div class="form-group">
-												<label for="description">Popis</label>
+												<label class="form-control-label" for="description">Popis</label>
 												<textarea class="form-control" id="description" rows="3" required
 													placeholder="Zde se prosím rozepište o zadání týmové práce"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="description">Výsledek (výstup) týmové práce</label>
+												<textarea class="form-control" id="result" rows="3" required
+													placeholder="Zde se prosím rozepište o tom, co bude výsledkem týmové práce"></textarea>
 											</div>
 										</div>
 									</div>
@@ -366,6 +477,17 @@
 									</div>
 								</div>
 								<div class="pl-lg-4" id="consultants"></div>
+								<hr class="my-4">
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading text-muted mb-4">Média</h6>
+									</div>
+									<div class="col float-right">
+										<button type="button" onclick="addRepositoryRowToMedia()"
+											class="btn btn-sm btn-primary float-right">Přidat repozitář</button>
+									</div>
+								</div>
+								<div class="pl-lg-4" id="media"></div>
 								<div class="pl-lg-4">
 									<div class="row">
 										<div class="col" id="edit-teamwork-status" style="display: none;"></div>

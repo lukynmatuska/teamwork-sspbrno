@@ -22,6 +22,8 @@ module.exports.new = (req, res) => {
     return res.send('not-send-name')
   } else if (req.body.description === undefined) {
     return res.send('not-send-description')
+  } else if (req.body.result == undefined) {
+    return res.send('not-send-result')
   } else if (req.body.students === undefined) {
     return res.send('not-send-students')
   } else if (typeof req.body.students !== 'object') {
@@ -47,7 +49,9 @@ module.exports.new = (req, res) => {
       guarantors: req.body.guarantors,
       consultants: req.body.consultants,
       year: req.session.year._id,
-      author: req.session.user._id
+      author: req.session.user._id,
+      media: req.body.media,
+      result: req.body.result,
     }).save((err) => {
       if (err) {
         res.send('err')
@@ -77,9 +81,17 @@ module.exports.edit = (req, res) => {
   if (req.body.name !== undefined) {
     update.name = req.body.name
   }
+  
+  if (req.body.number != undefined) {
+    update.number = Number(req.body.number)
+  }
 
   if (req.body.description !== undefined) {
     update.description = req.body.description
+  }
+
+  if (req.body.result !== undefined) {
+    update.result = req.body.result
   }
 
   if (typeof req.body.students !== 'object') {
@@ -128,6 +140,10 @@ module.exports.edit = (req, res) => {
 
   if (req.body.year !== undefined) {
     update.year = req.body.year
+  }
+
+  if (req.body.media !== undefined) {
+    update.media = req.body.media
   }
 
   TeamWork
@@ -230,6 +246,8 @@ module.exports.copy = (req, res) => {
         delete teamWork.consultants[i]._id
       }
       teamWork._id = mongoose.Types.ObjectId()
+      teamWork.media = {}
+      teamWork.number += 1
       teamWork = new TeamWork(teamWork)
       teamWork.isNew = true
       teamWork.save((err) => {

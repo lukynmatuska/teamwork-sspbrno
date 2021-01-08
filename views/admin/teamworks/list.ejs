@@ -22,6 +22,7 @@
 									<tr>
 										<th scope="col" class="sort">ID</th>
 										<th scope="col" class="sort" data-sort="name">Název</th>
+										<th scope="col">Číslo TP</th>
 										<th scope="col">Studenti</th>
 										<th scope="col">Garanti</th>
 										<th scope="col">Konzultanti</th>
@@ -179,6 +180,8 @@
 								visible: false,
 							}, {
 								data: 'name',
+							}, {
+								data: 'number',
 							}, {
 								data: 'students',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {

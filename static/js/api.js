@@ -315,12 +315,12 @@ var API = {
   },
 
   teamwork: {
-    new: function (name, description, students, guarantors, consultants) {
-      return postData('/teamwork/new', { name, description, students, guarantors, consultants })
+    new: function (name, description, students, guarantors, consultants, result) {
+      return postData('/teamwork/new', { name, description, students, guarantors, consultants, result })
     },
 
-    edit: function (id, name, description, students, guarantors, consultants) {
-      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants })
+    edit: function (id, name, description, students, guarantors, consultants, result, number, media) {
+      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants, result, number, media })
     },
 
     findById: function (id) {

@@ -1,7 +1,7 @@
 /**
  * Team work database model
  * @author Lukas Matuska (lukynmatuska@gmail.com)
- * @version 1.1
+ * @version 1.2
  */
 
 /**
@@ -19,6 +19,14 @@ var teamWorkSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true
+  },
+  number: {
+    type: Number,
+    default: 1
+  },
+  result: {
+    type: String,
+    required: true,
   },
   students: [{
     user: {
@@ -62,12 +70,27 @@ var teamWorkSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  media: {
+    type: Object,
+    default: {},
+    kanban: String,
+    meeting: String,
+    repositories: [String],
   }
 })
 
 // Duplicate the ID field.
-teamWorkSchema.virtual('id').get(function(){
+teamWorkSchema.virtual('id').get(function () {
   return this._id.toHexString()
+})
+
+teamWorkSchema.virtual('fullname').get(function () {
+  if (this.number == undefined || this.number == null || this.number <= 1) {
+    return this.name
+  } else {
+    return String(`${this.name} ${this.number}`)
+  }
 })
 
 // Ensure virtual fields are serialised.

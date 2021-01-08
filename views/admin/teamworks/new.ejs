@@ -6,13 +6,13 @@
 		$('<div>', { class: 'row' }).append(
 			$('<div>', { class: 'col-2' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-position` }).text('Zaměření (Pozice)'),
+					$('<label>', { for: `student-${i}-position`, class: 'form-control-label' }).text('Zaměření (Pozice)'),
 					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required' })
 				)
 			),
 			$('<div>', { class: 'col' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-task` }).text('Popis pozice'),
+					$('<label>', { for: `student-${i}-task`, class: 'form-control-label' }).text('Popis pozice'),
 					$('<textarea>', {
 						class: 'form-control', id: `student-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o studentově úkolu'
@@ -21,7 +21,7 @@
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `student-${i}-user` }).text('Student'),
+					$('<label>', { for: `student-${i}-user`, class: 'form-control-label' }).text('Student'),
 					$('<select>', { class: 'form-control', id: `student-${i}-user`, disabled: 'disabled' }).append(
 						$('<option>', { value: 'null'}).append('Vyberte studentovo zaměření')
 					)
@@ -62,7 +62,7 @@
 		$('<div>', { class: 'row' }).append(
 			$('<div>', { class: 'col' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `guarantor-${i}-task` }).text('Popis práce'),
+					$('<label>', { for: `guarantor-${i}-task`, class: 'form-control-label' }).text('Popis práce'),
 					$('<textarea>', {
 						class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o garantově zadaní'
@@ -71,7 +71,7 @@
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `guarantor-${i}-user` }).text('Učitel'),
+					$('<label>', { for: `guarantor-${i}-user`, class: 'form-control-label' }).text('Učitel'),
 					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required' })
 				)
 			),
@@ -95,7 +95,7 @@
 		$('<div>', { class: 'row' }).append(
 			$('<div>', { class: 'col' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `consultant-${i}-task` }).text('Popis práce'),
+					$('<label>', { for: `consultant-${i}-task`, class: 'form-control-label' }).text('Popis práce'),
 					$('<textarea>', {
 						class: 'form-control', id: `consultant-${i}-task`, rows: '1', required: 'required',
 						placeholder: 'Zde se prosím rozepište o garantově zadaní'
@@ -104,7 +104,7 @@
 			),
 			$('<div>', { class: 'col-4' }).append(
 				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { for: `consultant-${i}-user` }).text('Učitel | Externista'),
+					$('<label>', { for: `consultant-${i}-user`, class: 'form-control-label' }).text('Učitel | Externista'),
 					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required' })
 				)
 			),
@@ -156,9 +156,10 @@
 		return {
 			name: $('#name').val(),
 			description: $('#description').val(),
+			result: $('#result').val(),
 			students,
 			guarantors,
-			consultants
+			consultants,
 		}
 	}
 
@@ -213,7 +214,8 @@
 				dataForRequest.description,
 				dataForRequest.students,
 				dataForRequest.guarantors,
-				dataForRequest.consultants
+				dataForRequest.consultants,
+				dataForRequest.result,
 			).then(function (responseFromServer) {
 				if (responseFromServer.status === 'ok') {
 					$status
@@ -282,9 +284,18 @@
 									<div class="row">
 										<div class="col">
 											<div class="form-group">
-												<label for="description">Popis</label>
+												<label class="form-control-label" for="description">Popis</label>
 												<textarea class="form-control" id="description" rows="3" required
 													placeholder="Zde se prosím rozepište o zadání týmové práce"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="description">Výsledek (výstup) týmové práce</label>
+												<textarea class="form-control" id="result" rows="3" required
+													placeholder="Zde se prosím rozepište o tom, co bude výsledkem týmové práce"></textarea>
 											</div>
 										</div>
 									</div>
