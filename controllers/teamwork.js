@@ -215,6 +215,13 @@ module.exports.copy = (req, res) => {
             status: 'error',
             error: err
           })
+      } else if (teamWork == null) {
+        return res
+          .status(404)
+          .json({
+            status: 'error',
+            error: 'source-teamwork-not-found'
+          })
       }
       teamWork = teamWork.toObject()
       if (req.body.year !== undefined) {

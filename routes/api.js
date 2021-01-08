@@ -21,6 +21,7 @@ const partials = require('./partials')
 const userController = require('../controllers/user')
 const specializationController = require('../controllers/specialization')
 const teamworkController = require('../controllers/teamwork')
+const teamworkTemplateController = require('../controllers/teamworkTemplate')
 const yearController = require('../controllers/year')
 
 /**
@@ -143,6 +144,18 @@ router.post('/teamwork/select', partials.onlyLoggedIn, teamworkController.select
 router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
 router.get('/teamwork/has-student-been-asigned-to-teamwork', teamworkController.hasStudentBeenAsignedToTeamWork)
 router.get('/teamwork/is-given-teamwork-mine', teamworkController.isGivenTeamworkMine)
+
+/**
+ * TeamWorkTemplates
+ */
+router.get('/teamworktemplates', teamworkTemplateController.list)
+router.post('/teamworktemplate/new', partials.onlyAdmin, teamworkTemplateController.new)
+router.post('/teamworktemplate/edit', partials.onlyAdmin, teamworkTemplateController.edit)
+router.get('/teamworktemplate/list', teamworkTemplateController.list)
+router.get('/teamworktemplate/find-by-id/:id', teamworkTemplateController.findById)
+router.post('/teamworktemplate/delete', partials.onlyAdmin, teamworkTemplateController.delete)
+router.post('/teamworktemplate/copy', partials.onlyAdmin, teamworkTemplateController.copy)
+router.post('/teamworktemplate/deploy', partials.onlyAdmin, teamworkTemplateController.deployTeamwork)
 
 /**
  * Not found route

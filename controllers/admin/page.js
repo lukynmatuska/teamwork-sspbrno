@@ -12,6 +12,7 @@
  * Models
  */
 const TeamWork = require('../../models/TeamWork')
+const TeamWorkTemplate = require('../../models/TeamWorkTemplate')
 const User = require('../../models/User')
 const Year = require('../../models/Year')
 const Specialization = require('../../models/Specialization')
@@ -141,6 +142,65 @@ module.exports.users = {
             }
             res.render('admin/users/detail', { req, res, active: 'users', title: 'Detail uživatele', user, years })
           })
+      })
+  }
+}
+
+module.exports.teamworktemplates = {
+  list: (req, res) => {
+    res.render('admin/teamworktemplates/list', { req, res, active: 'teamworktemplates', title: 'Seznam šablon týmových prací' })
+  },
+  new: (req, res) => {
+    res.render('admin/teamworktemplates/new', { req, res, active: 'teamworktemplates', title: 'Nová šablona týmové práce' })
+  },
+  edit: (req, res) => {
+    TeamWorkTemplate
+      .findById(req.params.id)
+      .exec((err, teamwork) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (teamwork === null) {
+          return this.error.notFound(
+            req, res,
+            '404 Šablona týmové práce nenalezena',
+            'Hledáte šablonu týmové práce, která se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
+        }
+        res.render('admin/teamworktemplates/edit', { req, res, active: 'teamworktemplates', title: 'Editace šablony týmové práce' })
+      })
+  },
+  detail: (req, res) => {
+    TeamWorkTemplate
+      .findById(req.params.id)
+      .populate({
+        path: 'students.user',
+        select: 'name email photo type'
+      })
+      .populate('students.position')
+      .populate({
+        path: 'guarantors.user',
+        select: 'name email photo type'
+      })
+      .populate('year')
+      .populate({
+        path: 'author',
+        select: 'name email photo type'
+      })
+      .exec((err, teamworktemplates) => {
+        if (err) {
+          this.error.internalError(req, res)
+          return console.error(err)
+        }
+        if (teamworktemplates === null) {
+          return this.error.notFound(
+            req, res,
+            '404 Šablona týmové práce nenalezena',
+            'Hledáte šablonu týmové práce, která se nenachází v databázi, přeji Vám příjmenou hru na schovávanou.'
+          )
+        }
+        res.render('admin/teamworktemplates/detail', { req, res, active: 'teamworktemplates', title: 'Detail šablony týmové práce', teamworktemplates })
       })
   }
 }

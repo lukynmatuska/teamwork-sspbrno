@@ -1,0 +1,347 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'list' }) %>
+		<div class="container-fluid mt--7 flex-grow-1">
+			<!-- Light table -->
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h3 class="mb-0">Seznam</h3>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="teamworktemplates">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col" class="sort">ID</th>
+										<th scope="col" class="sort" data-sort="name">Název</th>
+										<th scope="col">Štítek</th>
+										<th scope="col">Garanti</th>
+										<th scope="col">Konzultanti</th>
+										<th scope="col">Autor</th>
+										<th scope="col">Akce</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/datatables') %>
+	<script>
+		function deleteTeamWorkTemplateById(id) {
+			Swal.fire({
+				title: 'Opravdu chcete smazat tuto šablonu týmové práce?',
+				text: 'Radši si to dvakrát rozmyslete.',
+				icon: 'warning',
+				timer: 5000,
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if(!result.value) {
+					Swal.fire({
+						title: 'Šablona týmové práce se nesmazala!',
+						text: 'Jelikož jste tuto akci zrušil(a), tak se neprovedla.',
+						icon: 'error'
+					})
+				} else {
+					API.teamworktemplate
+						.delete(id)
+						.then(function (response) {
+							if (response.status === 'ok') {
+							 	return Swal.fire({
+									title: 'Šablona týmové práce je smazána!',
+									text: 'Už ji nikdy neuvidíme.',
+									icon: 'success',
+									timer: 5000
+								}).then((value) => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
+								case 'not-send-id':
+									Swal.fire({
+										title: 'Šablona týmové práce se nesmazala!',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete smazat.',
+										icon: 'error'
+									})
+									break
+
+								default:
+									console.error(response)
+									Swal.fire({
+										title: 'Něco se pokazilo!',
+										text: response.error,
+										icon: 'error'
+									})
+									break
+							}
+						})
+				}
+			})
+		}
+
+		function copyTeamWorkTemplateById(id) {
+			Swal.fire({
+				title: 'Opravdu chcete duplikovat tuto šablonu týmové práce?',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if(!result.value) {
+					Swal.fire({
+						title: 'Duplikace šablony týmové práce nebyla provedena!',
+						text: 'Jelikož jste tuto akci zrušil(a), tak se neprovedla.',
+						icon: 'error'
+					})
+				} else {
+					API.teamworktemplate
+						.copy(id)
+						.then(function (response) {
+							if (response.status === 'ok') {
+								return Swal.fire({
+									title: 'Šablona týmové práce byla zduplikována!',
+									text: 'Nyní ji uvidíme dvakrát.',
+									icon: 'success',
+									timer: 5000
+								}).then(() => {
+									location.reload()
+								})
+							}
+							switch (response.error) {
+								case 'not-send-id':
+									Swal.fire({
+										title: 'Šablona týmové práce se nezduplikovala!',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID šablony týmové práce, kterou chcete duplikovat.',
+										icon: 'error'
+									})
+									break
+
+								default:
+									console.error(response)
+									Swal.fire({
+										title: 'Něco se pokazilo!',
+										text: response.error,
+										icon: 'error'
+									})
+									break
+							}
+						})
+				}
+			})
+		}
+
+		function deployTeamWorkTemplateById(id) {
+			Swal.fire({
+				title: 'Opravdu chcete vytvořit novou týmovou práci z šablony?',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33'
+			}).then((result) => {
+				if(!result.value) {
+					Swal.fire({
+						title: 'Týmová práce nebyla vytvořena!',
+						text: 'Jelikož jste tuto akci zrušil(a), tak se neprovedla.',
+						icon: 'error'
+					})
+				} else {
+					API.teamworktemplate
+						.deploy(id)
+						.then(function (response) {
+							if (response.status === 'ok') {
+								return Swal.fire({
+									title: 'Týmová práce je vytvořená!',
+									text: 'Rádo se stalo.',
+									icon: 'success',
+									timer: 5000
+								}).then(() => {
+									if (response.new != undefined) {
+										window.location = '../teamworks/edit/' + response.new._id
+									} else {
+										location.reload()
+									}
+								})
+							}
+							switch (response.error) {
+								case 'not-send-id':
+									Swal.fire({
+										title: 'Týmová práce nebyla vytvořena!',
+										text: 'Nastala chyba, protože jste neposlal(a) na server ID šablony týmové práce, podle které chcete vytvořit novou týmovou práci.',
+										icon: 'error'
+									})
+									break
+
+								default:
+									console.error(response)
+									Swal.fire({
+										title: 'Něco se pokazilo!',
+										text: response.error,
+										icon: 'error'
+									})
+									break
+							}
+						})
+				}
+			})
+		}
+
+		$(document).ready(function () {
+			API.teamworktemplate
+				.list()
+				.then((responseFromServer) => {
+					$('table#teamworktemplates').DataTable({
+						language: {
+							url: '/js/dataTables/myCzech.json'
+						},
+						responsive: true,
+						data: responseFromServer,
+						columns: [
+							{
+								data: "_id",
+								visible: false,
+							}, {
+								data: 'name',
+							}, {
+								data: 'label',
+							}, {
+								data: 'guarantors',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let guarantorsDOMSs = $('<div>', { class: 'avatar-group' })
+									for (let i = 0; i < oData.guarantors.length; i++) {
+										const guarantor = oData.guarantors[i]
+										if (guarantor.user === undefined || guarantor.user === null) {
+											guarantor.user = {
+												name: {
+													first: 'Ještě',
+													last: 'neznámý'
+												},
+												photo: '/images/users/_unknown.png',
+												link: '#'
+											}
+										} else {
+											guarantor.user.link = `/admin/users/detail/${guarantor.user._id}/`
+										}
+										$('<a>', {
+											href: guarantor.user.link,
+											class: 'avatar avatar-sm rounded-circle',
+											'data-toggle': 'tooltip',
+											'data-original-title': `${guarantor.user.name.first} ${guarantor.user.name.middle !== undefined ? `${guarantor.user.name.middle} ` : ''}${guarantor.user.name.last}`,
+										}).tooltip().append(
+											$('<img>', {
+												alt: 'Garantův avatar',
+												src: generateAvatar(guarantor.user.fullName)
+											})
+										).appendTo(guarantorsDOMSs)
+									}
+									$(nTd).html(guarantorsDOMSs)
+								}
+							}, {
+								data: 'consultants',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let consultantsDOMSs = $('<div>', { class: 'avatar-group' })
+									for (let i = 0; i < oData.consultants.length; i++) {
+										const consultant = oData.consultants[i]
+										if (consultant.user === undefined || consultant.user === null) {
+											consultant.user = {
+												name: {
+													first: 'Ještě',
+													last: 'neznámý'
+												},
+												photo: '/images/users/_unknown.png',
+												link: '#'
+											}
+										} else {
+											consultant.user.link = `/admin/users/detail/${consultant.user._id}/`
+										}
+										$('<a>', {
+											href: consultant.user.link,
+											class: 'avatar avatar-sm rounded-circle',
+											'data-toggle': 'tooltip',
+											'data-original-title': `${consultant.user.name.first} ${consultant.user.name.middle !== undefined ? `${consultant.user.name.middle} ` : ''}${consultant.user.name.last}`,
+										}).tooltip().append(
+											$('<img>', {
+												alt: 'Garantův avatar',
+												src: generateAvatar(consultant.user.fullName)
+											})
+										).appendTo(consultantsDOMSs)
+									}
+									$(nTd).html(consultantsDOMSs)
+								}
+							}, {
+								data: 'author',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let author = oData.author
+									if (author === undefined || author === null) {
+										consultant.user = {
+											name: {
+												first: 'Neznámý',
+												last: 'uživatel'
+											},
+											photo: '/images/users/_unknown.png',
+											link: '#'
+										}
+									} else {
+										author.link = `/admin/users/detail/${author._id}/`
+									}
+									$(nTd).html($('<a>', {
+										href: author.link,
+										class: 'avatar avatar-sm rounded-circle',
+										'data-toggle': 'tooltip',
+										'data-original-title': author.fullName,
+									}).tooltip().append(
+										$('<img>', {
+											alt: 'Autorův avatar',
+											src: generateAvatar(author.fullName)
+										})
+									))
+								}
+							}, {
+								data: '_id',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$('<button>', {
+												onclick: `deployTeamWorkTemplateById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-hand-holding-medical" }),
+											),
+											$('<button>', {
+												onclick: `copyTeamWorkTemplateById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-copy text-gray" }),
+											),
+											$("<a>", { href: `/admin/teamworktemplates/edit/${oData._id}`, style: "background: none; border: none; padding: 0; " }).append(
+												$("<i>", { class: "fas fa-pen text-primary" }),
+											),
+											$('<button>', {
+												onclick: `deleteTeamWorkTemplateById('${oData._id}');`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$('<i>', { class: "fas fa-trash text-danger" }),
+											),
+										),
+									);
+								}
+							}
+						],
+					})
+				})
+		})
+	</script>
+	<%- include('../partials/file-end') %>

@@ -60,6 +60,16 @@ router.get('/teamworks/new', adminPageController.teamworks.new)
 router.get('/teamworks/edit/:id', adminPageController.teamworks.edit)
 
 /**
+ * TeamWorkTemplates
+ */
+router.get('/teamworktemplates/', (req, res) => {
+  res.redirect('./list')
+})
+router.get('/teamworktemplates/list', adminPageController.teamworktemplates.list)
+router.get('/teamworktemplates/new', adminPageController.teamworktemplates.new)
+router.get('/teamworktemplates/edit/:id', adminPageController.teamworktemplates.edit)
+
+/**
  * Specializations
  */
 router.get('/specializations/', (req, res) => {

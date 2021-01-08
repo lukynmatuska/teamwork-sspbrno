@@ -1,0 +1,395 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+<%- include('../partials/select2') %>
+<script>
+	function addStudentRow(student, i = $('div#students .row').length, motherDOM = $('div#students')) {
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col-2' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `student-${i}-position` }).text('Zaměření (Pozice)'),
+					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required', value: (student == undefined || student == null ? '' : student.position._id) })
+				)
+			),
+			$('<div>', { class: 'col' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `student-${i}-task` }).text('Popis pozice'),
+					$('<textarea>', {
+						class: 'form-control', id: `student-${i}-task`, rows: '1', required: 'required',
+						placeholder: 'Zde se prosím rozepište o studentově úkolu'
+					}).text(student == undefined || student == null ? '' : student.task)
+				)
+			),
+			$('<div>', { class: 'col-1 m-auto' }).append(
+				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+			)
+		).appendTo(motherDOM)
+		let $selectPosition = $(`select#student-${i}-position`).select2({
+			minimumResultsForSearch: -1
+		})
+		$selectPosition.html(`<option selected="selected" value>Načítání...</option>`)
+		$selectPosition.prop("disabled", true);
+		API.specialization.list().then((listOfSpecializations) => {
+			$selectPosition.html(`<option selected="selected" value disabled="disabled">Vyberte zaměření</option>`)
+			listOfSpecializations.forEach((specialization) => {
+				$selectPosition.append(`<option value="${specialization._id}">${specialization.name}</option>`)
+			})
+			if (student !== undefined || student != null) {
+				if (student.position !== undefined || student.position != null) {
+					$selectPosition.val(student.position._id)
+					$selectPosition.trigger('change')
+				}
+			}
+			$selectPosition.prop("disabled", false)
+		})
+	}
+
+	function addGuarantorRow(guarantor, i = $('div#guarantors .row').length, motherDOM = $('div#guarantors')) {
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-task` }).text('Popis práce'),
+					$('<textarea>', {
+						class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
+						placeholder: 'Zde se prosím rozepište o garantově zadaní'
+					}).text(guarantor == undefined || guarantor == null ? '' : guarantor.task)
+				)
+			),
+			$('<div>', { class: 'col-4' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-user` }).text('Učitel'),
+					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor == undefined || guarantor == null ? '' : (guarantor.user == undefined || guarantor.user == null ? '' : guarantor.user._id)) })
+				)
+			),
+			$('<div>', { class: 'col-1 m-auto' }).append(
+				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+			)
+		).appendTo(motherDOM)
+		let $selectGuarantor = $(`select#guarantor-${i}-user`).select2()
+		$selectGuarantor.html(`<option selected="selected" value>Načítání...</option>`)
+		$selectGuarantor.prop("disabled", true);
+		API.user.list({ type: 'guarantor' }).then((listOfUsers) => {
+			$selectGuarantor.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
+			listOfUsers.forEach((user) => {
+				$selectGuarantor.append(`<option value="${user._id}">${user.name.first} ${user.name.middle != undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+			})
+			if (guarantor != undefined || guarantor != null) {
+				if (guarantor.user != undefined || guarantor != null) {
+					$selectGuarantor.val(guarantor.user._id)
+					$selectGuarantor.trigger('change')
+				}
+			}
+			$selectGuarantor.prop("disabled", false);
+		})
+	}
+
+	function addConsultantRow(consultant, i = $('div#consultants .row').length, motherDOM = $('div#consultants')) {
+		$('<div>', { class: 'row' }).append(
+			$('<div>', { class: 'col' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `consultant-${i}-task` }).text('Popis práce'),
+					$('<textarea>', {
+						class: 'form-control', id: `consultant-${i}-task`, rows: '1', required: 'required',
+						placeholder: 'Zde se prosím rozepište o zadání konzultanta'
+					}).text(consultant == undefined || consultant == null ? '' : consultant.task)
+				)
+			),
+			$('<div>', { class: 'col-4' }).append(
+				$('<div>', { class: 'form-group' }).append(
+					$('<label>', { class: 'form-control-label', for: `consultant-${i}-user` }).text('Externista'),
+					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant == undefined || consultant == null ? '' : (consultant.user == undefined || consultant.user == null ? '' : consultant.user._id)) })
+				)
+			),
+			$('<div>', { class: 'col-sm-1 m-auto' }).append(
+				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+			)
+		).appendTo(motherDOM)
+		let $selectConsultant = $(`select#consultant-${i}-user`).select2()
+		$selectConsultant.html(`<option selected="selected" value>Načítání...</option>`)
+		$selectConsultant.prop("disabled", true);
+		API.user.list({ type: 'consultant' }).then((listOfUsers) => {
+			$selectConsultant.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
+			listOfUsers.forEach((user) => {
+				$selectConsultant.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+			})
+			if (consultant != undefined || consultant != null) {
+				if (consultant.user != undefined || consultant.user != null) {
+					$selectConsultant.val(consultant.user._id)
+					$selectConsultant.trigger('change')
+				}
+			}
+			$selectConsultant.prop("disabled", false);
+		})
+	}
+
+	function getDataForRequest() {
+		let students = []
+		let $students = $('div#students .row')
+		for (let i = 0; i < $students.length; i++) {
+			let user = $($($($($students[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val()
+			if (user == '') {
+				user = null
+			}
+			students.push({
+				position: $($($($($students[i]).children('div.col-2')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+				task: $($($($($students[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user,
+			})
+		}
+
+		let guarantors = []
+		let $guarantors = $('div#guarantors .row')
+		for (let i = 0; i < $guarantors.length; i++) {
+			guarantors.push({
+				task: $($($($($guarantors[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($guarantors[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
+		}
+
+		let consultants = []
+		let $consultants = $('div#consultants .row')
+		for (let i = 0; i < $consultants.length; i++) {
+			consultants.push({
+				task: $($($($($consultants[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
+				user: $($($($($consultants[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
+			})
+		}
+
+		return {
+			name: $('#name').val(),
+			description: $('#description').val(),
+			students,
+			guarantors,
+			consultants,
+			label: $('#label').val(),
+			result: $('#result').val()
+		}
+	}
+
+	$(document).ready(() => {
+		let $label = $('#label')
+		API.teamworktemplate
+			.findById('<%= req.params.id %>')
+			.then(function (responseFromServer) {
+				console.log(responseFromServer)
+				if (responseFromServer.name !== undefined) {
+					$('#name').val(responseFromServer.name)
+				}
+				if (responseFromServer.description !== undefined) {
+					$('#description').val(responseFromServer.description)
+				}
+				if (responseFromServer.result !== undefined) {
+					$('#result').val(responseFromServer.result)
+				}
+				if (responseFromServer.students !== undefined) {
+					for (let i = 0; i < responseFromServer.students.length; i++) {
+						addStudentRow(responseFromServer.students[i])
+					}
+				}
+				if (responseFromServer.guarantors !== undefined) {
+					for (let i = 0; i < responseFromServer.guarantors.length; i++) {
+						addGuarantorRow(responseFromServer.guarantors[i])
+					}
+				}
+				if (responseFromServer.consultants !== undefined) {
+					for (let i = 0; i < responseFromServer.consultants.length; i++) {
+						addConsultantRow(responseFromServer.consultants[i])
+					}
+				}
+				if (responseFromServer.label != undefined) {
+					$label.val(responseFromServer.label)
+				}
+			})
+
+		$('form#edit-teamwork-template').submit(function (event) {
+			event.preventDefault()
+			let $status = $('div#edit-teamwork-template-status')
+			$status
+				.empty()
+				.append(
+					$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+						$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+						'Zpracovávám'
+					)
+				)
+				.show()
+			let dataForRequest = getDataForRequest()
+			if (dataForRequest.students.length < 2) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet studentů u týmové práce je 2'
+						)
+					)
+					.show()
+			}
+			if (dataForRequest.guarantors.length < 1) {
+				return $status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Ouha! '),
+							'Minimální počet garantů u týmové práce je 1'
+						)
+					)
+					.show()
+			}
+			API.teamworktemplate
+				.edit(
+					'<%= req.params.id %>',
+					dataForRequest.name,
+					dataForRequest.description,
+					dataForRequest.students,
+					dataForRequest.guarantors,
+					dataForRequest.consultants,
+					dataForRequest.result,
+					dataForRequest.number,
+					dataForRequest.media,
+				)
+				.then(function (responseFromServer) {
+					console.log(responseFromServer)
+					if (responseFromServer.status === 'ok') {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Gratuluji!'),
+									' Úspěšně jste upravil(a) týmovou práci'
+								)
+							)
+							.show()
+
+						// Redirect to teamworks page
+						setTimeout(function () {
+							window.location.href = window.location.href;
+						}, 3500)
+					} else {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Ach ne! '),
+									responseFromServer.error
+								)
+							)
+							.show()
+					}
+				})
+		})
+	})
+</script>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'edit' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0"><%- title %></h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<form action="./" method="POST" id="edit-teamwork-template">
+								<h6 class="heading text-muted mb-4">Základní údaje</h6>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="form-control-label" for="name">Název</label>
+												<input type="text" id="name" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="form-control-label" for="label">Štítek</label>
+												<input type="text" id="label" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="description">Popis</label>
+												<textarea class="form-control" id="description" rows="3" required
+													placeholder="Zde se prosím rozepište o zadání týmové práce"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="description">Výsledek (výstup) týmové práce</label>
+												<textarea class="form-control" id="result" rows="3" required
+													placeholder="Zde se prosím rozepište o tom, co bude výsledkem týmové práce"></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+								<hr class="my-4">
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading text-muted mb-4">Studenti</h6>
+									</div>
+									<div class="col float-right">
+										<button type="button" onclick="addStudentRow()"
+											class="btn btn-sm btn-primary float-right">Přidat studenta</button>
+									</div>
+								</div>
+								<div class="pl-lg-4" id="students"></div>
+								<hr class="my-4">
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading text-muted mb-4">Garanti</h6>
+									</div>
+									<div class="col float-right">
+										<button type="button" onclick="addGuarantorRow()"
+											class="btn btn-sm btn-primary float-right">Přidat garanta</button>
+									</div>
+								</div>
+								<div class="pl-lg-4" id="guarantors"></div>
+								<hr class="my-4">
+								<div class="row">
+									<div class="col float-left">
+										<h6 class="heading text-muted mb-4">Konzultanti</h6>
+									</div>
+									<div class="col float-right">
+										<button type="button" onclick="addConsultantRow()"
+											class="btn btn-sm btn-primary float-right">Přidat konzultantanta</button>
+									</div>
+								</div>
+								<div class="pl-lg-4" id="consultants"></div>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col" id="edit-teamwork-template-status" style="display: none;"></div>
+										<div class="col-4 text-left">
+											<button type="submit" class="btn btn-primary"
+												id="new-teamwork-button">Upravit</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/file-end') %>

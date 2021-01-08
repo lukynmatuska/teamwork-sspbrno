@@ -354,5 +354,35 @@ var API = {
     isGivenTeamworkMine: function (UserId) {
       return getData('/teamwork/is-given-teamwork-mine', { id: UserId })
     }
-  }
+  },
+
+  teamworktemplate: {
+    new: function (name, description, students, guarantors, consultants, result, label) {
+      return postData('/teamworktemplate/new', { name, description, students, guarantors, consultants, result, label })
+    },
+
+    edit: function (id, name, description, students, guarantors, consultants, result, label) {
+      return postData('/teamworktemplate/edit', { id, name, description, students, guarantors, consultants, result, label })
+    },
+
+    findById: function (id) {
+      return getData('/teamworktemplate/find-by-id/' + id)
+    },
+
+    copy: function (id) {
+      return postData('/teamworktemplate/copy', { id })
+    },
+
+    deploy: function (id) {
+      return postData('/teamworktemplate/deploy', { id })
+    },
+
+    delete: function (id) {
+      return postData('/teamworktemplate/delete', { id })
+    },
+
+    list: function (filter = {}) {
+      return getData('/teamworktemplate/list', filter)
+    },
+  },
 }
