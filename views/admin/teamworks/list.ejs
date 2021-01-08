@@ -25,6 +25,7 @@
 										<th scope="col">Studenti</th>
 										<th scope="col">Garanti</th>
 										<th scope="col">Konzultanti</th>
+										<th scope="col">Autor</th>
 										<th scope="col">Akce</th>
 									</tr>
 								</thead>
@@ -274,6 +275,34 @@
 										).appendTo(consultantsDOMSs)
 									}
 									$(nTd).html(consultantsDOMSs)
+								}
+							}, {
+								data: 'author',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									let author = oData.author
+									if (author === undefined || author === null) {
+										consultant.user = {
+											name: {
+												first: 'Neznámý',
+												last: 'uživatel'
+											},
+											photo: '/images/users/_unknown.png',
+											link: '#'
+										}
+									} else {
+										author.link = `/admin/users/detail/${author._id}/`
+									}
+									$(nTd).html($('<a>', {
+										href: author.link,
+										class: 'avatar avatar-sm rounded-circle',
+										'data-toggle': 'tooltip',
+										'data-original-title': author.fullName,
+									}).tooltip().append(
+										$('<img>', {
+											alt: 'Garantův avatar',
+											src: generateAvatar(author.fullName)
+										})
+									))
 								}
 							}, {
 								data: '_id',
