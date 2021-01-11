@@ -398,7 +398,7 @@ function dashboardCards() {
   API.common
     .dashboard()
     .then((data) => {
-      console.log(data)
+      // console.log(data)
       if (data.specializations != undefined) {
         $('table#specializations').DataTable({
           language: {
@@ -416,7 +416,18 @@ function dashboardCards() {
               data: 'countOfPositionsInTeamworks',
             }, {
               data: 'countOfStudentsInTeamworks',
-            }
+            }, {
+              data: 'name',
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html((oData.countOfPositionsInTeamworks - oData.countOfStudentsInTeamworks))
+              }
+            }, {
+              data: 'name',
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                let val = oData.countOfPositionsInTeamworks - oData.countOfStudentsInTeamworks - oData.countOfStudents
+                $(nTd).html(val > 0 ? val : 0)
+              }
+            },
           ],
         })
         /* for (let i = 0; i < data.specializations.length; i++) {
