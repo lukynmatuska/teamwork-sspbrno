@@ -27,6 +27,11 @@ function createNewUserInMongoDB(req, res, userType) {
       year: req.session.year._id,
       permissions: 'edit'
     })
+  } else {
+    years.push({
+      year: req.session.year._id,
+      permissions: 'read'
+    })
   }
   new User({
     name: {
@@ -927,11 +932,15 @@ module.exports.import = async (req, res) => {
           }
         }
 
-        for (student of students) {
-          try {
+        try {
+          for (student of students) {
             student.specialization = dictOfSpecializationsFromDB[student.specialization]._id
             student.rescue = true
             student.password = randomstring.generate()
+            student.years = [{
+              year: req.session.year._id,
+              permissions: 'read'
+            }]
             let stud = await new User(student).save()
             // Send email
             const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
@@ -954,16 +963,16 @@ module.exports.import = async (req, res) => {
 
               }
             })
-          } catch (err) {
-            console.error(err)
-            return res
-              .status(500)
-              .json({
-                status: 'error',
-                error: err.errmsg,
-                student: student
-              })
           }
+        } catch (err) {
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err.errmsg,
+              student: student
+            })
         }
         return res
           .status(200)
