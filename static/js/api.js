@@ -1,23 +1,23 @@
-function generateAvatar(name){
+function generateAvatar(name) {
   name = name.split(' ')
-  var initials = name[name.length-1][0] + name[0][0]
+  var initials = name[name.length - 1][0] + name[0][0]
   var canvas = document.createElement('canvas');
   var radius = 30;
   var margin = 5;
-  canvas.width = radius*2+margin*2;
-  canvas.height = radius*2+margin*2;
+  canvas.width = radius * 2 + margin * 2;
+  canvas.height = radius * 2 + margin * 2;
 
   // Get the drawing context
   var ctx = canvas.getContext('2d');
   ctx.beginPath();
-  ctx.arc(radius+margin,radius+margin,radius, 0, 2 * Math.PI, false);
+  ctx.arc(radius + margin, radius + margin, radius, 0, 2 * Math.PI, false);
   ctx.closePath();
   ctx.fillStyle = '#000000';
   ctx.fill();
   ctx.fillStyle = "white";
   ctx.font = "bold 30px Open Sans,sans-serif";
   ctx.textAlign = 'center';
-  ctx.fillText(initials, radius+5,radius*4/3+margin);
+  ctx.fillText(initials, radius + 5, radius * 4 / 3 + margin);
   return canvas.toDataURL();
   //The canvas will never be added to the document.
 }
@@ -108,7 +108,7 @@ function switchYear(yearId) {
             icon: 'error',
           })
           break
-        
+
         default:
           Swal.fire({
             title: 'Rok se nezměnil!',
@@ -257,7 +257,7 @@ var API = {
     hasUserGivenSpecialization: function (UserId, specializationId) {
       return getData('/user/has-user-given-specialization', { id: UserId, specialization: specializationId })
     },
-    
+
     isGivenUserIdMine: function (UserId) {
       return getData('/user/is-given-id-mine', { id: UserId })
     },
@@ -350,7 +350,7 @@ var API = {
     hasStudentBeenAsignedToTeamWork: function () {
       return getData('/teamwork/has-student-been-asigned-to-teamwork')
     },
-    
+
     isGivenTeamworkMine: function (UserId) {
       return getData('/teamwork/is-given-teamwork-mine', { id: UserId })
     }
@@ -385,4 +385,67 @@ var API = {
       return getData('/teamworktemplate/list', filter)
     },
   },
+
+  common: {
+    dashboard: function () {
+      return getData('/common/dashboard')
+    }
+  }
+}
+
+function dashboardCards() {
+  // let $cards = $('div#cards')
+  API.common
+    .dashboard()
+    .then((data) => {
+      console.log(data)
+      if (data.specializations != undefined) {
+        $('table#specializations').DataTable({
+          language: {
+            url: '/js/dataTables/myCzech.json'
+          },
+          order: [[0, "desc"]],
+          responsive: true,
+          data: data.specializations,
+          columns: [
+            {
+              data: 'name',
+            }, {
+              data: 'countOfStudents',
+            }, {
+              data: 'countOfPositionsInTeamworks',
+            }, {
+              data: 'countOfStudentsInTeamworks',
+            }
+          ],
+        })
+        /* for (let i = 0; i < data.specializations.length; i++) {
+          const specialization = data.specializations[i]
+          $cards.append(
+            $('<div>', { class: 'col-xl-3 col-lg-6 m-auto' }).append(
+              $('<div>', { class: 'card card-stats' }).append(
+                $('<div>', { class: 'card-body' }).append(
+                  $('<div>', { class: 'row' }).append(
+                    $('<div>', { class: 'col' }).append(
+                      $('<h5>', { class: 'card-title text-uppercase text-muted mb-0' }).text(specialization.name),
+                      $('<span>', { class: 'h2 font-weight-bold mb-0' }).append(
+                        specialization.countOfStudents,
+                        $('<span>', {class: 'p'}).text(' stud'),
+                        specialization.countOfStudents,
+                        $('<span>', {class: 'p'}).text('stud'),
+                      )
+                    ),
+                    $('<div>', { class: 'col-auto' }).append(
+                      $('<div>', { class: 'icon icon-shape bg-danger text-white rounded-circle shadow' }).append(
+                        $('<i>', { class: 'fas fa-users' })
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        } */
+      }
+    })
 }

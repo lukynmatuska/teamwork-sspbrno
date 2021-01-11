@@ -15,77 +15,35 @@
 				<div class="header-body">
 					<div class="row">
 						<div class="col-lg-7 col-md-10">
-							<h1 class="display-2 text-white">Dobrý den <%= osloveni(req.session.user.name.first) %>!
+							<h1 class="display-2 text-white">
+								Dobrý den <%= osloveni(req.session.user.name.first) %>!
 							</h1>
 							<p class="text-white">Vítejte zpět na přehledu.</p>
-						</div>
-					</div>
-					<!-- Card stats -->
-					<div class="row">
-						<div class="col-xl-3 col-lg-6">
-							<div class="card card-stats mb-4 mb-xl-0" id="paid-reservation-card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col">
-											<h5 class="card-title text-uppercase text-muted mb-0">
-												Nadpis
-											</h5>
-											<span class="h2 font-weight-bold mb-0">
-												X
-												<span style="font-size: 75%;">
-													/ Y
-												</span>
-											</span>
-										</div>
-										<div class="col-auto">
-											<div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-												<i class="fas fa-ticket-alt"></i>
-											</div>
-										</div>
-									</div>
-									<!-- <p class="mt-3 mb-0 text-muted text-sm">
-										<span class="text-success mr-2"><i class="fa fa-arrow-up"></i> x %</span>
-										<span class="text-nowrap">Oproti minulému roku</span>
-									</p> -->
-								</div>
-							</div>
-						</div>
-						<div class="col-xl-3 col-lg-6">
-							<div class="card card-stats mb-4 mb-xl-0">
-								<div class="card-body">
-									<div class="row">
-										<div class="col">
-											<h5 class="card-title text-uppercase text-muted mb-0">
-												Nadpis
-											</h5>
-											<span class="h2 font-weight-bold mb-0">
-												X
-												<span style="font-size: 75%;">
-													/ Y
-												</span>
-											</span>
-										</div>
-										<div class="col-auto">
-											<div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-												<i class="fas fa-child"></i>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="container-fluid mt--7 flex-grow-1">
-			<div class="row">
+		<div class="container-fluid mt--9 flex-grow-1 d-flex flex-column jusitfy-content-center">
+			<!-- Table -->
+			<div class="row flex-grow-1">
 				<div class="col">
-					<div class="card shadow border-0">
-						<div class="card-body">
-							<div class="card-text">
-								<p>Text</p>
-							</div>
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h2 class="mb-0">Přehled pozic zaměření</h2>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="specializations">
+								<thead class="thead-light">
+									<tr>
+										<th>Název</th>
+										<th>Studentů celkem</th>
+										<th>Pozic celkem</th>
+										<th>Obsazeno pozic</th>
+									</tr>
+								</thead>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -93,5 +51,12 @@
 			<%- include('partials/footer') %>
 		</div>
 	</div>
+	<script>
+		// dashboardCards()
+	</script>
 	<%- include('./partials/scripts-file-end') %>
+	<%- include('./partials/datatables') %>
+	<script>
+		dashboardCards()
+	</script>
 	<%- include('partials/file-end') %>

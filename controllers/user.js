@@ -43,7 +43,7 @@ function createNewUserInMongoDB(req, res, userType) {
     password: bcrypt.hashSync(req.body.password, 15),
     email: req.body.email,
     type: userType,
-    years: years
+    years
   })
     .save()
     .then(u => u

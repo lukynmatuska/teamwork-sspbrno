@@ -23,6 +23,7 @@ const specializationController = require('../controllers/specialization')
 const teamworkController = require('../controllers/teamwork')
 const teamworkTemplateController = require('../controllers/teamworkTemplate')
 const yearController = require('../controllers/year')
+const commonController = require('../controllers/common')
 
 /**
  * Routes
@@ -156,6 +157,11 @@ router.get('/teamworktemplate/find-by-id/:id', teamworkTemplateController.findBy
 router.post('/teamworktemplate/delete', partials.onlyAdmin, teamworkTemplateController.delete)
 router.post('/teamworktemplate/copy', partials.onlyAdmin, teamworkTemplateController.copy)
 router.post('/teamworktemplate/deploy', partials.onlyAdmin, teamworkTemplateController.deployTeamwork)
+
+/**
+ * Common
+ */
+router.get('/common/dashboard', partials.onlyAdmin, commonController.admin.dashboard)
 
 /**
  * Not found route
