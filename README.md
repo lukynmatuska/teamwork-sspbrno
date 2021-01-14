@@ -47,3 +47,8 @@ Not supported, but you can try it...
 │   └── js  
 └── views (Part of pages for render)  
     └── partials (Repeating parts of pages – header, menu, ...)  
+
+## How it works?
+Node.js express waits for HTTP requests which are afterwards processed by their respective `routers` which lead to `controllers` that execute the *main code*.
+
+You must use reverse proxy server (like [nginx](https://www.nginx.com/)) if you want run this in production enviroment with safe HTTPS.
