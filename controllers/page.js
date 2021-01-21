@@ -12,6 +12,7 @@
  * Models
  */
 const User = require('../models/User')
+const TeamWork = require('../models/TeamWork')
 const errorController = require('./error')
 
 module.exports.homepage = (req, res) => {
@@ -26,8 +27,10 @@ module.exports.register = (req, res) => {
   res.render('register', { req, res, active: 'login', title: 'Registrace' })
 }
 
-module.exports.teamworks = (req, res) => {
-  res.render('teamworks', { req, res, active: 'teamworks', title: 'Seznam týmových prací' })
+module.exports.teamworks = {
+  list: (req, res) => {
+    res.render('teamworks/list', { req, res, active: 'teamworks', title: 'Seznam týmových prací' })
+  },
 }
 
 module.exports.profile = (req, res) => {

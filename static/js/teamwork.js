@@ -169,7 +169,7 @@ async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeam
         $('<div>', { class: 'col' }).append(
             $('<div>', { class: 'card flex-grow-1' }).append(
                 $('<div>', { class: 'card-body' }).append(
-                    $('<h3>', { class: 'card-title text-dark' }).text(teamwork.name),
+                    $('<h3>', { class: 'card-title text-dark' }).text(teamwork.fullname),
                     $('<p>', { class: 'card-text text-muted' }).text(teamwork.description)
                 ),
                 $('<h4>', { class: 'card-title text-dark' }).text('Studenti'),

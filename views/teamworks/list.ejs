@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+    <%- include('../partials/file-start') %>
+        <%- include('../partials/menu') %>
+            <main role="main" class="inner cover mt-5">
+                <h1 class="cover-heading">
+                    <%= title %>
+                </h1>
+                <span class="underline"></span>
+                <div class="mt-5" id="teamworks"></div>
+            </main>
+            <%- include('../partials/scripts-file-end') %>
+                <%- include('../partials/toast') %>
+                    <script src="/js/teamwork.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            const $teamWorksDOM = $('div#teamworks')
+                            API.teamwork
+                                .list()
+                                .then(async function (teamworks) {
+                                    const canStudentsJoinOrLeaveTeamworkInVar = await API.year.canStudentsJoinOrLeaveTeamwork()
+                                    let isUserLoggedIn
+                                    let hasStudentBeenAsignedToTeamWorkInVar
+                                    if (canStudentsJoinOrLeaveTeamworkInVar) {
+                                        isUserLoggedIn = await API.user.loggedIn()
+                                        hasStudentBeenAsignedToTeamWorkInVar = await hasStudentBeenAsignedToTeamWork()
+                                    } else {
+                                        isUserLoggedIn = false
+                                        hasStudentBeenAsignedToTeamWorkInVar = false
+                                    }
+                                    for (let i = 0; i < teamworks.length; i++) {
+                                        const teamworkDOM = await teamWorkDOM(teamworks[i], isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar)
+                                        $teamWorksDOM.append(teamworkDOM)
+                                    }
+                                })
+                        })
+                    </script>
+                    <%- include('../partials/footer') %>
+                        <%- include('../partials/file-end') %>

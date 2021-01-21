@@ -27,7 +27,7 @@ const partials = require('../routes/partials')
 
 /* Homepage */
 router.get('/', pageController.homepage)
-router.get('/teamworks', pageController.teamworks)
+router.get('/teamworks', pageController.teamworks.list)
 
 /* Error pages for testing */
 router.get('/403', errorController.error403)
