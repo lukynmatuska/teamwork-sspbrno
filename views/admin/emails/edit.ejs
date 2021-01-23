@@ -1,0 +1,112 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'edit' }) %>
+		<!-- Page content -->
+		<div class="container-fluid mt--7 flex-grow-1">
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<h3 class="mb-0"><%= title %></h3>
+								</div>
+							</div>
+						</div>
+						<div class="card-body bg-secondary">
+							<form action="./" method="POST" id="edit-email">
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="subject">Předmět</label>
+												<input type="text" id="subject" class="form-control" required
+													placeholder="Vyplňte prosím toto povinné pole" value="<%= subject %>">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="body">Zpráva</label>
+												<textarea class="form-control" id="body" rows="15" required
+													placeholder="Zde se prosím napište, co se má poslat uživateli"><%= body %></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="pl-lg-4">
+									<div class="row">
+										<div class="col" id="edit-email-status" style="display: none;"></div>
+										<div class="col-4 text-left">
+											<button type="submit" class="btn btn-primary">Upravit</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div><script>
+		$(document).ready(() => {
+			$('form#edit-email').submit(function (event) {
+				event.preventDefault()
+				let $status = $('div#edit-email-status')
+				$status
+					.empty()
+					.append(
+						$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+							$('<strong>').text('Zpracovávám'),
+							' Vyčkejte prosím'
+						)
+					)
+					.show()
+	
+				API.email.edit(
+					'<%= req.params.id %>',
+					$('#subject').val(),
+					$('#body').val()
+				).then(function (responseFromServer) {
+					if (responseFromServer.status === 'ok') {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Gratuluji!'),
+									' Úspěšně jste upravil(a) šablonu emailu'
+								)
+							)
+							.show()
+	
+						// Reload page
+						setTimeout(function () {
+							window.location.href = window.location.href;
+						}, 3500)
+					} else {
+						$status
+							.empty()
+							.append(
+								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+									$('<strong>').text('Ach ne! '),
+									responseFromServer.error
+								)
+							)
+							.show()
+					}
+				})
+			})
+		})
+	</script>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/file-end') %>

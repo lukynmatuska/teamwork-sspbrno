@@ -1,0 +1,78 @@
+<%- include('../partials/header') %>
+<%- include('../partials/scripts') %>
+</head>
+
+<body class="min-vh-100 d-flex flex-column">
+	<%- include('../partials/navbar') %>
+	<div class="main-content d-flex flex-column flex-grow-1">
+		<%- include('../partials/topbar') %>
+		<%- include('./header', { active: 'list' }) %>
+		<div class="container-fluid mt--7 flex-grow-1">
+			<!-- Light table -->
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header border-0">
+							<h3 class="mb-0"><%= title %></h3>
+						</div>
+						<div class="table-responsive">
+							<table class="table w-100" id="emails">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col" class="sort">ID</th>
+										<th scope="col" class="sort" data-sort="name">Název</th>
+										<th scope="col">Akce</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+	</div>
+	<%- include('../partials/scripts-file-end') %>
+	<%- include('../partials/datatables') %>
+	<script>
+		$(document).ready(function () {
+			API.email
+				.list()
+				.then((responseFromServer) => {
+					$('table#emails').DataTable({
+						language: {
+							url: '/js/dataTables/myCzech.json'
+						},
+						responsive: true,
+						data: responseFromServer /*[
+							{ name: 'Nový uživatel', id: 'newUser' },
+							{ name: 'Nový uživatel', id: 'newUser' },
+						]*/,
+						columns: [
+							{
+								data: "id",
+								visible: false
+							}, {
+								data: 'name'
+							}, {
+								data: 'id',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									$(nTd).html(
+										$("<div>", { class: "row m-auto justify-content-around" }).append(
+											$("<a>", {
+												href: `/admin/emails/${oData.id}/edit`,
+												style: "background: none; border: none; padding: 0; "
+											}).append(
+												$("<i>", { class: "fas fa-pen text-primary" }),
+											)
+										),
+									);
+								}
+							}
+						],
+					})
+				})
+		})
+	</script>
+	<%- include('../partials/file-end') %>
