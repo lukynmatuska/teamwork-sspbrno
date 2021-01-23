@@ -180,12 +180,11 @@ var API = {
       return postData('/user/login', { email, password })
     },
 
-    parseXlsx: function (file, userType) {
+    parseStudentsXlsx: function (file) {
       let body = new FormData()
       body.append('xlsx', file)
-      body.append('userType', userType)
       return fetch(
-        API.endpoint + '/user/parse-xlsx',
+        API.endpoint + '/user/parse-students-xlsx',
         {
           method: 'POST',
           body: body
@@ -193,10 +192,9 @@ var API = {
       )
     },
 
-    import: function (users, userType) {
+    import: function (user) {
       let body = new FormData()
-      body.append('users', JSON.stringify(users))
-      body.append('userType', userType)
+      body.append('user', JSON.stringify(user))
       return fetch(
         API.endpoint + '/user/import',
         {
@@ -205,6 +203,10 @@ var API = {
         }
       )
     },
+
+    /*import: function (user) {
+      return postData('/user/import', { user })
+    },*/
 
     edit: function (object) {
       return postData('/user/edit', object)

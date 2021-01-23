@@ -808,7 +808,7 @@ module.exports.delete = (req, res) => {
     })
 }
 
-module.exports.parseXlsx = (req, res) => {
+module.exports.parseStudentsXlsx = (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({
       status: 'error',
@@ -816,98 +816,86 @@ module.exports.parseXlsx = (req, res) => {
     })
   }
 
-  if (req.body.userType === 'student') {
-    const studentsFromTable = xlsx.parse(req.files.xlsx.data)[0].data
-    studentsFromTable.shift()
-    let setOfSpecializationsFromExcel = new Set()
-    let students = []
-    for (student of studentsFromTable) {
-      if (student.length > 0) {
-        setOfSpecializationsFromExcel.add(student[4])
-        students.push({
-          name: {
-            first: student[2],
-            last: student[1]
-          },
-          email: student[3],
-          type: req.body.userType,
-          specialization: student[4]
-        })
-      }
+  const studentsFromTable = xlsx.parse(req.files.xlsx.data)[0].data
+  studentsFromTable.shift()
+  let setOfSpecializationsFromExcel = new Set()
+  let students = []
+  for (let [i, student] of studentsFromTable.entries()) {
+    if (student.length > 0) {
+      setOfSpecializationsFromExcel.add(student[4])
+      students.push({
+        id: i,
+        name: {
+          first: student[2],
+          last: student[1]
+        },
+        email: student[3],
+        type: req.body.userType,
+        specialization: student[4]
+      })
     }
+  }
 
-    Specialization
-      .find({})
-      .exec(async (err, specializationsFromDB) => {
-        if (err) {
-          console.error(err)
+  Specialization
+    .find({})
+    .exec(async (err, specializationsFromDB) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+
+      /* Create dictionary of shortnames and names of specializations from DB */
+      let dictOfSpecializationsFromDB = {}
+      specializationsFromDB.forEach(spec => {
+        dictOfSpecializationsFromDB[spec.short] = spec
+      })
+      let setOfSpecializationsFromDB = new Set(Object.keys(dictOfSpecializationsFromDB))
+
+      /* Check if specializations from Excel are in DB */
+      for (specialization of setOfSpecializationsFromExcel) {
+        if (!setOfSpecializationsFromDB.has(specialization)) {
+          console.log(specialization)
           return res
-            .status(500)
+            .status(400)
             .json({
               status: 'error',
-              error: err
+              error: 'specialization-from-table-is-not-in-db',
+              specialization: specialization
             })
         }
+      }
 
-        /* Create dictionary of shortnames and names of specializations from DB */
-        let dictOfSpecializationsFromDB = {}
-        specializationsFromDB.forEach(spec => {
-          dictOfSpecializationsFromDB[spec.short] = spec
+      return res
+        .status(200)
+        .json({
+          status: 'ok',
+          users: students
         })
-        let setOfSpecializationsFromDB = new Set(Object.keys(dictOfSpecializationsFromDB))
-
-        /* Check if specializations from Excel are in DB */
-        for (specialization of setOfSpecializationsFromExcel) {
-          if (!setOfSpecializationsFromDB.has(specialization)) {
-            console.log(specialization)
-            return res
-              .status(400)
-              .json({
-                status: 'error',
-                error: 'specialization-from-table-is-not-in-db',
-                specialization: specialization
-              })
-          }
-        }
-
-        return res
-          .status(200)
-          .json({
-            status: 'ok',
-            users: students
-          })
-      })
-  }
+    })
 }
 
-
 module.exports.import = async (req, res) => {
-  if (req.body.users === undefined) {
+  if (req.body.user === undefined) {
     return res
       .status(400)
       .json({
         status: 'error',
-        error: 'not-send-users'
+        error: 'not-send-user'
       })
   } else if (req.body.userType === undefined) {
-    return res
-      .status(400)
-      .json({
-        status: 'error',
-        error: 'not-send-userType'
-      })
-  } else if (req.body.userType === 'student') {
-    let students = JSON.parse(req.body.users)
-    let setOfSpecializationsFromRequest = new Set()
-    for (student of students) {
-      if (Object.values(student).length > 0) {
-        setOfSpecializationsFromRequest.add(student.specialization)
-      }
-    }
-
+    req.body.userType = 'student'
+  }
+  if (req.body.userType === 'student') {
     Specialization
-      .find({})
-      .exec(async (err, specializationsFromDB) => {
+      .find({
+        short: req.body.user.specialization
+      })
+      .exec(async (err, specialization) => {
         if (err) {
           console.error(err)
           return res
@@ -917,74 +905,64 @@ module.exports.import = async (req, res) => {
               error: err
             })
         }
+        if (specialization == null) {
+          return res
+            .status(400)
+            .json({
+              status: 'error',
+              error: 'specialization-from-table-is-not-in-db',
+              specialization: specialization
+            })
 
-        /* Create dictionary of shortnames and names of specializations from DB */
-        let dictOfSpecializationsFromDB = {}
-        specializationsFromDB.forEach(spec => {
-          dictOfSpecializationsFromDB[spec.short] = spec
-        })
-        let setOfSpecializationsFromDB = new Set(Object.keys(dictOfSpecializationsFromDB))
-
-        /* Check if specializations from request are in DB */
-        for (specialization of setOfSpecializationsFromRequest) {
-          if (!setOfSpecializationsFromDB.has(specialization)) {
-            return res
-              .status(400)
-              .json({
-                status: 'error',
-                error: 'specialization-from-table-is-not-in-db',
-                specialization: specialization
-              })
-          }
         }
 
         try {
-          for (student of students) {
-            student.specialization = dictOfSpecializationsFromDB[student.specialization]._id
-            student.rescue = true
-            student.password = randomstring.generate()
-            student.years = [{
-              year: req.session.year._id,
-              permissions: 'read'
-            }]
-            let stud = await new User(student).save()
-            // Send email
-            const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-            const text = `Dobrý den ${osloveni(stud.name.first)},\n\nVáš účet v týmových pracích je připraven!\nZbývá už jen maličkost a tou není nic jiného, než nastavení hesla.\nTo můžeš provést zde: ${global.CONFIG.url}\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
-            const message = {
-              from: global.CONFIG.nodemailer.sender,
-              to: `"${stud.name.first}${stud.name.middle !== undefined ? ` ${stud.name.middle} ` : ''} ${stud.name.last}" <${stud.email}>`,
-              subject: 'Váš nový účet 👤🔑',
-              text
-            }
-
-            transporter.sendMail(message, (err, info, response) => {
-              if (err) {
-                console.error(`Error occurred. ${err.message}`)
-                return res.status(400).json({
-                  status: 'error',
-                  error: err.message,
-                  student: student
-                })
-
-              }
-            })
+          let student = JSON.parse(req.body.user)
+          student.id = undefined
+          student.specialization = specialization._id
+          student.rescue = {
+            enabled: true,
+            hash: randomstring.generate()
           }
+          student.password = student.rescue.hash
+          student.years = [{
+            year: req.session.year._id,
+            permissions: 'read'
+          }]
+          new User(student).save((err, student) => {
+            if (err) {
+              if (err.code === 11000 && err.keyPattern.email === 1) {
+                return res
+                .status(500)
+                .json({
+                  status: 'error',
+                  error: 'Email už se nachází v databázi.'
+                })
+              }
+              console.error(err)
+              return res
+                .status(500)
+                .json({
+                  status: 'error',
+                  error: err.errmsg
+                })
+            }
+            // emailController.studentImported(student)
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
+          })
         } catch (err) {
           console.error(err)
           return res
             .status(500)
             .json({
               status: 'error',
-              error: err.errmsg,
-              student: student
+              error: err
             })
         }
-        return res
-          .status(200)
-          .json({
-            status: 'ok'
-          })
       })
   }
 }

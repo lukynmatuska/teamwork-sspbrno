@@ -15,16 +15,19 @@
 					<div class="card">
 						<div class="card-header">
 							<div class="row align-items-center">
-								<div class="col-12">
-									<h3 class="mb-0">Import uživatelů</h3>
+								<div class="col">
+									<h3 class="mb-0">Import studentů</h3>
+								</div>
+								<div class="col text-right">
+									<a href="/files/students_example.xlsx" target="_blank" class="btn btn-sm btn-primary">Vzorový XLSX</a>
 								</div>
 							</div>
 						</div>
 						<div class="card-body bg-secondary">
 							<form action="../parse" method="POST" id="parse-users">
 								<div class="row">
-									<div class="col-xs-12 col-lg-6">
-										<h6 class="heading text-muted mb-4">Zpracovaní uživatelů</h6>
+									<div class="col-12">
+										<h6 class="heading text-muted mb-4">Zpracování</h6>
 										<div class="pl-lg-4">
 											<div class="form-group">
 												<label class="form-control-label" for="file-to-parse">
@@ -35,25 +38,10 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-xs-12 col-lg-6">
-										<h6 class="heading text-muted mb-4">Výchozí nastavení nových uživatelů</h6>
-										<div class="pl-lg-4">
-											<div class="row">
-												<div class="col-lg-12">
-													<div class="form-group">
-														<label for="user-type">Typ uživatele</label>
-														<select class="form-control" id="user-type">
-															<option value="student">Student(ka)</option>
-															<option value="guarantor">Garant(ka)</option>
-															<option value="admin">Administrátor(ka)</option>
-														</select>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
+								</div>
+								<div class="row">
 									<div class="col-12" style="display: none;" id="parsed-users">
-										<h6 class="heading text-muted mb-4">Zpracovaní uživatelé</h6>
+										<h6 class="heading text-muted mb-4">Zpracovaní studenti</h6>
 										<div class="pl-lg-4" id="parse-users-result"></div>
 									</div>
 								</div>
@@ -92,7 +80,7 @@
 			let thead = document.createElement('thead')
 			thead.classList = `thead-${theme}`
 			let theadRow = document.createElement('tr')
-			for (val of ['Příjmení', 'Křestní jméno', 'Email', 'Specializace']) {
+			for (val of ['Příjmení', 'Křestní jméno', 'Email', 'Specializace', 'Status'/*, 'Akce'*/]) {
 				let th = document.createElement('th')
 				th.appendChild(document.createTextNode(val))
 				theadRow.appendChild(th)
@@ -104,6 +92,7 @@
 
 			users.forEach(function (user) {
 				let row = document.createElement('tr')
+				row.id = `parsed-student-row-${user.id}`
 
 				/* Lastname */
 				let lastname = document.createElement('td')
@@ -125,13 +114,31 @@
 				specialization.appendChild(document.createTextNode(user.specialization))
 				row.appendChild(specialization)
 
+				/* Status */
+				let status = document.createElement('td')
+				status.id = `parsed-student-status-${user.id}`
+				status.appendChild(document.createTextNode('Připraveno pro import'))
+				row.appendChild(status)
+
+				/* Actions * /
+				let actions = document.createElement('td')
+				let edit = document.createElement('button')
+				edit.style = 'background: none; border: none; padding: 0;'
+				edit.type = 'button'
+				edit.onclick = () => {
+					sweeeetAleeert(user)
+				}
+				let editIcon = document.createElement('i')
+				editIcon.setAttribute('class', 'fas fa-sync-alt text-primary')
+				edit.appendChild(editIcon)
+				actions.appendChild(edit)
+				row.appendChild(actions)*/
+
 				tableBody.appendChild(row)
 			})
 
 			table.appendChild(tableBody)
 			tableDivDiv.appendChild(table)
-			// parentElement.innerHtml = ''
-			// parentElement.appendChild(tableDiv)
 			$(parentElement).html(tableDiv)
 		}
 
@@ -162,18 +169,15 @@
 					)
 					.show()
 
-				API.user.parseXlsx(
-					document.getElementById("file-to-parse").files[0],
-					$('#user-type').val()
-				)
-					.then(response => response.json()) // .then(data => console.log(data))
+				API.user
+					.parseStudentsXlsx(document.getElementById("file-to-parse").files[0])
+					.then(response => response.json())
 					.then(function (responseFromServer) {
 						console.log(responseFromServer)
 						if (responseFromServer.status === 'ok') {
 							$button
 								.addClass('btn-success')
 								.text('Zpracovat znovu')
-								// .removeClass('btn-primary')
 							$importButton
 								.attr('type', 'submit')
 								.attr('disabled', null)
@@ -198,7 +202,7 @@
 								$status.hide()
 								$button.removeClass('btn-success')
 							}, 5000)
-							$importButton.click(function (event) {
+							$importButton.click(async function (event) {
 								event.preventDefault()
 								let $importStatus = $('div#import-users-status')
 								$importStatus
@@ -218,37 +222,49 @@
 									)
 									.show()
 
-								API.user.import(
-									responseFromServer.users,
-									$('#user-type').val()
-								)
-									.then(response => response.json()) // .then(data => console.log(data))
-									.then(function (resFromServer) {
-										console.log(resFromServer)
-										if (resFromServer.status === 'ok') {
-											$importStatus
-												.empty()
-												.append(
-													$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-														$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-														$('<strong>').text('Gratuluji!'),
-														' Úspěšně jste naimportoval(a) nové uživatele'
-													)
-												)
-												.show()
-										} else {
-											$importStatus
-												.empty()
-												.append(
-													$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-														$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-														$('<strong>').text('Ach ne! '),
-														resFromServer.error
-													)
-												)
-												.show()
-										}
-									})
+								let statusOfImport = 'importing'
+								for (const student of responseFromServer.users) {
+									let rowInTable = document.getElementById(`parsed-student-row-${student.id}`)
+									let status = document.getElementById(`parsed-student-status-${student.id}`)
+									let text
+									await API.user
+										.import(student)
+										.then(response => response.json())
+										.then(function (resFromServer) {
+											console.log(resFromServer)
+											if (resFromServer.status === 'ok') {
+												rowInTable.className = 'bg-gradient-success text-white'
+												status.innerHTML = 'Úspěšně naimportován'
+											} else {
+												statusOfImport = 'error'
+												rowInTable.className = 'bg-gradient-danger text-white'
+												status.innerHTML = `<b>Nastala chyba!</b> ${resFromServer.error}`
+											}
+										})
+								}
+								if (statusOfImport == 'error') {
+									$importStatus
+										.empty()
+										.append(
+											$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+												$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+												$('<strong>').text('Pozor! '),
+												'Při importu jednoho či více studentů nastala chyba.'
+											)
+										)
+										.show()
+								} else {
+									$importStatus
+										.empty()
+										.append(
+											$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+												$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+												$('<strong>').text('Gratuluji!'),
+												' Úspěšně jste naimportoval(a) nové uživatele'
+											)
+										)
+										.show()
+								}
 							})
 						} else if (responseFromServer.error === 'specialization-from-table-is-not-in-db') {
 							$status
