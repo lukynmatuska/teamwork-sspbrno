@@ -1037,12 +1037,23 @@ module.exports.import = async (req, res) => {
                   error: err.errmsg
                 })
             }
-            // emailController.studentImported(student)
-            return res
-              .status(200)
-              .json({
-                status: 'ok'
-              })
+            emailController.send('importedStudent', student, (err, info, response) => {
+              if (err) {
+                console.error(`Error occurred when sending email:\n${err.message}`)
+                return res
+                  .status(400)
+                  .json({
+                    status: 'error',
+                    error: 'Problém s odesíláním emailu.'
+                  })
+              } else {
+                return res
+                  .status(200)
+                  .json({
+                    status: 'ok'
+                  })
+              }
+            })
           })
         } catch (err) {
           console.error(err)
