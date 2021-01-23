@@ -23,6 +23,7 @@ const specializationController = require('../controllers/specialization')
 const teamworkController = require('../controllers/teamwork')
 const teamworkTemplateController = require('../controllers/teamworkTemplate')
 const yearController = require('../controllers/year')
+const emailController = require('../controllers/email')
 const commonController = require('../controllers/common')
 
 /**
@@ -78,6 +79,7 @@ router.post('/user/login', userController.login)
 router.post('/user/edit', partials.onlyLoggedIn, userController.edit)
 router.post('/user/forgot-password', userController.enableRescue)
 router.post('/user/set-new-password', userController.setNewPassword)
+router.post('/user/rescue-password', userController.rescuePassword)
 router.post('/user/update-password', partials.onlyLoggedIn, userController.updatePassword)
 router.get('/user/update-session', partials.onlyLoggedIn, userController.updateSession)
 router.post('/user/change-type', partials.onlyAdmin, userController.changeType)
@@ -157,6 +159,12 @@ router.get('/teamworktemplate/find-by-id/:id', teamworkTemplateController.findBy
 router.post('/teamworktemplate/delete', partials.onlyAdmin, teamworkTemplateController.delete)
 router.post('/teamworktemplate/copy', partials.onlyAdmin, teamworkTemplateController.copy)
 router.post('/teamworktemplate/deploy', partials.onlyAdmin, teamworkTemplateController.deployTeamwork)
+
+/**
+ * Email
+ */
+router.get('/email/list', partials.onlyAdmin, emailController.list)
+router.post('/email/edit', partials.onlyAdmin, emailController.edit)
 
 /**
  * Common

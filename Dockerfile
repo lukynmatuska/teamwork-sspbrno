@@ -15,6 +15,7 @@ RUN npm install pm2 -g
 
 # Bundle app source
 COPY . .
+RUN cp -rvf emails.sample emails
 
 EXPOSE 3000
 #CMD [ "node", "app.js" ]

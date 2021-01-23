@@ -1,0 +1,5 @@
+{
+  "name": "Zaslání odkazu na nastavení nového hesla",
+  "subject": "Zapomenuté heslo",
+  "body": "Dobrý den <%= osloveni(user.name.first) %>,\n\njelikož máte účet v týmových pracích a požádal(a) jste o změnu hesla, zde je možnost: <%= global.CONFIG.url %>/forgot-password/<%= user.rescue.hash %>\n\nS přáním hezkého dne,\nOldřich Vrátný\nSprávce uživatelských účtů"
+}

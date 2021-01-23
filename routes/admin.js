@@ -102,6 +102,15 @@ router.get('/years/new', adminPageController.years.new)
 router.get('/years/edit/:id', adminPageController.years.edit)
 
 /**
+ * Emails
+ */
+router.get('/emails/', (req, res) => {
+  res.redirect('./list')
+})
+router.get('/emails/list', adminPageController.emails.list)
+router.get('/emails/:id/edit', adminPageController.emails.edit)
+
+/**
  * Error pages (for testing)
  */
 router.get('/403', adminPageController.error.accessDenied)

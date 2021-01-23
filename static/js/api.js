@@ -216,6 +216,10 @@ var API = {
       return postData('/user/forgot-password', { email })
     },
 
+    rescuePassword: function (hash, password) {
+      return postData('/user/rescue-password', { hash, password })
+    },
+
     setNewPassword: function (userId, password) {
       return postData('/user/set-new-password', { id: userId, password })
     },
@@ -388,11 +392,21 @@ var API = {
     },
   },
 
+  email: {
+    edit: function (id, subject, body) {
+      return postData('/email/edit', { id, subject, body })
+    },
+    
+    list: function () {
+      return getData('/email/list')
+    }
+  },
+
   common: {
     dashboard: function () {
       return getData('/common/dashboard')
-    }
-  }
+    },
+  },
 }
 
 function dashboardCards() {

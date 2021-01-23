@@ -8,10 +8,9 @@
  * Libs
  */
 const bcrypt = require('bcrypt')
-const osloveni = require('../libs/osloveni')
-const nodemailer = require('nodemailer')
 const xlsx = require('node-xlsx').default
 const randomstring = require("randomstring")
+const emailController = require('./email')
 
 /**
  * Models
@@ -52,17 +51,7 @@ function createNewUserInMongoDB(req, res, userType) {
       .execPopulate()
     )
     .then(user => {
-      // Send email
-      const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-      const text = `Dobrý den ${osloveni(user.name.first)},\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na ${global.CONFIG.url}/login\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
-      const message = {
-        from: global.CONFIG.nodemailer.sender,
-        to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
-        subject: 'Váš nový účet 👤🔑',
-        text
-      }
-
-      transporter.sendMail(message, (err, info, response) => {
+      emailController.newUser.send('newUser', user, (err, info, response) => {
         if (err) {
           console.error(err.message)
           return res
@@ -400,23 +389,13 @@ module.exports.enableRescue = (req, res) => {
             })
         } else if (user === null) {
           return res
-            // .status(404)
+            .status(422)
             .send({
               status: 'error',
               error: 'wrong-email'
             })
         } else {
-          // Send email
-          const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
-          const text = `Dobrý den ${osloveni(user.name.first)},\n\njelikož máte účet v týmových pracích a požádal(a) jste o změnu hesla, zde je možnost: ${global.CONFIG.url}/forgot-password/${user.rescue.hash}/\n\nS přáním hezkého dne,\nOlda Vrátník\nSprávce uživatelských účtů týmových prací`
-          const message = {
-            from: global.CONFIG.nodemailer.sender,
-            to: `"${user.name.first}${user.name.middle !== undefined ? ` ${user.name.middle} ` : ''} ${user.name.last}" <${user.email}>`,
-            subject: 'Zapomenuté heslo',
-            text
-          }
-
-          transporter.sendMail(message, (err, info, response) => {
+          emailController.send('enableRescue', user, (err, info, response) => {
             if (err) {
               console.error(`Error occurred when sending email:\n${err.message}`)
               return res
@@ -438,6 +417,92 @@ module.exports.enableRescue = (req, res) => {
   }
 }
 
+module.exports.rescuePassword = (req, res) => {
+  if (req.session.user == undefined && req.body.hash == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-hash'
+      })
+  } else if (req.body.password === undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-password'
+      })
+  }
+  User
+    .findOneAndUpdate({
+      rescue: {
+        enabled: true,
+        hash: req.body.hash
+      }
+    }, {
+      rescue: {
+        enabled: false,
+      },
+      password: bcrypt.hashSync(req.body.password, 15)
+    }, {
+      new: true
+    })
+    .populate('specialization')
+    .populate('years.year')
+    .exec((err, user) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      } else if (user === null) {
+        return res
+          .status(404)
+          .json({
+            status: 'error',
+            error: 'wrong-email'
+          })
+      } else {
+        if (req.session.user == undefined) {
+          // Sort years by name
+          user.years.sort((a, b) => {
+            if (a.year == undefined || a.year == null) {
+              return 1
+            }
+            if (Number(a.year.name) > Number(b.year.name)) {
+              return -1
+            }
+            if (Number(a.year.name) < Number(b.year.name)) {
+              return 1
+            }
+            return 0
+          })
+          req.session.user = user
+        }
+        emailController.send('rescuePassword', user, (err, info, response) => {
+          if (err) {
+            console.error(`Error occurred when sending email:\n${err.message}`)
+            return res
+              .status(400)
+              .json({
+                status: 'error',
+                error: 'Problém s odesíláním emailu.'
+              })
+          } else {
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
+          }
+        })
+      }
+    })
+}
+
 module.exports.setNewPassword = (req, res) => {
   if (req.body.id === undefined) {
     return res
@@ -453,84 +518,97 @@ module.exports.setNewPassword = (req, res) => {
         status: 'error',
         error: 'not-send-password'
       })
-  } else {
-    User
-      .findById(req.body.id)
-      .exec((err, user) => {
-        if (err) {
-          console.error(err)
-          return res
-            .status(500)
-            .json({
-              status: 'error',
-              error: 'mongo-err'
-            })
-        }
-
-        if (!user.rescue.enabled || req.session.user != undefined) {
-          if (req.session.user.type === 'admin' || req.session.user._id === user._id) {
-
-          } else {
-            return res.status(403).send('403')
-          }
-        }
-        User
-          .findByIdAndUpdate(
-            req.body.id,
-            {
-              rescue: false,
-              password: bcrypt.hashSync(req.body.password, 15)
-            },
-            {
-              new: true
-            }
-          )
-          .populate('specialization')
-          .populate('years.year')
-          .exec((err, user) => {
-            if (err) {
-              console.error(err)
-              return res
-                .status(500)
-                .json({
-                  status: 'error',
-                  error: err
-                })
-            } else if (user === null) {
-              return res
-                .status(404)
-                .json({
-                  status: 'error',
-                  error: 'wrong-email'
-                })
-            } else {
-              if (req.session.user !== undefined) {
-                if (req.session.user._id === user._id) {
-                  // Sort years by name
-                  user.years.sort((a, b) => {
-                    if (a.year == undefined || a.year == null) {
-                      return 1
-                    }
-                    if (Number(a.year.name) > Number(b.year.name)) {
-                      return -1
-                    }
-                    if (Number(a.year.name) < Number(b.year.name)) {
-                      return 1
-                    }
-                    return 0
-                  })
-                  req.session.user = user
-                }
-              }
-              return res
-                .status(200)
-                .send({
-                  status: 'ok'
-                })
-            }
-          })
-      })
   }
+  User
+    .findById(req.body.id)
+    .exec((err, user) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+
+      if (!user.rescue.enabled || req.session.user != undefined) {
+        if (req.session.user.type === 'admin' || req.session.user._id === user._id) {
+
+        } else {
+          return res.status(403).send('403')
+        }
+      }
+      User
+        .findByIdAndUpdate(
+          req.body.id,
+          {
+            rescue: {
+              enabled: false,
+            },
+            password: bcrypt.hashSync(req.body.password, 15)
+          },
+          {
+            new: true
+          }
+        )
+        .populate('specialization')
+        .populate('years.year')
+        .exec((err, user) => {
+          if (err) {
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          } else if (user === null) {
+            return res
+              .status(404)
+              .json({
+                status: 'error',
+                error: 'wrong-email'
+              })
+          } else {
+            if (req.session.user !== undefined) {
+              if (req.session.user._id === user._id) {
+                // Sort years by name
+                user.years.sort((a, b) => {
+                  if (a.year == undefined || a.year == null) {
+                    return 1
+                  }
+                  if (Number(a.year.name) > Number(b.year.name)) {
+                    return -1
+                  }
+                  if (Number(a.year.name) < Number(b.year.name)) {
+                    return 1
+                  }
+                  return 0
+                })
+                req.session.user = user
+              }
+            }
+            emailController.send('setNewPassword', user, (err, info, response) => {
+              if (err) {
+                console.error(`Error occurred when sending email:\n${err.message}`)
+                return res
+                  .status(400)
+                  .json({
+                    status: 'error',
+                    error: 'Problém s odesíláním emailu.'
+                  })
+              } else {
+                return res
+                  .status(200)
+                  .json({
+                    status: 'ok'
+                  })
+              }
+            })
+          }
+        })
+    })
 }
 
 module.exports.updatePassword = async (req, res) => {
@@ -609,11 +687,23 @@ module.exports.updatePassword = async (req, res) => {
         return 0
       })
       req.session.user = user
-      return res
-        .status(200)
-        .send({
-          status: 'ok'
-        })
+      emailController.send('rescuePassword', user, (err, info, response) => {
+        if (err) {
+          console.error(`Error occurred when sending email:\n${err.message}`)
+          return res
+            .status(400)
+            .json({
+              status: 'error',
+              error: 'Problém s odesíláním emailu.'
+            })
+        } else {
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
+        }
+      })
     })
 }
 
@@ -933,11 +1023,11 @@ module.exports.import = async (req, res) => {
             if (err) {
               if (err.code === 11000 && err.keyPattern.email === 1) {
                 return res
-                .status(500)
-                .json({
-                  status: 'error',
-                  error: 'Email už se nachází v databázi.'
-                })
+                  .status(500)
+                  .json({
+                    status: 'error',
+                    error: 'Email už se nachází v databázi.'
+                  })
               }
               console.error(err)
               return res

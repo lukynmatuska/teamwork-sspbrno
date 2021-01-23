@@ -7,6 +7,7 @@
 /**
  * Libs
  */
+const emailController = require('../email')
 
 /**
  * Models
@@ -16,6 +17,7 @@ const TeamWorkTemplate = require('../../models/TeamWorkTemplate')
 const User = require('../../models/User')
 const Year = require('../../models/Year')
 const Specialization = require('../../models/Specialization')
+const { rmSync } = require('fs')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })
@@ -273,5 +275,26 @@ module.exports.error = {
   },
   internalError: (req, res) => {
     res.render('admin/errors/500', { req, res, active: 'error', title: '500 Chyba serveru' })
+  }
+}
+
+module.exports.emails = {
+  list: (req, res) => {
+    res.render('admin/emails/list', { req, res, active: 'emails', title: 'Seznam šablon emailů'})
+  },
+  edit: (req, res) => {
+    if (req.params.id == undefined) {
+      return this.error.notFound(req, res)
+    } else if (!emailController.exists(req.params.id)) {
+      return this.error.notFound(req, res)
+    }
+    emailController.read(req.params.id, (err, data) => {
+      if (err) {
+        console.error(err)
+        return this.error.internalError(req, res)
+      }
+      data = JSON.parse(data)
+      res.render('admin/emails/edit', { req, res, active: 'emails', title: 'Editace šablony emailu', name: data.name, subject: data.subject, body: data.body })
+    })
   }
 }

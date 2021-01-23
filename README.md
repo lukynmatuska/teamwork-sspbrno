@@ -25,6 +25,8 @@ Node.js webapp for administration of Team works at [SSPBRNO](https://sspbrno.cz)
 ##### Prepare config file:
 - ```cp config.sample.js config.js```  
 Edit settings in your `config.js` or in ENV variables (see `app.js`)
+##### Prepare email templates
+- ```cp -rvf emails.sample emails```  
 
 ### Windows
 Not supported, but you can try it...
@@ -38,6 +40,7 @@ Not supported, but you can try it...
 ├── app.js (Entry point of app)  
 ├── config.js (Configuration data, connection to db, etc.) or **ENV** variables  
 ├── controllers (Controllers - heart of app, carrying out individual activities as such)  
+├── emails (Emails - folder for email templates)  
 ├── libs (Libraries - external libraries, which aren't in npm or own solution like connection to db)  
 ├── models (Database models, ex. User, Ticket, Car, ...)  
 ├── routes (Routers paths, call funcions by URL from controllers)  

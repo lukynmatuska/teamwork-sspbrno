@@ -9,7 +9,6 @@
  */
 const moment = require('moment')
 moment.locale('cs')
-// const nodemailer = require('nodemailer')
 const mongoose = require('../libs/db')
 
 /**

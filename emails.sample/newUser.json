@@ -1,0 +1,5 @@
+{
+  "name": "Nový uživatel",
+  "subject": "Váš nový účet!",
+  "body": ":)\nDobrý den <%= osloveni(user.name.first) %>,\n\nVáš účet v týmových pracích je připraven.\nMůžete se přihlásit na <%= global.CONFIG.url %>/login\n\nS přáním hezkého dne,\nOldřich Vrátný\nSprávce uživatelských účtů"
+}
