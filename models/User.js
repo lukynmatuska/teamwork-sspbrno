@@ -27,8 +27,14 @@ var userSchema = new mongoose.Schema({
     required: true
   },
   rescue: {
-    type: Boolean,
-    default: false
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    hash: {
+      type: String,
+      unique: true,
+    }
   },
   type: {
     type: String,

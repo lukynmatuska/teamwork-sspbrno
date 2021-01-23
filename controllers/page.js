@@ -42,20 +42,25 @@ module.exports.forgotPassword = (req, res) => {
 }
 
 module.exports.setNewPassword = (req, res) => {
-  if (req.params.id === undefined) {
+  if (req.params.hash === undefined) {
     return errorController.error403(req, res)
   }
   User
-    .findById(req.params.id)
+    .findOne({
+      rescue: {
+        enabled: true,
+        hash: String(req.params.hash)
+      }
+    })
     .exec((err, user) => {
       if (err) {
         console.error(err)
         return errorController.error500(req, res, err)
       } else if (user === null) {
         return errorController.error404(req, res)
-      } else if (!user.rescue) {
+      } else if (!user.rescue.enabled) {
         return errorController.error403(req, res)
       }
-      res.render('set-new-password', { req, res, active: 'login', title: 'Nové heslo' })
+      return res.render('set-new-password', { req, res, active: 'login', title: 'Nové heslo', user })
     })
 }
