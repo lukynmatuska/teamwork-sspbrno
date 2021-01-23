@@ -165,6 +165,9 @@
 												.appendTo($(nTd))
 										}
 									}
+									if (oData.years.length == 0) {
+										$(nTd).parent().addClass('bg-gradient-danger text-white')
+									}
 								}
 							}, {
 								data: '_id',
