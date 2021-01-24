@@ -50,7 +50,9 @@ try {
       user: process.env.MONGODB_USER || 'root',
       password: process.env.MONGODB_PASS || '',
       options: process.env.MONGODB_OPTIONS || ''
-    }
+    },
+
+    contactPersonEmail: process.env.CONTACT_PERSON_EMAIL || 'teamworks@sspbrno.com',
   }
 }
 

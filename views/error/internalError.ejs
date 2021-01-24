@@ -6,8 +6,12 @@
     <% if (error) { %>
     <p class="lead">Chyba: <%= error %></p>
     <% } %>
-    <p class="lead">Zkuste to prosím později, pokud chyba přetrvává i po obnovení stránky, tak nás můžete kontakovat na
-        emailu <a href="#mailto:">somebody@example.com</a>.</p>
+    <p class="lead">
+        Zkuste to prosím později, pokud chyba přetrvává i po obnovení stránky, tak nás můžete kontakovat na emailu
+        <a href="mailto:<%= global.CONFIG.contactPersonEmail %>">
+            <%= global.CONFIG.contactPersonEmail %>
+        </a>.
+    </p>
 </main>
 <%- include('../partials/scripts-file-end') %>
 <%- include('../partials/footer') %>

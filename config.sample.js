@@ -38,6 +38,8 @@ module.exports = {
     }
   },
 
+  contactPersonEmail: 'teamworks@sspbrno.com',
+
   redis: {
     url: 'redis://localhost:6379'
   }

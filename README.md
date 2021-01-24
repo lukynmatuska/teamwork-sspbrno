@@ -3,7 +3,7 @@ Node.js webapp for administration of Team works at [SSPBRNO](https://sspbrno.cz)
 
 ## Instalation on-premise
 ### Docker
-```docker run -d --network host --restart=always --env COOKIE_MAX_AGE=86400000 --env PORT=3000 --env PROTOCOL=http --env URL="teamwork.local" --env REDIS_URL="redis://localhost:6379" --env SESSION_SECRET="randomString" --env SMTP_HOST="mail.local" --env SMTP_PASS="strongPass" --env SMTP_PORT="465" --env SMTP_SECURE=true --env SMTP_USER="teamworks@mail.local" --env MONGODB_PORT=27017 --env MONGODB_HOST="localhost" --env MONGODB_NAME="teamworks" --env MONGODB_USER="teamworks" --env MONGODB_PASS="strongPass" --env MONGODB_OPTIONS="" index.docker.io/lukynmatuska/sspbrnoprojectsweb:master```
+```docker run -d --network host --restart=always --env COOKIE_MAX_AGE=86400000 --env PORT=3000 --env PROTOCOL=http --env URL="teamwork.local" --env REDIS_URL="redis://localhost:6379" --env SESSION_SECRET="randomString" --env SMTP_HOST="mail.local" --env SMTP_PASS="strongPass" --env SMTP_PORT="465" --env SMTP_SECURE=true --env SMTP_USER="teamworks@mail.local" --env MONGODB_PORT=27017 --env MONGODB_HOST="localhost" --env MONGODB_NAME="teamworks" --env MONGODB_USER="teamworks" --env MONGODB_PASS="strongPass" --env MONGODB_OPTIONS="" --env CONTACT_PERSON_EMAIL="somebody@example.com" index.docker.io/lukynmatuska/sspbrnoprojectsweb:master```
 
 ### Linux
 #### Debian based
