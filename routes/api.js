@@ -116,7 +116,7 @@ router.post('/year/new', partials.onlyAdmin, yearController.new)
 router.post('/year/edit', partials.onlyAdmin, yearController.edit)
 router.post('/year/delete', partials.onlyAdmin, yearController.delete)
 router.post('/year/change-status', partials.onlyAdmin, yearController.changeStatus)
-router.post('/year/switch', partials.onlyAdmin, yearController.switch)
+router.post('/year/switch', partials.onlyLoggedIn, yearController.switch)
 router.get('/year/list', partials.onlyAdmin, yearController.list)
 router.get('/year/can-students-join-or-leave-teamwork', yearController.canStudentsJoinOrLeaveTeamwork)
 

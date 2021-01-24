@@ -17,6 +17,9 @@
                             API.teamwork
                                 .list()
                                 .then(async function (teamworks) {
+                                    if (teamworks.length == 0){
+                                        return $teamWorksDOM.append($('<p>', { class: 'lead description' }).text('Pro tento ročník ještě nebyly vytvořeny žádné týmové práce.'))
+                                    }
                                     const canStudentsJoinOrLeaveTeamworkInVar = await API.year.canStudentsJoinOrLeaveTeamwork()
                                     let isUserLoggedIn
                                     let hasStudentBeenAsignedToTeamWorkInVar

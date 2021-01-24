@@ -71,7 +71,7 @@ function switchYear(yearId) {
   API.year
     .switch(yearId)
     .then(function (response) {
-      /* if (response.status === 'ok') {
+      if (response.status === 'ok') {
         return Swal.fire({
           title: 'Rok se změnil!',
           text: 'Jaká byla cesta časem?',
@@ -80,13 +80,11 @@ function switchYear(yearId) {
         }).then((value) => {
           location.reload()
         })
-      } */
-      location.reload()
-
+      }
       console.error(response)
       switch (response.error) {
         case 'not-permissions-for-this-year':
-          Swal.fire({
+          return Swal.fire({
             title: 'Rok se nezměnil!',
             text: 'Nastala chyba, protože nemáte práva na ročník, na který se chcete přepnout.',
             icon: 'error',
@@ -94,7 +92,7 @@ function switchYear(yearId) {
           break
 
         case 'not-found-year-bad-id':
-          Swal.fire({
+          return Swal.fire({
             title: 'Rok se nezměnil!',
             text: 'Nastala chyba, protože jste na server poslal(a) špatné id ročníku, na který se chcete přepnout.',
             icon: 'error',
@@ -102,7 +100,7 @@ function switchYear(yearId) {
           break
 
         case 'not-sent-id':
-          Swal.fire({
+          return Swal.fire({
             title: 'Rok se nezměnil!',
             text: 'Nastala chyba, protože jste neposlal(a) na server id ročníku, na který se chcete přepnout.',
             icon: 'error',
@@ -110,7 +108,7 @@ function switchYear(yearId) {
           break
 
         default:
-          Swal.fire({
+          return Swal.fire({
             title: 'Rok se nezměnil!',
             text: `Nastala chyba ${response.error}`,
             icon: 'error',
@@ -341,7 +339,7 @@ var API = {
       return postData('/teamwork/delete', { id })
     },
 
-    list: function (filter = {}) {
+    list: function (filter = undefined) {
       return getData('/teamwork/list', filter)
     },
 

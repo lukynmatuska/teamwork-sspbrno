@@ -47,20 +47,16 @@ module.exports.hasUserGivenYear = (user, year) => {
 module.exports.setYearForUser = (req, res, next) => {
   const Year = require('../models/Year')
   const User = require('../models/User')
-  let yearFilter
-  if ((req.session.user != undefined || req.session.user != null) && req.session.year != undefined) {
-    if (req.session.user.type === 'admin') {
-      return next()
-    }
+  let yearFilter = {
+    status: 'active'
   }
-
-  if (req.session.year === undefined || req.session.user === undefined || req.session.user == null) {
-    yearFilter = {
-      status: 'active'
-    }
-  } else if (req.session.user.years.length > 0 && !(this.hasUserGivenYear(req.session.user, req.session.year))) {
-    yearFilter = {
-      _id: mongoose.Types.ObjectId(req.session.user.years[req.session.user.years.length - 1].year._id)
+  if ((req.session.user != undefined || req.session.user != null) && req.session.year != undefined) {
+    if (req.session.user.years.length > 0 && !(this.hasUserGivenYear(req.session.user, req.session.year))) {
+      yearFilter = {
+        _id: mongoose.Types.ObjectId(req.session.user.years[req.session.user.years.length - 1].year._id)
+      }
+    } else {
+      return next()
     }
   }
 
@@ -68,12 +64,16 @@ module.exports.setYearForUser = (req, res, next) => {
     .findOne(yearFilter)
     .exec((err, year) => {
       if (err) {
-        return console.error(err)
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'err-finding-year-while-setting-year-for-user'
+          })
       }
-
       if (year != null) {
         req.session.year = year
-        // Move to the next route
         next()
       } else if (year === null) {
         Year.countDocuments((err, count) => {
