@@ -27,13 +27,13 @@ module.exports.new = (req, res) => {
     return res.send('not-send-students')
   } else if (typeof req.body.students !== 'object') {
     return res.send('not-object-students')
-  } else if (req.body.students.length < 2 ) {
+  } else if (req.body.students.length < 2) {
     return res.send('few-students')
   } else if (req.body.guarantors === undefined) {
     return res.send('not-send-guarantors')
   } else if (typeof req.body.guarantors !== 'object') {
     return res.send('not-object-guarantors')
-  } else if (req.body.guarantors.length < 1 ) {
+  } else if (req.body.guarantors.length < 1) {
     return res.send('few-guarantors')
   } else {
     for (let i = 0; i < req.body.students.length; i++) {
@@ -77,90 +77,137 @@ module.exports.edit = (req, res) => {
       })
   }
 
-  if (req.body.name !== undefined) {
-    update.name = req.body.name
-  }
-  
-  if (req.body.number != undefined) {
-    update.number = Number(req.body.number)
-  }
-
-  if (req.body.description !== undefined) {
-    update.description = req.body.description
-  }
-
-  if (req.body.result !== undefined) {
-    update.result = req.body.result
-  }
-
-  if (typeof req.body.students !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-students'
-      })
-  } else if (req.body.students !== undefined) {
-    update.students = req.body.students
-    if (update.students.length < 2 ) {
-      return res.send('few-students')
-    }
-    for (let i = 0; i < update.students.length; i++) {
-      if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
-        update.students[i].user = undefined
-      }
-    }
-  }
-
-  if (typeof req.body.guarantors !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-guarantors'
-      })
-  } else if (req.body.guarantors !== undefined) {
-    update.guarantors = req.body.guarantors
-    if (update.guarantors.length < 1 ) {
-      return res.send('few-guarantors')
-    }
-  }
-
-  if (typeof req.body.consultants !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-consultants'
-      })
-  } else if (req.body.consultants !== undefined) {
-    update.consultants = req.body.consultants
-  }
-
-  if (req.body.year !== undefined) {
-    update.year = req.body.year
-  }
-
-  if (req.body.media !== undefined) {
-    update.media = req.body.media
-  }
-
   TeamWork
-    .findByIdAndUpdate(req.body.id, update)
-    .exec((err) => {
+    .findById(req.body.id)
+    .exec((err, tw) => {
       if (err) {
         console.error(err)
         return res
           .status(500)
           .json({
             status: 'error',
-            error: err
+            error: err.errmsg,
+            err
           })
       }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
+      if (tw == null) {
+        return res
+          .status(404)
+          .json({
+            status: 'error',
+            error: 'not-found'
+          })
+      }
+      let isGuarantorOrConsultant
+      if (req.session.user.type === 'admin') {
+        isGuarantorOrConsultant = true
+      }
+      for (let i = 0; i < tw.guarantors.length; i++) {
+        if (tw.guarantors[i].user == req.session.user._id) {
+          isGuarantorOrConsultant = true
+          break
+        }
+      }
+      for (let i = 0; i < tw.consultants.length; i++) {
+        if (tw.consultants[i].user == req.session.user._id) {
+          isGuarantorOrConsultant = true
+          break
+        }
+      }
+      if (!isGuarantorOrConsultant) {
+        return res
+          .status(403)
+          .json({
+            status: 'error',
+            error: 'not-guarantor-or-consultant-in-the-teamwork'
+          })
+      }
+
+      if (req.body.name !== undefined && req.session.user.type === 'admin') {
+        update.name = req.body.name
+      }
+
+      if (req.body.number != undefined && req.session.user.type === 'admin') {
+        update.number = Number(req.body.number)
+      }
+
+      if (req.body.description !== undefined) {
+        update.description = req.body.description
+      }
+
+      if (req.body.result !== undefined) {
+        update.result = req.body.result
+      }
+
+      if (typeof req.body.students !== 'object') {
+        return res
+          .status(422)
+          .json({
+            status: 'error',
+            error: 'not-object-students'
+          })
+      } else if (req.body.students !== undefined) {
+        update.students = req.body.students
+        if (update.students.length < 2) {
+          return res.send('few-students')
+        }
+        for (let i = 0; i < update.students.length; i++) {
+          if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
+            update.students[i].user = undefined
+          }
+        }
+      }
+
+      if (typeof req.body.guarantors !== 'object' && req.session.user.type === 'admin') {
+        return res
+          .status(422)
+          .json({
+            status: 'error',
+            error: 'not-object-guarantors'
+          })
+      } else if (req.body.guarantors !== undefined) {
+        update.guarantors = req.body.guarantors
+        if (update.guarantors.length < 1) {
+          return res.send('few-guarantors')
+        }
+      }
+
+      if (typeof req.body.consultants !== 'object' && req.session.user.type === 'admin') {
+        return res
+          .status(422)
+          .json({
+            status: 'error',
+            error: 'not-object-consultants'
+          })
+      } else if (req.body.consultants !== undefined) {
+        update.consultants = req.body.consultants
+      }
+
+      if (req.body.year !== undefined && req.session.user.type === 'admin') {
+        update.year = req.body.year
+      }
+
+      if (req.body.media !== undefined) {
+        update.media = req.body.media
+      }
+
+      TeamWork
+        .findByIdAndUpdate(req.body.id, update)
+        .exec((err) => {
+          if (err) {
+            console.error(err)
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
         })
     })
 }
@@ -226,7 +273,7 @@ module.exports.copy = (req, res) => {
       if (req.body.year !== undefined) {
         teamWork.year = req.body.year
       }
-    
+
       for (let i = 0; i < teamWork.students.length; i++) {
         delete teamWork.students[i]._id
         delete teamWork.students[i].user

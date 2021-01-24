@@ -229,6 +229,26 @@ module.exports.onlyGuarantorAndAdmin = (req, res, next) => {
   }
 }
 
+module.exports.onlyGuarantorAndConsultantAndAdmin = (req, res, next) => {
+  if (req.session.user === undefined) {
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor-or-admin'
+      })
+  } else if (['guarantor', 'consultant', 'admin'].includes(req.session.user.type)) {
+    return next()
+  } else {
+    return res
+      .status(403)
+      .json({
+        status: 'error',
+        error: 'only-guarantor-or-admin'
+      })
+  }
+}
+
 module.exports.onlyAdmin = (req, res, next) => {
   if (req.session.user === undefined) {
     return res

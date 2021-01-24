@@ -138,7 +138,7 @@ router.get('/specialization/list', specializationController.list)
  */
 router.get('/teamworks', teamworkController.list)
 router.post('/teamwork/new', partials.onlyAdmin, teamworkController.new)
-router.post('/teamwork/edit', partials.onlyAdmin, teamworkController.edit)
+router.post('/teamwork/edit', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.edit)
 router.get('/teamwork/list', teamworkController.list)
 router.get('/teamwork/find-by-id/:id', teamworkController.findById)
 router.post('/teamwork/delete', partials.onlyAdmin, teamworkController.delete)
