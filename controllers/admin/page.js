@@ -17,7 +17,6 @@ const TeamWorkTemplate = require('../../models/TeamWorkTemplate')
 const User = require('../../models/User')
 const Year = require('../../models/Year')
 const Specialization = require('../../models/Specialization')
-const { rmSync } = require('fs')
 
 module.exports.dashboard = (req, res) => {
   res.render('admin/dashboard', { req, res, active: 'dashboard', title: 'Přehled' })

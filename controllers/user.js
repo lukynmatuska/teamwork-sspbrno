@@ -51,7 +51,7 @@ function createNewUserInMongoDB(req, res, userType) {
       .execPopulate()
     )
     .then(user => {
-      emailController.newUser.send('newUser', user, (err, info, response) => {
+      emailController.send('newUser', user, (err, info, response) => {
         if (err) {
           console.error(err.message)
           return res

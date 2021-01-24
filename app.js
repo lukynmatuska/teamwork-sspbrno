@@ -105,7 +105,7 @@ app.use(session({
 }))
 
 // set extended urlencoded to true (post)
-app.use(bodyparser.json())
+app.use(bodyparser.json({ limit: '50mb' }))
 app.use(bodyparser.urlencoded({ extended: true }))
 
 // set up views directory and the rendering engine

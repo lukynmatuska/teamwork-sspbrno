@@ -33,9 +33,18 @@
 									<div class="row">
 										<div class="col">
 											<div class="form-group">
-												<label class="form-control-label" for="body">Zpráva</label>
-												<textarea class="form-control" id="body" rows="15" required
-													placeholder="Zde se prosím napište, co se má poslat uživateli"><%= body %></textarea>
+												<label class="form-control-label" for="body-plain">Zpráva v plaintextu</label>
+												<textarea class="form-control" id="body-plain" rows="15" required
+													placeholder="Zde se prosím napište, co se má poslat uživateli"><%= body.text %></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="body-html">Zpráva v HTML</label>
+												<textarea class="form-control" id="body-html" rows="15" required
+													placeholder="Zde se prosím napište, co se má poslat uživateli"><%= body.html %></textarea>
 											</div>
 										</div>
 									</div>
@@ -74,7 +83,10 @@
 				API.email.edit(
 					'<%= req.params.id %>',
 					$('#subject').val(),
-					$('#body').val()
+					{
+						text: $('#body-plain').val(),
+						html: $('#body-html').val(),
+					}
 				).then(function (responseFromServer) {
 					if (responseFromServer.status === 'ok') {
 						$status

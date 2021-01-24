@@ -116,11 +116,16 @@ module.exports.send = (id, user, callback) => {
       return callback(err)
     }
     data = JSON.parse(data)
+    for (let i = 0; i < data.attachments.length; i++) {
+      data.attachments[i].path = `${__dirname}/${data.attachments[i].path}`
+    }
     return transporter.sendMail({
       from: global.CONFIG.nodemailer.sender,
       to: `"${user.name.full}" <${user.email}>`,
       subject: data.subject,
-      text: ejs.render(data.body, localEjsData)
+      text: ejs.render(data.body.text, localEjsData),
+      html: ejs.render(data.body.html, localEjsData),
+      attachments: data.attachments
     }, callback)
   })
 }
