@@ -12,6 +12,7 @@
  * Models
  */
 const User = require('../models/User')
+const TeamWork = require('../models/TeamWork')
 
 module.exports.homepage = (req, res) => {
   res.render('homepage', { req, res, active: 'home', title: '' })
@@ -28,6 +29,72 @@ module.exports.register = (req, res) => {
 module.exports.teamworks = {
   list: (req, res) => {
     res.render('teamworks/list', { req, res, active: 'teamworks', title: 'Seznam týmových prací' })
+  },
+
+  detail: (req, res) => {
+    TeamWork
+      .findById(req.params.id)
+      .populate({
+        path: 'students.user',
+        select: 'name email photo type'
+      })
+      .populate('students.position')
+      .populate({
+        path: 'guarantors.user',
+        select: 'name email photo type'
+      })
+      .populate({
+        path: 'consultants.user',
+        select: 'name email photo type'
+      })
+      .populate('year')
+      .populate({
+        path: 'author',
+        select: 'name email photo type'
+      })
+      .exec((err, teamwork) => {
+        if (err) {
+          console.error(err)
+          return this.error.internalError(req, res, 'Mongoose error')
+        } else if (teamwork == undefined) {
+          return this.error.notFound(req, res)
+        } else {
+          return res.render('teamworks/detail', { req, res, active: 'teamworks', title: 'Detail týmové práce', teamwork })
+        }
+      })
+  },
+
+  edit: (req, res) => {
+    TeamWork
+      .findById(req.params.id)
+      .populate({
+        path: 'students.user',
+        select: 'name email photo type'
+      })
+      .populate('students.position')
+      .populate({
+        path: 'guarantors.user',
+        select: 'name email photo type'
+      })
+      .populate({
+        path: 'consultants.user',
+        select: 'name email photo type'
+      })
+      .populate('year')
+      .populate({
+        path: 'author',
+        select: 'name email photo type'
+      })
+      .exec((err, teamwork) => {
+        if (err) {
+          console.error(err)
+          return this.error.internalError(req, res, err)
+        } else if (teamwork == null) {
+          return this.error.notFound(req, res)
+        } else {
+          return res.render('teamworks/edit', { req, res, active: 'teamworks', title: 'Editace týmové práce', teamwork })
+        }
+      })
   },
 }
 

@@ -123,12 +123,43 @@ module.exports.edit = (req, res) => {
           })
       }
 
-      if (req.body.name !== undefined && req.session.user.type === 'admin') {
-        update.name = req.body.name
-      }
+      if (req.session.user.type === 'admin') {
+        if (req.body.name !== undefined) {
+          update.name = req.body.name
+        }
 
-      if (req.body.number != undefined && req.session.user.type === 'admin') {
-        update.number = Number(req.body.number)
+        if (req.body.number != undefined) {
+          update.number = Number(req.body.number)
+        }
+
+        if (typeof req.body.guarantors !== 'object') {
+          return res
+            .status(422)
+            .json({
+              status: 'error',
+              error: 'not-object-guarantors'
+            })
+        } else if (req.body.guarantors !== undefined) {
+          update.guarantors = req.body.guarantors
+          if (update.guarantors.length < 1) {
+            return res.send('few-guarantors')
+          }
+        }
+
+        if (typeof req.body.consultants !== 'object') {
+          return res
+            .status(422)
+            .json({
+              status: 'error',
+              error: 'not-object-consultants'
+            })
+        } else if (req.body.consultants !== undefined) {
+          update.consultants = req.body.consultants
+        }
+
+        if (req.body.year !== undefined) {
+          update.year = req.body.year
+        }
       }
 
       if (req.body.description !== undefined) {
@@ -156,35 +187,6 @@ module.exports.edit = (req, res) => {
             update.students[i].user = undefined
           }
         }
-      }
-
-      if (typeof req.body.guarantors !== 'object' && req.session.user.type === 'admin') {
-        return res
-          .status(422)
-          .json({
-            status: 'error',
-            error: 'not-object-guarantors'
-          })
-      } else if (req.body.guarantors !== undefined) {
-        update.guarantors = req.body.guarantors
-        if (update.guarantors.length < 1) {
-          return res.send('few-guarantors')
-        }
-      }
-
-      if (typeof req.body.consultants !== 'object' && req.session.user.type === 'admin') {
-        return res
-          .status(422)
-          .json({
-            status: 'error',
-            error: 'not-object-consultants'
-          })
-      } else if (req.body.consultants !== undefined) {
-        update.consultants = req.body.consultants
-      }
-
-      if (req.body.year !== undefined && req.session.user.type === 'admin') {
-        update.year = req.body.year
       }
 
       if (req.body.media !== undefined) {

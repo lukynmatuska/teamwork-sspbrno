@@ -1,0 +1,30 @@
+<% if (req.session.user != undefined) { %>
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link text-dark <%= active == 'detail' ? 'active' : '' %> " href="../detail/<%= teamwork._id %>">Detail</a>
+            </li>
+            <% if (['admin', 'guarantor' , 'consultant' ].includes(req.session.user.type)) { %>
+                <li class="nav-item">
+                    <a class="nav-link text-dark <%= active == 'edit' ? 'active' : '' %> " href="../edit/<%= teamwork._id %>">Editace</a>
+                </li>
+            <% } %>
+            <li class="nav-item">
+                <a class="nav-link <%= active == 'documentation' ? 'active' : '' %>  disabled" href="#">Dokumentace</a>
+            </li>
+            <li class="nav-item ml-auto">
+                <a class="nav-link text-dark" href="<%= teamwork.media.kanban %>" target="_blank">Kanban</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="<%= teamwork.media.meeting %>" target="_blank">Meeting</a>
+            </li>
+            <% if (typeof teamwork.media.repositories != 'undefined') { %>
+            <% for( let i = 0; i < teamwork.media.repositories.length; i++ ) { %>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="<%= teamwork.media.repositories[i] %>" target="_blank">Meeting</a>
+            </li>
+            <% } %>
+            <% } %>
+        </ul>
+    </div>
+<% } %>

@@ -163,6 +163,10 @@ function usersDOMsFromTeamwork(teamwork, userType = 'guarantors') {
     return $users
 }
 
+function teamWorkDetailButton(id) {
+    return $('<a>', { class: 'btn btn-secondary', href: `/teamworks/detail/${id}` }).text('Detail')
+}
+
 async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar) {
     const consultantsDOMs = usersDOMsFromTeamwork(teamwork, 'consultants')
     return $('<div>', { class: 'row mb-4' }).append(
@@ -177,7 +181,8 @@ async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeam
                 $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
                 usersDOMsFromTeamwork(teamwork),
                 consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : null,
-                consultantsDOMs
+                consultantsDOMs,
+                isUserLoggedIn ? teamWorkDetailButton(teamwork._id) : null
             )
         )
     )
