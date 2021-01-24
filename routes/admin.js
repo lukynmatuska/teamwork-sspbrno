@@ -18,7 +18,7 @@ const router = require('express').Router()
  * Controllers
  */
 const adminPageController = require('../controllers/admin/page')
-const errorController = require('../controllers/error')
+const pageController = require('../controllers/page')
 
 /**
  * Routes
@@ -33,7 +33,7 @@ router.get('/*', (req, res, next) => {
       return next()
     }
   }
-  errorController.error404(req, res)
+  pageController.error.notFound(req, res)
 })
 
 /**

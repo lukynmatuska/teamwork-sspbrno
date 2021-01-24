@@ -5,10 +5,12 @@
     <h1 class="cover-heading title"><%= title %></h1>
     <span class="underline-animation"></span>
     <div class="fade-down">
-        <p class="lead description">Vyberte si svoji týmovku ještě dnes.</p>
-        <p class="lead">
-            <a href="/teamworks" class="btn btn-lg btn-secondary">Vybrat</a>
-        </p>
+        <% if (typeof description != 'undefined') { %>
+            <p class="lead description"><%= description %></p>
+        <% } else { %>
+            <p class="lead description">Vyberte si svoji týmovku ještě dnes.</p>
+            <p class="lead"><a href="/teamworks" class="btn btn-lg btn-secondary">Vybrat</a></p>
+        <% } %>
     </div>
 </main>
 <%- include('../partials/scripts-file-end') %>

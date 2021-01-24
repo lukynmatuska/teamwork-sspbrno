@@ -12,8 +12,6 @@
  * Models
  */
 const User = require('../models/User')
-const TeamWork = require('../models/TeamWork')
-const errorController = require('./error')
 
 module.exports.homepage = (req, res) => {
   res.render('homepage', { req, res, active: 'home', title: '' })
@@ -43,7 +41,7 @@ module.exports.forgotPassword = (req, res) => {
 
 module.exports.setNewPassword = (req, res) => {
   if (req.params.hash === undefined) {
-    return errorController.error403(req, res)
+    return this.error.accessDenied(req, res)
   }
   User
     .findOne({
@@ -55,12 +53,25 @@ module.exports.setNewPassword = (req, res) => {
     .exec((err, user) => {
       if (err) {
         console.error(err)
-        return errorController.error500(req, res, err)
+        return this.error.internalError(req, res, err)
       } else if (user === null) {
-        return errorController.error404(req, res)
+        return this.error.notFound(req, res, 'Hledáte uživatele, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.')
       } else if (!user.rescue.enabled) {
-        return errorController.error403(req, res)
+        return this.error.accessDenied(req, res)
       }
       return res.render('set-new-password', { req, res, active: 'login', title: 'Nové heslo', user })
     })
+}
+
+module.exports.error = {
+  accessDenied: (req, res) => {
+    return res.status(403).render('error/universal', { req, res, active: 'error', title: '403 Přístup odepřen!' })
+  },
+  notFound: (req, res, description = 'Hledáte soubor, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.', title = '404 Nenalezeno') => {
+    // res.render('error/universal', { req, res, active: 'error', title, locals: { description }})
+    return res.render('error/universal', { req, res, active: 'error', title, description })
+  },
+  internalError: (req, res, error = 'Testovací stránka', title = '500 Vnitřní chyba serveru') => {
+    return res.status(500).render('error/internalError', { req, res, active: 'error', title, error })
+  }
 }

@@ -17,7 +17,6 @@ const router = require('express').Router()
 /**
  * Controllers
  */
-const errorController = require('../controllers/error')
 const pageController = require('../controllers/page')
 const partials = require('../routes/partials')
 
@@ -30,9 +29,9 @@ router.get('/', pageController.homepage)
 router.get('/teamworks', pageController.teamworks.list)
 
 /* Error pages for testing */
-router.get('/403', errorController.error403)
-router.get('/404', errorController.error404)
-router.get('/500', errorController.error500)
+router.get('/403', pageController.error.accessDenied)
+router.get('/404', (req, res) => { pageController.error.notFound(req, res) })
+router.get('/500', (req, res) => { pageController.error.internalError(req, res) })
 router.all('/d', (req, res) => {
   req.session.destroy()
   res.redirect('/?status=destroy-ok')
@@ -49,6 +48,6 @@ router.get('/logout', partials.onlyLoggedIn, (req, res) => {
   res.redirect('/login')
 })
 
-router.get('*', errorController.error404)
+router.get('*', (req, res) => { pageController.error.notFound(req, res) })
 
 module.exports = router
