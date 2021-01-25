@@ -955,7 +955,7 @@ module.exports.parseStudentsXlsx = (req, res) => {
             .json({
               status: 'error',
               error: 'specialization-from-table-is-not-in-db',
-              specialization: specialization
+              specialization
             })
         }
       }
@@ -981,8 +981,9 @@ module.exports.import = async (req, res) => {
     req.body.userType = 'student'
   }
   if (req.body.userType === 'student') {
+    req.body.user = JSON.parse(req.body.user)
     Specialization
-      .find({
+      .findOne({
         short: req.body.user.specialization
       })
       .exec(async (err, specialization) => {
@@ -1001,15 +1002,14 @@ module.exports.import = async (req, res) => {
             .json({
               status: 'error',
               error: 'specialization-from-table-is-not-in-db',
-              specialization: specialization
+              specialization: req.body.user.specialization
             })
-
         }
 
         try {
-          let student = JSON.parse(req.body.user)
+          let student = req.body.user
           student.id = undefined
-          student.specialization = specialization._id
+          student.specialization = String(specialization._id)
           student.rescue = {
             enabled: true,
             hash: randomstring.generate()

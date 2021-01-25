@@ -226,7 +226,6 @@
 								for (const student of responseFromServer.users) {
 									let rowInTable = document.getElementById(`parsed-student-row-${student.id}`)
 									let status = document.getElementById(`parsed-student-status-${student.id}`)
-									let text
 									await API.user
 										.import(student)
 										.then(response => response.json())
