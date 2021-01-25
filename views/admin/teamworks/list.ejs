@@ -283,8 +283,8 @@
 								data: 'author',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									let author = oData.author
-									if (author === undefined || author === null) {
-										consultant.user = {
+									if (author == undefined || author == null) {
+										author = {
 											name: {
 												first: 'Neznámý',
 												last: 'uživatel'
@@ -292,6 +292,7 @@
 											photo: '/images/users/_unknown.png',
 											link: '#'
 										}
+										author.fullName = author.name.first + author.name.last
 									} else {
 										author.link = `/admin/users/detail/${author._id}/`
 									}
