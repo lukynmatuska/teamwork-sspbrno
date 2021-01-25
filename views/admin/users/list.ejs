@@ -145,6 +145,9 @@
 									if (oData.specialization != undefined || oData.specialization != null) {
 										$(nTd).html(oData.specialization.name)
 									} else {
+										if (oData.type == 'student') {
+											$(nTd).parent().addClass('bg-gradient-danger text-white')
+										}
 										$(nTd).html('')
 									}
 								}
