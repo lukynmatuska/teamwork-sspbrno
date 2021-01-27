@@ -21,7 +21,7 @@
             <% if (typeof teamwork.media.repositories != 'undefined') { %>
             <% for( let i = 0; i < teamwork.media.repositories.length; i++ ) { %>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="<%= teamwork.media.repositories[i] %>" target="_blank">Meeting</a>
+                <a class="nav-link text-dark" href="<%= teamwork.media.repositories[i] %>" target="_blank"><%= i + 1 %>. Repozitář</a>
             </li>
             <% } %>
             <% } %>
