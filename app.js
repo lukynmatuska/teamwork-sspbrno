@@ -69,7 +69,7 @@ const express = require('express')
 const app = express()
 
 // load some libraries
-const moment = require('moment')
+const moment = require('./libs/moment')
 const path = require('path')
 const bodyparser = require('body-parser')
 const fileUpload = require('express-fileupload')

@@ -7,8 +7,7 @@
 /**
  * Libs
  */
-const moment = require('moment')
-moment.locale('cs')
+const moment = require('../libs/moment')
 const mongoose = require('../libs/db')
 
 /**

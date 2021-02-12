@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const moment = require('moment')
+const moment = require('./moment')
 
 // connect to the database
 mongoose.connect(

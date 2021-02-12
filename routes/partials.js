@@ -13,8 +13,7 @@ const router = require('express').Router()
 /**
  * Libs
  */
-const moment = require('moment')
-moment.locale('cs')
+const moment = require('../libs/moment')
 const osloveni = require('../libs/osloveni')
 const mongoose = require('../libs/db')
 const bcrypt = require('bcrypt')
