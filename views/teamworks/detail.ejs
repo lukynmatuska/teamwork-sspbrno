@@ -3,12 +3,10 @@
 <%- include('../partials/menu') %>
 <main role="main" class="inner cover mt-5">
     <div class="m-auto">
+		<h1><%= teamwork.fullname %></h1>
         <div class="card">
             <%- include('./menu', { active: 'detail'}) %>
             <div class="card-body">
-                <h1 class="card-title text-dark">
-                    <%= teamwork.fullname %>
-                </h1>
                 <h3 class="card-text text-dark">Popis</h3>
                 <p class="card-text text-muted">
                     <%= teamwork.description %>
