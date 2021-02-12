@@ -1,19 +1,14 @@
 const generate = require('generate-source-map')
 const fs = require('fs')
-
-const pathToFile = 'static/admin/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js'
-
-var file = {
+const pathToFile = process.env.pathToFile || 'static/admin/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js'
+let file = {
   source: fs.readFileSync(pathToFile),
   sourceFile: pathToFile.split('/')[(pathToFile.split('/').length - 1)]
 }
-
-var map = generate(file)
-
-// console.log(map.toString())
+let map = generate(file)
 fs.writeFile(`${pathToFile}.map`, map.toString(), 'utf-8', (err, data) => {
   if (err) {
     return console.error(err)
   }
-  console.log(data)
+  console.log('Successfully wrote a file.')
 })
