@@ -26,6 +26,7 @@
 										<th scope="col">Email</th>
 										<th scope="col">Typ účtu</th>
 										<th scope="col">Specializace</th>
+										<th scope="col">OwnCloud ID</th>
 										<th scope="col">Ročníky</th>
 										<th scope="col">Akce</th>
 									</tr>
@@ -149,6 +150,15 @@
 											$(nTd).parent().addClass('bg-gradient-danger text-white')
 										}
 										$(nTd).html('')
+									}
+								}
+							}, {
+								data: 'ownCloudId',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									if (oData.ownCloudId == undefined) {
+										$(nTd).html('Chybí')
+									} else {
+										$(nTd).html(oData.ownCloudId)
 									}
 								}
 							}, {

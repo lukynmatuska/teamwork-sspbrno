@@ -80,7 +80,7 @@
 			let thead = document.createElement('thead')
 			thead.classList = `thead-${theme}`
 			let theadRow = document.createElement('tr')
-			for (val of ['Příjmení', 'Křestní jméno', 'Email', 'Specializace', 'Status'/*, 'Akce'*/]) {
+			for (val of ['Příjmení', 'Křestní jméno', 'Email', 'Specializace', 'OwnCloud ID', 'Status']) {
 				let th = document.createElement('th')
 				th.appendChild(document.createTextNode(val))
 				theadRow.appendChild(th)
@@ -91,6 +91,7 @@
 			tableBody.classList = 'list'
 
 			users.forEach(function (user) {
+				let rowStatus = 'Připraveno pro import'
 				let row = document.createElement('tr')
 				row.id = `parsed-student-row-${user.id}`
 
@@ -114,25 +115,23 @@
 				specialization.appendChild(document.createTextNode(user.specialization))
 				row.appendChild(specialization)
 
+				/* ownCloudId */
+				let ownCloudId = document.createElement('td')
+				if (user.ownCloudId == undefined) {
+					row.classList.add('bg-gradient-warning')
+					row.classList.add('text-white')
+					rowStatus = 'Chybí OwnCloud ID!'
+					ownCloudId.appendChild(document.createTextNode('Chybí'))
+				} else {
+					ownCloudId.appendChild(document.createTextNode(user.ownCloudId))
+				}
+				row.appendChild(ownCloudId)
+
 				/* Status */
 				let status = document.createElement('td')
 				status.id = `parsed-student-status-${user.id}`
-				status.appendChild(document.createTextNode('Připraveno pro import'))
+				status.appendChild(document.createTextNode(rowStatus))
 				row.appendChild(status)
-
-				/* Actions * /
-				let actions = document.createElement('td')
-				let edit = document.createElement('button')
-				edit.style = 'background: none; border: none; padding: 0;'
-				edit.type = 'button'
-				edit.onclick = () => {
-					sweeeetAleeert(user)
-				}
-				let editIcon = document.createElement('i')
-				editIcon.setAttribute('class', 'fas fa-sync-alt text-primary')
-				edit.appendChild(editIcon)
-				actions.appendChild(edit)
-				row.appendChild(actions)*/
 
 				tableBody.appendChild(row)
 			})
@@ -173,7 +172,6 @@
 					.parseStudentsXlsx(document.getElementById("file-to-parse").files[0])
 					.then(response => response.json())
 					.then(function (responseFromServer) {
-						console.log(responseFromServer)
 						if (responseFromServer.status === 'ok') {
 							$button
 								.addClass('btn-success')
@@ -230,7 +228,6 @@
 										.import(student)
 										.then(response => response.json())
 										.then(function (resFromServer) {
-											console.log(resFromServer)
 											if (resFromServer.status === 'ok') {
 												rowInTable.className = 'bg-gradient-success text-white'
 												status.innerHTML = 'Úspěšně naimportován'
