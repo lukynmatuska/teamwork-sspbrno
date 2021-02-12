@@ -412,7 +412,6 @@ function dashboardCards() {
   API.common
     .dashboard()
     .then((data) => {
-      // console.log(data)
       if (data.specializations != undefined) {
         $('table#specializations').DataTable({
           language: {

@@ -170,7 +170,6 @@
 		API.teamworktemplate
 			.findById('<%= req.params.id %>')
 			.then(function (responseFromServer) {
-				console.log(responseFromServer)
 				if (responseFromServer.name !== undefined) {
 					$('#name').val(responseFromServer.name)
 				}
@@ -250,7 +249,6 @@
 					dataForRequest.media,
 				)
 				.then(function (responseFromServer) {
-					console.log(responseFromServer)
 					if (responseFromServer.status === 'ok') {
 						$status
 							.empty()

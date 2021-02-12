@@ -126,7 +126,6 @@
                 }
 
                 API.user.new(email, password, firstname, lastname, middlename, 'student', specialization).then(function (responseFromServer) {
-                    // console.log(responseFromServer)
                     if (responseFromServer.status === 'ok') {
                         $('div#register-status')
                             .empty()
