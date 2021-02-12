@@ -42,7 +42,8 @@ function createNewUserInMongoDB(req, res, userType) {
     password: bcrypt.hashSync(req.body.password, 15),
     email: req.body.email,
     type: userType,
-    years
+    years,
+    ownCloudId: req.body.ownCloudId
   })
     .save()
     .then(u => u
@@ -283,6 +284,10 @@ module.exports.edit = (req, res) => {
 
   if (req.body.email !== undefined) {
     update.email = req.body.email
+  }
+
+  if (req.body.ownCloudId !== undefined) {
+    update.ownCloudId = req.body.ownCloudId
   }
 
   if (Object.keys(update.name).length === 0) {
@@ -814,7 +819,8 @@ module.exports.list = (req, res) => {
       photo: 1,
       type: 1,
       rescue: 1,
-      years: 1
+      years: 1,
+      ownCloudId: 1,
     })
     .exec((err, users) => {
       if (err) {
@@ -920,8 +926,9 @@ module.exports.parseStudentsXlsx = (req, res) => {
           last: student[1]
         },
         email: student[3],
-        type: req.body.userType,
-        specialization: student[4]
+        type: 'student',
+        specialization: student[4],
+        ownCloudId: student[6] || null,
       })
     }
   }
@@ -949,7 +956,6 @@ module.exports.parseStudentsXlsx = (req, res) => {
       /* Check if specializations from Excel are in DB */
       for (specialization of setOfSpecializationsFromExcel) {
         if (!setOfSpecializationsFromDB.has(specialization)) {
-          console.log(specialization)
           return res
             .status(400)
             .json({

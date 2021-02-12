@@ -45,6 +45,10 @@ var userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Specialization'
   },
+  ownCloudId: {
+    type: String,
+    default: null,
+  },
   years: [{
     year: {
       type: mongoose.Schema.Types.ObjectId,
