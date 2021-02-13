@@ -219,8 +219,26 @@ module.exports.edit = (req, res) => {
       }
 
       TeamWork
-        .findByIdAndUpdate(req.body.id, update)
-        .exec((err) => {
+        .findByIdAndUpdate(req.body.id, update, { new: true })
+        .populate({
+          path: 'students.user',
+          select: 'name email photo type ownCloudId'
+        })
+        .populate('students.position')
+        .populate({
+          path: 'guarantors.user',
+          select: 'name email photo type ownCloudId'
+        })
+        .populate({
+          path: 'consultants.user',
+          select: 'name email photo type ownCloudId'
+        })
+        .populate('year')
+        .populate({
+          path: 'author',
+          select: 'name email photo type ownCloudId'
+        })
+        .exec((err, teamWork) => {
           if (err) {
             console.error(err)
             return res
@@ -230,11 +248,7 @@ module.exports.edit = (req, res) => {
                 error: err
               })
           }
-          return res
-            .status(200)
-            .json({
-              status: 'ok'
-            })
+          owncloudController.updateSharesInTeamwork(req, res, teamWork)
         })
     })
 }
@@ -515,24 +529,7 @@ module.exports.select = (req, res) => {
           break
         }
       }
-      TeamWork
-        .findByIdAndUpdate(req.body.id, teamWork)
-        .exec((err) => {
-          if (err) {
-            console.error(err)
-            return res
-              .status(500)
-              .json({
-                status: 'error',
-                error: 'mongo-err'
-              })
-          }
-          return res
-            .status(200)
-            .json({
-              status: 'ok'
-            })
-        })
+      owncloudController.selectTeamWork(req, res, teamWork)
     })
 }
 
