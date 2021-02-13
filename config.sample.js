@@ -21,6 +21,18 @@ module.exports = {
 
   devMode: false,
 
+  cors_options: {
+    credentials: true,
+    origin: ['http://localhost:3000']
+  },
+
+  owncloud: {
+    baseUrl: 'https://cloud.example.com',
+    username: 'user',
+    password: 'pass',
+    folder: ''
+  },
+
   nodemailer: {
     sender: 'Adolf <adolf@exmaple.com>',
     settings: {

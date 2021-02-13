@@ -39,6 +39,13 @@ try {
       }
     },
 
+    owncloud: {
+      baseUrl: process.env.OC_BASE_URL,
+      username: process.env.OC_USERNAME,
+      password: process.env.OC_PASSWORD,
+      folder: process.env.OC_FOLDER || '',
+    },
+
     redis: {
       url: process.env.REDIS_URL
     },
