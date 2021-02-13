@@ -328,21 +328,21 @@ module.exports.list = (req, res) => {
     .find(filter)
     .populate({
       path: 'students.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .exec((err, teamWorks) => {
       if (err) {
@@ -377,21 +377,21 @@ module.exports.findById = (req, res) => {
     .findById(req.params.id)
     .populate({
       path: 'students.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .exec((err, teamWork) => {
       if (err) {
@@ -448,21 +448,21 @@ module.exports.select = (req, res) => {
     .findById(req.body.id)
     .populate({
       path: 'students.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .exec((err, teamWork) => {
       if (err) {
@@ -542,21 +542,21 @@ module.exports.leave = (req, res) => {
     .findById(req.body.id)
     .populate({
       path: 'students.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('students.position')
     .populate({
       path: 'guarantors.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type'
+      select: 'name email photo type ownCloudId'
     })
     .exec((err, teamWork) => {
       if (err) {

@@ -52,17 +52,17 @@ module.exports.teamworks = {
       .findById(req.params.id)
       .populate({
         path: 'students.user',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .populate('students.position')
       .populate({
         path: 'guarantors.user',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .populate('year')
       .populate({
         path: 'author',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .exec((err, teamwork) => {
         if (err) {
@@ -177,17 +177,17 @@ module.exports.teamworktemplates = {
       .findById(req.params.id)
       .populate({
         path: 'students.user',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .populate('students.position')
       .populate({
         path: 'guarantors.user',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .populate('year')
       .populate({
         path: 'author',
-        select: 'name email photo type'
+        select: 'name email photo type ownCloudId'
       })
       .exec((err, teamworktemplates) => {
         if (err) {
