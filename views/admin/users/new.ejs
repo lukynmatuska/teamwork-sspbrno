@@ -57,6 +57,13 @@
 													placeholder="Vyplňte prosím toto prázdné povinné pole">
 											</div>
 										</div>
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="ownCloudId">OwnCloud ID</label>
+												<input type="text" id="ownCloudId" class="form-control" required
+													placeholder="Zde prosím vložte uživatelovo ID">
+											</div>
+										</div>
 									</div>
 									<div class="row">
 										<div class="col-md-6 col-sm-12">
@@ -186,7 +193,8 @@
 					$('#lastname').val(),
 					$('#middlename').val(),
 					$userTypeSelect.val(),
-					$specializationSelect.val()
+					$specializationSelect.val(),
+					$('#ownCloudId').val()
 				).then(function (responseFromServer) {
 					if (responseFromServer.error === undefined) {
 						$status

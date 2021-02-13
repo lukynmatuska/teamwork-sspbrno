@@ -159,7 +159,9 @@ var API = {
       lastname,
       middlename,
       usertype,
-      specialization) {
+      specialization,
+      ownCloudId
+    ) {
       return postData(
         '/user/new',
         {
@@ -169,7 +171,8 @@ var API = {
           middlename,
           lastname,
           usertype,
-          specialization
+          specialization,
+          ownCloudId,
         }
       )
     },
@@ -394,7 +397,7 @@ var API = {
     edit: function (id, subject, body) {
       return postData('/email/edit', { id, subject, body })
     },
-    
+
     list: function () {
       return getData('/email/list')
     }

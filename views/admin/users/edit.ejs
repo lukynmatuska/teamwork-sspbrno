@@ -72,6 +72,16 @@
 										</div>
 									</div>
 									<div class="row">
+										<div class="col">
+											<div class="form-group">
+												<label class="form-control-label" for="ownCloudId">OwnCloud ID</label>
+												<input type="text" id="ownCloudId" class="form-control" required
+													placeholder="Zde prosím vložte uživatelovo ID"
+													value="<%= user.ownCloudId %>">
+											</div>
+										</div>
+									</div>
+									<div class="row">
 										<div class="col-md-12 col-sm-12">
 											<div class="form-group">
 												<label class="form-control-label"
@@ -278,7 +288,8 @@
 						email: $('#email').val(),
 						type: $userTypeSelect.val(),
 						specialization,
-						years: getYearsForRequest()
+						years: getYearsForRequest(),
+						ownCloudId: $('#ownCloudId').val(),
 					})
 					.then(function (data) {
 						let $status = $('div#edit-user-status')
