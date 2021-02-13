@@ -77,6 +77,13 @@ var teamWorkSchema = new mongoose.Schema({
     kanban: String,
     meeting: String,
     repositories: [String],
+  },
+  owncloud: {
+    link: String,
+    shares: {
+      students: [String],
+      consultantsAndGuarants: [String],
+    }
   }
 })
 

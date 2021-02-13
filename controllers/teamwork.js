@@ -9,6 +9,7 @@
  */
 const moment = require('../libs/moment')
 const mongoose = require('../libs/db')
+const owncloudController = require('./owncloud')
 
 /**
  * Models
@@ -50,17 +51,42 @@ module.exports.new = (req, res) => {
       author: req.session.user._id,
       media: req.body.media,
       result: req.body.result,
-    }).save((err) => {
-      if (err) {
-        res.send('err')
-        return console.error(err)
-      }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
-        })
     })
+      .save((err, teamwork) => {
+        if (err) {
+          console.log('error:')
+          console.error(err)
+          return res
+            .status(500)
+            .json({
+              status: 'error',
+              error: err
+            })
+        }
+        teamwork
+          .populate({
+            path: 'students.user',
+            select: 'name email photo type ownCloudId'
+          })
+          // .populate('students.position')
+          .populate({
+            path: 'guarantors.user',
+            select: 'name email photo type ownCloudId'
+          })
+          .populate({
+            path: 'consultants.user',
+            select: 'name email photo type ownCloudId'
+          })
+          .populate('year')
+          /*.populate({
+            path: 'author',
+            select: 'name email photo type ownCloudId'
+          })*/
+          .execPopulate()
+          .then(teamwork => {
+            owncloudController.newTeamwork(req, res, teamwork)
+          })
+      })
   }
 }
 

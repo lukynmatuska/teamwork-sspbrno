@@ -9,9 +9,11 @@
                     <a class="nav-link text-dark <%= active == 'edit' ? 'active' : '' %> " href="../edit/<%= teamwork._id %>">Editace</a>
                 </li>
             <% } %>
+            <% if (teamwork.owncloud.link != undefined) { %>
             <li class="nav-item">
-                <a class="nav-link <%= active == 'documentation' ? 'active' : '' %>  disabled" href="#">Dokumentace</a>
+                <a class="nav-link text-dark " href="<%= teamwork.owncloud.link %>" target="_blank">OwnCloud</a>
             </li>
+            <% } %>
             <li class="nav-item ml-auto">
                 <a class="nav-link text-dark" href="<%= teamwork.media.kanban %>" target="_blank">Kanban</a>
             </li>
