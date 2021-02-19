@@ -134,7 +134,7 @@ module.exports.error = {
   accessDenied: (req, res) => {
     return res.status(403).render('error/universal', { req, res, active: 'error', title: '403 Přístup odepřen!' })
   },
-  notFound: (req, res, description = 'Hledáte soubor, který se tu nenachází, přeji Vám příjmenou hru na schovávanou.', title = '404 Nenalezeno') => {
+  notFound: (req, res, description = 'Hledáte soubor, který se tu nenachází, přeji Vám příjemnou hru na schovávanou.', title = '404 Nenalezeno') => {
     return res.render('error/universal', { req, res, active: 'error', title, description })
   },
   internalError: (req, res, error = 'Testovací stránka', title = '500 Vnitřní chyba serveru') => {
