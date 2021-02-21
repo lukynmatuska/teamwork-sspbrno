@@ -33,7 +33,7 @@ docker-build:
       --env COOKIE_MAX_AGE=$COOKIE_MAX_AGE
       --env CORS_OPTIONS="$CORS_OPTIONS"
       --env OC_BASE_URL=$OC_BASE_URL
-      --env POC_USERNAMEORT=$OC_USERNAME
+      --env OC_USERNAME=$OC_USERNAME
       --env OC_PASSWORD=$OC_PASSWORD
       --env OC_FOLDER=$OC_FOLDER
       --env PORT=$PORT
