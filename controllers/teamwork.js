@@ -360,7 +360,7 @@ module.exports.copy = (req, res) => {
       teamWork.number += 1
       teamWork = new TeamWork(teamWork)
       teamWork.isNew = true
-      teamWork.save((err) => {
+      teamWork.save((err, tw) => {
         if (err) {
           console.error(err)
           return res
@@ -370,11 +370,7 @@ module.exports.copy = (req, res) => {
               error: err
             })
         }
-        return res
-          .status(200)
-          .json({
-            status: 'ok'
-          })
+        return owncloudController.newTeamwork(req, res, teamWork)
       })
     })
 }
@@ -658,11 +654,7 @@ module.exports.leave = (req, res) => {
                 error: 'mongo-err'
               })
           }
-          return res
-            .status(200)
-            .json({
-              status: 'ok'
-            })
+          return owncloudController.leaveTeamWork(req, res, teamWork)
         })
     })
 }
