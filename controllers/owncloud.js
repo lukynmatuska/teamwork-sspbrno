@@ -180,7 +180,24 @@ module.exports.selectTeamWork = (req, res, teamWork) => {
     }
 }
 
-module.exports.updateSharesInTeamwork = async (req, res, teamWork) => {
+module.exports.deleteTeamWork = (req, res, teamWork) => {
+    oc.files.delete(getPath(teamWork)).then((shareInfo) => {
+        return res
+            .json({
+                status: 'ok'
+            })
+    }).catch(error => {
+        console.error(error)
+        return res
+            .status(500)
+            .json({
+                status: 'error',
+                error
+            })
+    })
+}
+
+module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
     /**
      * Better removing items from array
      */
@@ -200,7 +217,7 @@ module.exports.updateSharesInTeamwork = async (req, res, teamWork) => {
     for (const student of teamWork.students) {
         if (student.user != undefined) {
             if (student.user.ownCloudId != undefined) {
-                await studentsOwnCloudIds.push(student.user.ownCloudId)
+                studentsOwnCloudIds.push(student.user.ownCloudId)
             }
         }
     }

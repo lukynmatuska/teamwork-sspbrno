@@ -252,10 +252,6 @@ module.exports.updateUsers = (req, res) => {
           })
       }
       return owncloudController.updateSharesInTeamwork(req, res, teamWork)
-      return res
-        .json({
-          status: 'ok'
-        })
     })
 }
 
@@ -302,7 +298,7 @@ module.exports.delete = (req, res) => {
   }
   TeamWork
     .findByIdAndDelete(req.body.id)
-    .exec((err) => {
+    .exec((err, tw) => {
       if (err) {
         console.error(err)
         return res
@@ -312,11 +308,7 @@ module.exports.delete = (req, res) => {
             error: err
           })
       }
-      return res
-        .status(200)
-        .json({
-          status: 'ok'
-        })
+      return owncloudController.deleteTeamWork(req, res, tw)
     })
 }
 
