@@ -23,18 +23,24 @@ module.exports.newTeamwork = (req, res, teamwork) => {
     let guarantorsAndConsultants = new Set()
     for (let i = 0; i < teamwork.guarantors.length; i++) {
         if (teamwork.guarantors[i].user != undefined) {
-            guarantorsAndConsultants.add(String(teamwork.guarantors[i].user.ownCloudId))
+            if (teamwork.guarantors[i].user.ownCloudId != undefined) {
+                guarantorsAndConsultants.add(String(teamwork.guarantors[i].user.ownCloudId))
+            }
         }
     }
     for (let i = 0; i < teamwork.consultants.length; i++) {
         if (teamwork.consultants[i].user != undefined) {
-            guarantorsAndConsultants.add(String(teamwork.consultants[i].user.ownCloudId))
+            if (teamwork.consultants[i].user.ownCloudId != undefined) {
+                guarantorsAndConsultants.add(String(teamwork.consultants[i].user.ownCloudId))
+            }
         }
     }
     let students = []
     for (const student of teamwork.students) {
         if (student.user != undefined) {
-            students.push(student.user.ownCloudId)
+            if (student.user.ownCloudId != undefined) {
+                students.push(student.user.ownCloudId)
+            }
         }
     }
     oc.files.mkdir(path).then(() => {
