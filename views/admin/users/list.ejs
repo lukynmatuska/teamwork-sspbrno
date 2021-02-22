@@ -156,6 +156,7 @@
 								data: 'ownCloudId',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									if (oData.ownCloudId == undefined) {
+										$(nTd).parent().addClass('bg-gradient-danger text-white')
 										$(nTd).html('Chybí')
 									} else {
 										$(nTd).html(oData.ownCloudId)
