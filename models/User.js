@@ -33,7 +33,7 @@ var userSchema = new mongoose.Schema({
     },
     hash: {
       type: String,
-      unique: true,
+      default: undefined
     }
   },
   type: {
