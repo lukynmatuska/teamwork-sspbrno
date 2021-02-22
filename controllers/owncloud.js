@@ -180,7 +180,7 @@ module.exports.selectTeamWork = (req, res, teamWork) => {
     }
 }
 
-module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
+module.exports.updateSharesInTeamwork = async (req, res, teamWork) => {
     /**
      * Better removing items from array
      */
@@ -194,16 +194,18 @@ module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
         }
         return this
     }
+
     // Create arrays with OwnCloud IDs of students
     const studentsOwnCloudIds = []
     for (const student of teamWork.students) {
         if (student.user != undefined) {
             if (student.user.ownCloudId != undefined) {
-                studentsOwnCloudIds.push(student.user.ownCloudId)
+                await studentsOwnCloudIds.push(student.user.ownCloudId)
             }
         }
     }
     let studentsOwnCloudIdsToShare = [...studentsOwnCloudIds]
+
     // Create arrays with OwnCloud IDs of guarantors and consultants
     const guarantorsAndConsultantsOwnCloudIds = []
     for (const guarantor of teamWork.guarantors) {
@@ -221,33 +223,33 @@ module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
         }
     }
     let guarantorsAndConsultantsOwnCloudIdsToShare = [...guarantorsAndConsultantsOwnCloudIds]
+
     // Create array for promises
-    const promises = []
+    const getSharePromises = []
     for (const array of [teamWork.owncloud.shares.students, teamWork.owncloud.shares.consultantsAndGuarants]) {
         for (const shareId of array) {
-            promises.push(oc.shares.getShare(shareId))
+            getSharePromises.push(oc.shares.getShare(shareId))
         }
     }
+
     // Solve promises
-    Promise.all(promises).then(values => {
+    Promise.all(getSharePromises).then(shares => {
         // Create arrays for share IDs
         const studentsShares = []
         const guarantorsAndConsultantsShares = []
-        for (const value of values) {
-            if (studentsOwnCloudIds.includes(value.shareInfo.share_with)) {
-                studentsOwnCloudIdsToShare.remove(value.shareInfo.share_with)
-                studentsShares.push(value.shareInfo.id)
-            } else if (guarantorsAndConsultantsOwnCloudIds.includes(value.shareInfo.share_with)) {
-                guarantorsAndConsultantsOwnCloudIdsToShare.remove(value.shareInfo.share_with)
-                guarantorsAndConsultantsShares.push(value.shareInfo.id)
+        for (const share of shares) {
+            if (studentsOwnCloudIds.includes(share.shareInfo.share_with)) {
+                studentsOwnCloudIdsToShare.remove(share.shareInfo.share_with)
+                studentsShares.push(share.shareInfo.id)
+            } else if (guarantorsAndConsultantsOwnCloudIds.includes(share.shareInfo.share_with)) {
+                guarantorsAndConsultantsOwnCloudIdsToShare.remove(share.shareInfo.share_with)
+                guarantorsAndConsultantsShares.push(share.shareInfo.id)
             } else {
-                oc.shares.deleteShare(value.shareInfo.id).then(console.log).catch(console.error)
+                oc.shares.deleteShare(share.shareInfo.id).then(function () { }).catch(console.error)
             }
         }
-        console.log(guarantorsAndConsultantsOwnCloudIdsToShare)
         const studentsPromises = []
         for (const studentOwnCloudId of studentsOwnCloudIdsToShare) {
-            console.log(studentOwnCloudId)
             studentsPromises.push(oc.shares.shareFileWithUser(getPath(teamWork), studentOwnCloudId, { perms: 15 }))
         }
         Promise.all(studentsPromises).then((values) => {
@@ -284,7 +286,6 @@ module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
                                     error: err
                                 })
                         }
-                        console.log(tw)
                         return res
                             .status(200)
                             .json({

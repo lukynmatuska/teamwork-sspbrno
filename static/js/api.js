@@ -326,8 +326,20 @@ var API = {
       return postData('/teamwork/new', { name, description, students, guarantors, consultants, result })
     },
 
-    edit: function (id, name, description, students, guarantors, consultants, result, number, media, year) {
-      return postData('/teamwork/edit', { id, name, description, students, guarantors, consultants, result, number, media, year })
+    updateBasicInfo: function (id, name, description, result, number) {
+      return postData('/teamwork/update-basic-info', { id, name, description, students, result, number })
+    },
+
+    updateAdvanced: function (id, yearId) {
+      return postData('/teamwork/update-advanced', { id, year: yearId })
+    },
+
+    updateUsers: function (id, students, guarantors, consultants) {
+      return postData('/teamwork/update-users', { id, students, guarantors, consultants })
+    },
+
+    updateMedia: function (id, media) {
+      return postData('/teamwork/update-media', { id, media })
     },
 
     findById: function (id) {
