@@ -10,6 +10,7 @@
 const ejs = require('ejs')
 const fs = require('fs')
 const nodemailer = require('nodemailer')
+const moment = require('../libs/moment')
 const osloveni = require('../libs/osloveni')
 const pathToTemplates = `${__dirname}/../emails/`
 
@@ -17,6 +18,14 @@ const pathToTemplates = `${__dirname}/../emails/`
  * Variables
  */
 const transporter = nodemailer.createTransport(global.CONFIG.nodemailer.settings)
+// verify connection configuration
+transporter.verify((error, success) => {
+  if (error) {
+    console.error(error)
+  } else {
+    console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} Nodemailer: Server is ready to take our messages`)
+  }
+})
 let ejsData = {
   osloveni
 }
