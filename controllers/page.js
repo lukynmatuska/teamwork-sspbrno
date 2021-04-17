@@ -96,6 +96,58 @@ module.exports.teamworks = {
         }
       })
   },
+
+  feedback: (req, res) => {
+    TeamWork
+      .findById(req.params.id)
+      .populate({
+        path: 'students.user',
+        select: 'name email photo type'
+      })
+      .populate('students.position')
+      .populate({
+        path: 'guarantors.user',
+        select: 'name email photo type'
+      })
+      .populate({
+        path: 'consultants.user',
+        select: 'name email photo type'
+      })
+      .populate('year')
+      .populate({
+        path: 'author',
+        select: 'name email photo type'
+      })
+      .populate({
+        path: 'feedbacks.author',
+        select: 'name email photo type'
+      })
+      .populate({
+        path: 'feedbacks.student',
+        select: 'name email photo type'
+      })
+      .exec((err, teamwork) => {
+        if (err) {
+          console.error(err)
+          return this.error.internalError(req, res, 'Mongoose error')
+        } else if (teamwork == undefined) {
+          return this.error.notFound(req, res)
+        } else {
+          let canFeedback = req.session.user.type === 'admin';
+          if (!canFeedback) {
+            for (const array of [teamwork.guarantors, teamwork.consultants]) {
+              for (const position of array) {
+                if (position.user._id == req.session.user._id) {
+                  canFeedback = true;
+                  break;
+                }
+              }
+            }
+          }
+          return res.render('teamworks/feedback', { req, res, active: 'teamworks', title: 'Hodnocení týmové práce', teamwork, canFeedback })
+        }
+      })
+  },
 }
 
 module.exports.profile = (req, res) => {

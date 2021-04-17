@@ -728,3 +728,54 @@ module.exports.isGivenTeamworkMine = (req, res) => {
         })
     })
 }
+
+module.exports.addFeedback = (req, res) => {
+  if (req.body.id == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  } else if (req.body.text == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-feedback'
+      })
+  }
+  TeamWork
+    .updateOne(
+      {
+        _id: req.body.id
+      },
+      {
+        $push: {
+          feedbacks: {
+            author: req.session.user._id,
+            date: moment(),
+            student: req.body.student,
+            text: req.body.text,
+          }
+        }
+      }
+    )
+    .exec((err) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
+    })
+
+}

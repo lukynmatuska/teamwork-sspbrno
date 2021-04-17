@@ -372,6 +372,10 @@ var API = {
 
     isGivenTeamworkMine: function (UserId) {
       return getData('/teamwork/is-given-teamwork-mine', { id: UserId })
+    },
+
+    addFeedback: function (teamWorkId, text, UserIdOfStudent) {
+      return postData('/teamwork/add-feedback', { student: UserIdOfStudent, text, id: teamWorkId })
     }
   },
 

@@ -150,6 +150,7 @@ router.post('/teamwork/select', partials.onlyLoggedIn, teamworkController.select
 router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
 router.get('/teamwork/has-student-been-asigned-to-teamwork', teamworkController.hasStudentBeenAsignedToTeamWork)
 router.get('/teamwork/is-given-teamwork-mine', teamworkController.isGivenTeamworkMine)
+router.post('/teamwork/add-feedback', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.addFeedback)
 
 /**
  * TeamWorkTemplates

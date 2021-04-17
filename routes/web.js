@@ -29,6 +29,7 @@ router.get('/', pageController.homepage)
 router.get('/teamworks', pageController.teamworks.list)
 router.get('/teamworks/detail/:id', pageController.teamworks.detail)
 router.get('/teamworks/edit/:id', partials.onlyGuarantorAndConsultantAndAdmin, pageController.teamworks.edit)
+router.get('/teamworks/feedback/:id', pageController.teamworks.feedback)
 
 /* Error pages for testing */
 router.get('/403', pageController.error.accessDenied)

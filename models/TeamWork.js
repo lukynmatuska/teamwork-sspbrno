@@ -84,7 +84,29 @@ var teamWorkSchema = new mongoose.Schema({
       students: [String],
       consultantsAndGuarants: [String],
     }
-  }
+  },
+  finalFeedback: {
+    type: String,
+  },
+  feedbacks: [{
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    date: {
+      type: Date,
+      required: true
+    },
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    text: {
+      type: String,
+      required: true
+    },
+  }],
 })
 
 // Duplicate the ID field.
