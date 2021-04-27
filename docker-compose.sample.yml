@@ -1,29 +1,29 @@
 version: "3.5"
-services: 
+services:
   mongo:
     image: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-    volumes: 
+    volumes:
       - ./data:/data/db
   redis:
     image: redis
     restart: always
-    volumes: 
+    volumes:
       - ./redis:/data
-  web: 
+  web:
     build: .
     restart: always
-    depends_on: 
+    depends_on:
       - mongo
       - redis
-    ports: 
+    ports:
       - 127.0.0.1:3000:3000
-    volumes: 
+    volumes:
       - ./emails:/usr/src/app/emails
-    environment: 
+    environment:
       - COOKIE_MAX_AGE=86400000
       - PORT=3000
       - PROTOCOL=http
@@ -43,3 +43,7 @@ services:
       - MONGODB_OPTIONS=""
       - CONTACT_PERSON_EMAIL="somebody@example.com"
       - CORS_OPTIONS="{}"
+      - OC_BASE_URL="https://cloud.example.com"
+      - OC_USERNAME="admin"
+      - OC_PASSWORD="admin"
+      - OC_FOLDER=""
