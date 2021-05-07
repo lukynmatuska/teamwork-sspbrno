@@ -91,11 +91,12 @@ const session = require('express-session')
 const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 
-// connect to the redis server
+// Connect to the redis server
 const redisClient = redis.createClient(global.CONFIG.redis.port, global.CONFIG.redis.host)
+redisClient.on('error', console.error)
 const store = new RedisStore({
-   host: global.CONFIG.redis.host,
-   port: global.CONFIG.redis.port,
+  host: global.CONFIG.redis.host,
+  port: global.CONFIG.redis.port,
   client: redisClient,
   ttl: 86400
 })
@@ -111,6 +112,13 @@ app.use(session({
     maxAge: global.CONFIG.session.maxAge
   }
 }))
+app.use((req, res, next) => {
+  if (!req.session) {
+    console.error(`${moment().format('YYYY-MM-DD HH:mm:ss')} Something went wrong with Redis!`)
+    return res.send(`${moment().format('YYYY-MM-DD HH:mm:ss')} Something went wrong with Redis!`)
+  }
+  next() // otherwise continue
+})
 
 // set extended urlencoded to true (post)
 app.use(bodyparser.json({ limit: '50mb' }))
