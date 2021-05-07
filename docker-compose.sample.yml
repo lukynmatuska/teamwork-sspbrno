@@ -40,6 +40,7 @@ services:
       - SMTP_HOST="mail.local"
       - SMTP_PORT="465"
       - SMTP_SECURE=true
+      - SMTP_SENDER="SSPBRNO Teamworks<teamworks@mail.local>"
       - SMTP_USER="teamworks@mail.local"
       - SMTP_PASS="strongPass"
       - MONGODB_PORT=27017
