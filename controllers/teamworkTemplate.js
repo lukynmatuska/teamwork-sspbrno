@@ -8,6 +8,7 @@
  * Libs
  */
 mongoose = require('../libs/db')
+const owncloudController = require('./owncloud')
 
 /**
  * Models
@@ -26,13 +27,13 @@ module.exports.new = (req, res) => {
     return res.send('not-send-students')
   } else if (typeof req.body.students !== 'object') {
     return res.send('not-object-students')
-  } else if (req.body.students.length < 2 ) {
+  } else if (req.body.students.length < 2) {
     return res.send('few-students')
   } else if (req.body.guarantors === undefined) {
     return res.send('not-send-guarantors')
   } else if (typeof req.body.guarantors !== 'object') {
     return res.send('not-object-guarantors')
-  } else if (req.body.guarantors.length < 1 ) {
+  } else if (req.body.guarantors.length < 1) {
     return res.send('few-guarantors')
   } else {
     new TeamWorkTemplate({
@@ -72,7 +73,7 @@ module.exports.edit = (req, res) => {
   if (req.body.name !== undefined) {
     update.name = req.body.name
   }
-  
+
   if (req.body.label != undefined) {
     update.label = Number(req.body.label)
   }
@@ -94,7 +95,7 @@ module.exports.edit = (req, res) => {
       })
   } else if (req.body.students !== undefined) {
     update.students = req.body.students
-    if (update.students.length < 2 ) {
+    if (update.students.length < 2) {
       return res.send('few-students')
     }
   }
@@ -108,7 +109,7 @@ module.exports.edit = (req, res) => {
       })
   } else if (req.body.guarantors !== undefined) {
     update.guarantors = req.body.guarantors
-    if (update.guarantors.length < 1 ) {
+    if (update.guarantors.length < 1) {
       return res.send('few-guarantors')
     }
   }
@@ -293,7 +294,7 @@ module.exports.copy = (req, res) => {
           })
       }
       teamWorkTemplate = teamWorkTemplate.toObject()
-    
+
       for (let i = 0; i < teamWorkTemplate.students.length; i++) {
         delete teamWorkTemplate.students[i]._id
       }
@@ -363,7 +364,7 @@ module.exports.deployTeamwork = (req, res) => {
           })
       }
       teamWorkTemplate = teamWorkTemplate.toObject()
-    
+
       for (let i = 0; i < teamWorkTemplate.students.length; i++) {
         delete teamWorkTemplate.students[i]._id
       }
@@ -377,7 +378,7 @@ module.exports.deployTeamwork = (req, res) => {
       teamWorkTemplate.year = req.body.year
       teamWork = new TeamWork(teamWorkTemplate)
       teamWork.isNew = true
-      teamWork.save((err, teamWork) => {
+      teamWork.save((err, teamwork) => {
         if (err) {
           console.error(err)
           return res
@@ -387,11 +388,28 @@ module.exports.deployTeamwork = (req, res) => {
               error: err
             })
         }
-        return res
-          .status(200)
-          .json({
-            status: 'ok',
-            new: teamWork
+        teamwork
+          .populate({
+            path: 'students.user',
+            select: 'name email photo type ownCloudId'
+          })
+          // .populate('students.position')
+          .populate({
+            path: 'guarantors.user',
+            select: 'name email photo type ownCloudId'
+          })
+          .populate({
+            path: 'consultants.user',
+            select: 'name email photo type ownCloudId'
+          })
+          .populate('year')
+          /*.populate({
+            path: 'author',
+            select: 'name email photo type ownCloudId'
+          })*/
+          .execPopulate()
+          .then(teamwork => {
+            owncloudController.newTeamwork(req, res, teamwork)
           })
       })
     })

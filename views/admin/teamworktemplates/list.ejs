@@ -255,8 +255,8 @@
 									icon: 'success',
 									timer: 5000
 								}).then(() => {
-									if (response.new != undefined) {
-										window.location = '../teamworks/edit/' + response.new._id
+									if (response.teamwork != undefined) {
+										window.location = '../teamworks/edit/' + response.teamwork._id
 									} else {
 										location.reload()
 									}

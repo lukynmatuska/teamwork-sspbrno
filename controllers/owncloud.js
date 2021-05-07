@@ -87,9 +87,12 @@ module.exports.newTeamwork = (req, res, teamwork) => {
                                         consultantsAndGuarants: guarantorsAndConsultantsShares,
                                     }
                                 }
+                            },
+                            {
+                                new: true,
                             }
                         )
-                        .exec((err) => {
+                        .exec((err, tw) => {
                             if (err) {
                                 console.error(err)
                                 return res
@@ -102,7 +105,8 @@ module.exports.newTeamwork = (req, res, teamwork) => {
                             return res
                                 .status(200)
                                 .json({
-                                    status: 'ok'
+                                    status: 'ok',
+                                    teamwork: tw,
                                 })
                         })
                 }).catch(error => {
