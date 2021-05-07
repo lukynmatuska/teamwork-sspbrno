@@ -19,7 +19,7 @@ try {
 
     session: {
       secret: process.env.SESSION_SECRET || 'secret',
-      maxAge: process.env.COOKIE_MAX_AGE || 86400000
+      maxAge: parseInt(process.env.COOKIE_MAX_AGE || 86400000)
     },
 
     nodemailer: {
@@ -47,7 +47,8 @@ try {
     },
 
     redis: {
-      url: process.env.REDIS_URL
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT
     },
 
     db: {
@@ -91,10 +92,10 @@ const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 
 // connect to the redis server
-const redisClient = redis.createClient(global.CONFIG.redis.url)
+const redisClient = redis.createClient(global.CONFIG.redis.port, global.CONFIG.redis.host)
 const store = new RedisStore({
-  // host: 'localhost',
-  // port: 6379,
+   host: global.CONFIG.redis.host,
+   port: global.CONFIG.redis.port,
   client: redisClient,
   ttl: 86400
 })

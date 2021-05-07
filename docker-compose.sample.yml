@@ -6,8 +6,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: teamworks
     volumes:
       - ./data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
   redis:
     image: redis
     restart: always
@@ -23,12 +25,17 @@ services:
       - 127.0.0.1:3000:3000
     volumes:
       - ./emails:/usr/src/app/emails
+    links:
+      - mongo
+      - redis
     environment:
       - COOKIE_MAX_AGE=86400000
       - PORT=3000
       - PROTOCOL=http
       - URL="teamwork.local"
-      - REDIS_URL="redis://redis:6379"
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
       - SESSION_SECRET="randomString"
       - SMTP_HOST="mail.local"
       - SMTP_PASS="strongPass"
@@ -36,14 +43,15 @@ services:
       - SMTP_SECURE=true
       - SMTP_USER="teamworks@mail.local"
       - MONGODB_PORT=27017
-      - MONGODB_HOST="mongo"
-      - MONGODB_NAME="teamworks"
-      - MONGODB_USER="root"
-      - MONGODB_PASS="example"
-      - MONGODB_OPTIONS=""
-      - CONTACT_PERSON_EMAIL="somebody@example.com"
+      - MONGODB_HOST=mongo
+      - MONGODB_NAME=teamworks
+      - MONGODB_USER=root
+      - MONGODB_PASS=example
+      - MONGODB_OPTIONS=
+      - CONTACT_PERSON_EMAIL=
       - CORS_OPTIONS="{}"
-      - OC_BASE_URL="https://cloud.example.com"
-      - OC_USERNAME="admin"
-      - OC_PASSWORD="admin"
+      - OC_BASE_URL=
+      - OC_USERNAME=example
+      - OC_PASSWORD=example
       - OC_FOLDER=""
+      - TEST="Test"
