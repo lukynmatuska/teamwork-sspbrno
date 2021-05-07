@@ -6,8 +6,9 @@ Node.js webapp for administration of Team works at [SSPBRNO](https://sspbrno.cz)
 ### Docker compose
 - Copy `docker-compose.sample.yml` to `docker-compose.yml`
 - Edit ENV variables in `docker-compose.yml`
-- Copy `mongo-init.sample.yml` to `mongo-init.yml`
-- Edit database credentials in `mongo-init.yml`
+- Copy `mongo-init.sample.js` to `mongo-init.js`
+- Edit database credentials in `mongo-init.js`
+- Copy `emails.sample` to `emails`
 - Start containers with ```docker-compose up -d```
 
 ### Docker
