@@ -8,13 +8,13 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: teamworks
     volumes:
-      - ./data:/data/db
+      - ./data/mongo:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
   redis:
     image: redis
     restart: always
     volumes:
-      - ./redis:/data
+      - ./data/redis:/data
   web:
     build: .
     restart: always
@@ -38,10 +38,10 @@ services:
       - REDIS_HOST=redis
       - SESSION_SECRET="randomString"
       - SMTP_HOST="mail.local"
-      - SMTP_PASS="strongPass"
       - SMTP_PORT="465"
       - SMTP_SECURE=true
       - SMTP_USER="teamworks@mail.local"
+      - SMTP_PASS="strongPass"
       - MONGODB_PORT=27017
       - MONGODB_HOST=mongo
       - MONGODB_NAME=teamworks
