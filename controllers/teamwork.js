@@ -15,6 +15,7 @@ const owncloudController = require('./owncloud')
  * Models
  */
 const TeamWork = require('../models/TeamWork')
+const User = require('../models/User')
 
 module.exports.new = (req, res) => {
   if (req.body.name === undefined) {
@@ -777,5 +778,137 @@ module.exports.addFeedback = (req, res) => {
           status: 'ok'
         })
     })
+}
 
+module.exports.editSetudentPosition = (req, res) => {
+  console.log(req.body.specialization);
+  if (req.body.twid == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-twid'
+      })
+  } else if (req.body.id == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  } else if (req.body.specialization == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-specialization'
+      })
+  } else if (req.body.task == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-text'
+      })
+  }
+  TeamWork
+    .findById(req.body.twid)
+    .populate({
+      path: 'students.user',
+      select: 'name email photo type ownCloudId'
+    })
+    // .populate('students.position')
+    // .populate({
+    //   path: 'guarantors.user',
+    //   select: 'name email photo type ownCloudId'
+    // })
+    // .populate({
+    //   path: 'consultants.user',
+    //   select: 'name email photo type ownCloudId'
+    // })
+    // .populate('year')
+    // .populate({
+    //   path: 'author',
+    //   select: 'name email photo type ownCloudId'
+    // })
+    .exec((err, teamwork) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      let userChanged = false;
+      let user = null;
+      let previousShareId = null;
+      if (req.body.id == 'new') {
+        teamwork.students.push({
+          task: req.body.task,
+          position: req.body.specialization,
+          user: req.body.user,
+        })
+        userChanged = true;
+      }
+      for (let i = 0; i < teamwork.students.length; i++) {
+        if (teamwork.students[i].id != req.body.id) {
+          continue;
+        }
+        teamwork.students[i].task = req.body.task;
+        teamwork.students[i].position = req.body.specialization;
+        user = teamwork.students[i].user;
+        if (teamwork.students[i].user != undefined) {
+          if (teamwork.students[i].user.id != req.body.user) {
+            teamwork.students[i].user = req.body.user;
+            userChanged = true;
+          }
+        } else {
+          previousShareId = teamwork.students[i].owncloudShareId;
+          teamwork.students[i].user = req.body.user;
+          userChanged = true;
+        }
+        break;
+      }
+      teamwork.save();
+      if (userChanged && req.body.user != null) {
+        User
+          .findById(req.body.user)
+          .exec((err, user) => {
+            if (err) {
+              console.error(err)
+              return res
+                .status(500)
+                .json({
+                  status: 'error',
+                  error: err
+                })
+            }
+            if (user == null) {
+              return res
+                .status(200)
+                .json({
+                  status: 'error',
+                  error: 'user-not-found'
+                })
+            }
+            if (user.ownCloudId == null) {
+              return res
+                .status(200)
+                .json({
+                  status: 'error',
+                  error: 'user-doesnt-have-owncloudid-but-added-to-teamwork'
+                })
+            }
+            return owncloudController.shareTeamworkFolderToUser(req, res, teamwork, user.ownCloudId, 15, user.type, req.body.position, previousShareId)
+          })
+      } else {
+        return res
+          .status(200)
+          .json({
+            status: 'ok'
+          })
+      }
+    })
 }

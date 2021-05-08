@@ -326,6 +326,11 @@ var API = {
       return postData('/teamwork/new', { name, description, students, guarantors, consultants, result })
     },
 
+    editStudentPosition: function (teamWorkId, studentPositionId, specializationId, task, userId) {
+      console.log(teamWorkId, studentPositionId, specializationId, task, userId);
+      return postData('/teamwork/edit-student-position', { twid: teamWorkId, id: studentPositionId, specialization: specializationId, task, user: userId })
+    },
+
     updateBasicInfo: function (id, name, description, result, number) {
       return postData('/teamwork/update-basic-info', { id, name, description, students, result, number })
     },

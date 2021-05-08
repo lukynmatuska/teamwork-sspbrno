@@ -13,6 +13,7 @@ const oc = require('../libs/owncloud')
  * Models
 */
 const TeamWork = require('../models/TeamWork')
+const User = require('../models/User')
 
 function getPath(teamwork) {
     return `${global.CONFIG.owncloud.folder}${teamwork._id}`
@@ -434,6 +435,10 @@ module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
             }).catch((error) => {
                 console.log(2)
                 console.error(error)
+                if (error == 'Path already shared with this user') {
+                    console.log('tak to jsem zvedavej')
+                    return
+                }
                 return res
                     .status(500)
                     .json({
@@ -461,4 +466,56 @@ module.exports.updateSharesInTeamwork = (req, res, teamWork) => {
                 error
             })
     })
+}
+
+module.exports.shareTeamworkFolderToUser = (req, res, teamwork, userOwnCloudId, perms = 1, userType, positionId, previousShareId) => {
+    if (previousShareId != undefined) {
+        oc.shares.deleteShare(positionId).then(() => { })
+    }
+    oc.shares
+        .shareFileWithUser(getPath(teamwork), userOwnCloudId, { perms })
+        .then(shareInfo => {
+            console.log(shareInfo)
+            if (userType == 'student') {
+                teamwork.owncloud.shares.students.push(shareInfo)
+                for (let i = 0; i < teamwork.students.length; i++) {
+                    if (teamwork.students[i]._id != positionId) {
+                        continue;
+                    }
+                    teamwork.students[i].owncloudShareId = shareInfo;
+                    break;
+                }
+            } else if (userType == 'consultant') {
+                teamwork.owncloud.shares.consultantsAndGuarants.push(shareInfo)
+                for (let i = 0; i < teamwork.consultants.length; i++) {
+                    if (teamwork.consultants[i]._id != positionId) {
+                        continue;
+                    }
+                    teamwork.consultants[i].owncloudShareId = shareInfo;
+                    break;
+                }
+            } else if (userType == 'guarantor') {
+                teamwork.owncloud.shares.consultantsAndGuarants.push(shareInfo)
+                for (let i = 0; i < teamwork.guarantors.length; i++) {
+                    if (teamwork.guarantors[i]._id != positionId) {
+                        continue;
+                    }
+                    teamwork.guarantors[i].owncloudShareId = shareInfo;
+                    break;
+                }
+            }
+            return res
+                .status(200)
+                .json({
+                    status: 'ok'
+                })
+        })
+        .catch(error => {
+            return res
+                .status(500)
+                .json({
+                    status: 'error',
+                    error: error
+                })
+        })
 }

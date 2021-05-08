@@ -41,7 +41,8 @@ var teamWorkSchema = new mongoose.Schema({
     task: {
       type: String,
       required: true
-    }
+    },
+    owncloudShareId: String,
   }],
   guarantors: [{
     user: {
@@ -52,14 +53,16 @@ var teamWorkSchema = new mongoose.Schema({
     task: {
       type: String,
       required: true
-    }
+    },
+    owncloudShareId: String,
   }],
   consultants: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
-    task: String
+    task: String,
+    owncloudShareId: String,
   }],
   year: {
     type: mongoose.Schema.Types.ObjectId,
@@ -80,10 +83,6 @@ var teamWorkSchema = new mongoose.Schema({
   },
   owncloud: {
     link: String,
-    shares: {
-      students: [String],
-      consultantsAndGuarants: [String],
-    }
   },
   finalFeedback: {
     type: String,
@@ -120,6 +119,23 @@ teamWorkSchema.virtual('fullname').get(function () {
   } else {
     return String(`${this.name} ${this.number}`)
   }
+})
+
+teamWorkSchema.virtual('owncloud.shares').get(function () {
+  let result = {
+    students: [],
+    consultantsAndGuarants: [],
+  };
+  for (let i = 0; i < this.students.length; i++) {
+    result.students.push(this.students[i].owncloudShareId);
+  }
+  for (let i = 0; i < this.consultants.length; i++) {
+    result.consultantsAndGuarants.push(this.consultants[i].owncloudShareId);
+  }
+  for (let i = 0; i < this.guarantors.length; i++) {
+    result.consultantsAndGuarants.push(this.guarantors[i].owncloudShareId);
+  }
+  return result;
 })
 
 // Ensure virtual fields are serialised.
