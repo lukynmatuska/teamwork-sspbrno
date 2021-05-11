@@ -144,73 +144,6 @@
 			})
 		}
 
-		
-		function copyTeamWorkById(id) {
-			API.year.list().then(async (years) => {
-				let inputOptions = {}
-				for (const year of years) {
-					inputOptions[year._id] = year.name
-				}
-				const { value: year } = await Swal.fire({
-					title: 'Opravdu chcete duplikovat tuto týmovou práci?',
-					icon: 'warning',
-					input: 'select',
-					inputOptions,
-					inputPlaceholder: 'Vyberte ročník',
-					showCancelButton: true,
-					inputValidator: (value) => {
-						return new Promise((resolve) => {
-							if (value == undefined) {
-								resolve('Musíte vybrat ročník')
-							} else {
-								resolve()
-							}
-						})
-					}
-				})
-				
-				if (!year) {
-					return Swal
-						.fire({
-							title: `Nevybral(a) jste ročník!`,
-							icon: 'error',
-						})
-				}
-				API.teamwork
-					.copy(id, year)
-					.then(function (response) {
-						if (response.status === 'ok') {
-							return Swal.fire({
-								title: 'Týmová práce byla zduplikována!',
-								text: 'Nyní ji uvidíme dvakrát.',
-								icon: 'success',
-								timer: 5000
-							}).then(() => {
-								location.reload()
-							})
-						}
-						switch (response.error) {
-							case 'not-send-id':
-								Swal.fire({
-									title: 'Týmová práce se nezduplikovala!',
-									text: 'Nastala chyba, protože jste neposlal(a) na server ID týmové práce, kterou chcete duplikovat.',
-									icon: 'error'
-								})
-								break
-
-							default:
-								console.error(response)
-								Swal.fire({
-									title: 'Něco se pokazilo!',
-									text: response.error,
-									icon: 'error'
-								})
-								break
-						}
-					})
-			})
-		}
-
 		function deployTeamWorkTemplateById(id) {
 			API.year.list().then(async (years) => {
 				let inputOptions = {}
@@ -236,7 +169,7 @@
 						})
 					}
 				})
-				
+
 				if (!year) {
 					return Swal
 						.fire({
@@ -247,20 +180,18 @@
 				} else {
 					API.teamworktemplate
 						.deploy(id, year)
-						.then(function (response) {
+						.then(async function (response) {
 							if (response.status === 'ok') {
-								return Swal.fire({
+								const { value: confirm } = await Swal.fire({
 									title: 'Týmová práce je vytvořená!',
-									text: 'Rádo se stalo.',
+									text: 'Po stisku OK budete přesměrován(a) na editaci nové týmové práce.',
 									icon: 'success',
-									timer: 5000
-								}).then(() => {
-									if (response.teamwork != undefined) {
-										window.location = '../teamworks/edit/' + response.teamwork._id
-									} else {
-										location.reload()
-									}
+									showCancelButton: true,
 								})
+								if (confirm && response.teamwork != undefined) {
+									window.location = '../teamworks/edit/' + response.teamwork._id
+								}
+								return;
 							}
 							switch (response.error) {
 								case 'not-send-id':
