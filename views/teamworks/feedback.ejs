@@ -27,8 +27,8 @@
                                             <div class="text-dark">
                                                 <%if ( teamwork.feedbacks[i].student==null || ['admin', 'guarantor'
                                                     , 'consultant' ].includes(req.session.user.type) ||
-                                                    teamwork.feedbacks[i].student==req.session.user._id ) {%>
-                                                    <%= moment(teamwork.feedbacks[i].date).format('DD.MM.YYY') %>
+                                                    String(teamwork.feedbacks[i].student) == String(req.session.user._id) ) {%>
+                                                    <%= moment(teamwork.feedbacks[i].date).format('DD.MM.YYYY') %>
                                                         <%= teamwork.feedbacks[i].author.name.full %>
                                                             <%= teamwork.feedbacks[i].student ? 'zhodnotil' : '' %>
                                                                 <%= teamwork.feedbacks[i]?.student?.name.full %>
@@ -42,9 +42,9 @@
                                                             <label for="feedback-student"
                                                                 class="text-dark">Student</label>
                                                             <select class="form-control" id="feedback-student">
-                                                                <option selected disabled value="null">
+                                                                <option selected value="null">
                                                                     Vyberte studenta
-                                                                    k hodnocení</option>
+                                                                    k hodnocení nebo hodnoťte celý tým</option>
                                                                 <% teamwork.students.forEach(studentObj=> {
                                                                     if (studentObj.user != undefined) { %>
                                                                     <%= studentObj.user.name.first %>
