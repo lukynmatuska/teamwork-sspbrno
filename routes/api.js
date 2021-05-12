@@ -76,7 +76,7 @@ router.all('/session/destroy', (req, res) => {
 router.get('/users', partials.onlyLoggedIn, userController.list)
 router.post('/user/new', partials.onlyAdmin, userController.new)
 router.post('/user/login', userController.login)
-router.post('/user/edit', partials.onlyLoggedIn, userController.edit)
+router.post('/user/edit', partials.onlyAdmin, userController.edit)
 router.post('/user/forgot-password', userController.enableRescue)
 router.post('/user/set-new-password', userController.setNewPassword)
 router.post('/user/rescue-password', userController.rescuePassword)

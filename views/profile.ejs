@@ -14,17 +14,6 @@
                         <%= req.session.user.name.middle %>
                         <%= req.session.user.name.last %>
                     </h5>
-                    <h6>
-                        <% if (req.session.user.type === 'student') { %>
-                        Student(ka)
-                        <% } else if (req.session.user.type === 'guarantor') { %>
-                            Garant(ka)
-                        <% } else if (req.session.user.type === 'consultant') { %>
-                            Konzultant(ka)
-                        <% } else if (req.session.user.type === 'admin') { %>
-                        Administrátor(ka)
-                        <% }%>
-                    </h6>
                 </div>
                 <hr>
                 <div class="row mt-3">
@@ -33,73 +22,6 @@
                     </div>
                     <div class="col-md-6 text-left">
                         <p class="text-secondary"><%= req.session.user._id %></p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 text-right">
-                        <label class="text-dark">Email</label>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="email" placeholder="Zadejte svůj email"
-                                value="<%= req.session.user.email %>">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 text-right">
-                        <label class="text-dark">Křestní jméno</label>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="firstname"
-                                placeholder="Zadejte svoje křestní jméno" value="<%= req.session.user.name.first %>">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 text-right">
-                        <label class="text-dark">Prostřední jméno</label>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="middlename"
-                                placeholder="Zadejte svoje prostřední jméno"
-                                value="<%= req.session.user.name.middle %>">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 text-right">
-                        <label class="text-dark">Příjmení</label>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="lastname" placeholder="Zadejte svoje příjmení"
-                                value="<%= req.session.user.name.last %>">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 text-right">
-                        <label class="text-dark">Specializace</label>
-                    </div>
-                    <div class="col-md-6 text-left">
-                        <div class="form-group">
-                            <label class="text-dark">
-                                <% if (req.session.user.specialization === null || req.session.user.specialization === undefined) { %>
-                                    Žádná
-                                <% } else { %>
-                                    <%= req.session.user.specialization.name %>
-                                <% } %>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="button" id="edit-profile" class="btn btn-dark m-auto">Upravit profil</button>
-                        <div class="form-group mx-auto mt-4" id="edit-profile-status" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -226,55 +148,6 @@
 
     $(document).ready(() => {
         $('#change-password-button').click(changePassword)
-        $('#edit-profile').click(function () {
-            API.user
-                .edit({
-                    firstname: $('#firstname').val(),
-                    middlename: $('#middlename').val(),
-                    lastname: $('#lastname').val(),
-                    email: $('#email').val()
-                })
-                .then(function (data) {
-                    if (data.status === 'ok') {
-                        $('div#edit-profile-status')
-                            .empty()
-                            .append(
-                                $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Gratuluji!'),
-                                    ' Úspěšně jste se upravil(a) svůj profil'
-                                )
-                            )
-                            .show()
-                        // Refresh the page
-                        setTimeout(function () {
-                            window.location.href = window.location.href;
-                        }, 3500)
-                    } else if (data.error === 'email-exists') {
-                        $('div#edit-profile-status')
-                            .empty()
-                            .append(
-                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Ouha! '),
-                                    'Tento email už používá někdo před tebou.'
-                                )
-                            )
-                            .show()
-                    } else {
-                        $('div#edit-profile-status')
-                            .empty()
-                            .append(
-                                $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                    $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                    $('<strong>').text('Ach ne! '),
-                                    data.error
-                                )
-                            )
-                            .show()
-                    }
-                })
-            })
     })
 </script>
 <%- include('./partials/footer') %>
