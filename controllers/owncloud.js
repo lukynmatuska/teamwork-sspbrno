@@ -206,7 +206,6 @@ module.exports.shareTeamworkFolderToUser = (req, res, teamwork, userOwnCloudId, 
                         continue;
                     }
                     update.students[i].owncloudShareId = String(shareInfo.shareInfo.id);
-                    break;
                 }
             } else if (userType == 'consultant') {
                 update.consultants = [];
@@ -216,7 +215,6 @@ module.exports.shareTeamworkFolderToUser = (req, res, teamwork, userOwnCloudId, 
                         continue;
                     }
                     update.consultants[i].owncloudShareId = String(shareInfo.shareInfo.id);
-                    break;
                 }
             } else if (userType == 'guarantor') {
                 update.guarantors = [];
@@ -226,7 +224,6 @@ module.exports.shareTeamworkFolderToUser = (req, res, teamwork, userOwnCloudId, 
                         continue;
                     }
                     update.guarantors[i].owncloudShareId = String(shareInfo.shareInfo.id);
-                    break;
                 }
             }
             TeamWork

@@ -771,7 +771,6 @@ module.exports.editSetudentPosition = (req, res) => {
           teamwork.students[i].user = req.body.user;
           userChanged = true;
         }
-        break;
       }
       TeamWork
         .findByIdAndUpdate(
@@ -1025,7 +1024,6 @@ module.exports.editGuarantorAndConsultantPosition = (req, res) => {
           teamwork[userType][i].user = req.body.user;
           userChanged = true;
         }
-        break;
       }
       TeamWork
         .findByIdAndUpdate(
