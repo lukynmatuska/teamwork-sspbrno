@@ -624,7 +624,11 @@ module.exports.isGivenTeamworkMine = (req, res) => {
   TeamWork
     .findOne({
       _id: req.query.id,
-      'students.user': mongoose.Types.ObjectId(req.session.user._id)
+      $or: [
+        { 'students.user': mongoose.Types.ObjectId(req.session.user._id) },
+        { 'consultants.user': mongoose.Types.ObjectId(req.session.user._id) },
+        { 'guarantors.user': mongoose.Types.ObjectId(req.session.user._id) },
+      ]
     })
     .exec((err, teamWork) => {
       if (err) {
