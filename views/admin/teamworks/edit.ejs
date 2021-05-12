@@ -2,6 +2,56 @@
 <%- include('../partials/scripts') %>
 <%- include('../partials/select2') %>
 <script>
+	function deletePosition(postId, DOMprefix, i, buttonDOM, userType) {
+	  if (buttonDOM) {
+	    buttonDOM.disabled = true;
+	  }
+	  const $status = $(`#${DOMprefix}-${i}-status`);
+	  $status
+	    .empty()
+	    .append(
+	      $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+	        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	        'Zpracovávám'
+	      )
+	    )
+	    .show()
+	  API.teamwork
+	    .deletePosition('<%= req.params.id %>', postId, userType)
+	    .then(responseFromServer => {
+	      if (buttonDOM) {
+	        buttonDOM.disabled = false;
+	      }
+	      if (responseFromServer.status === 'ok') {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Gratuluji!'),
+	              ' Úspěšně jste smazal(a) pozici týmové práce'
+	            )
+	          )
+	          .show()
+						$(this).parent().parent().remove();
+	        setTimeout(function () {
+	          window.location.reload()
+	        }, 3500)
+	      } else {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Ach ne! '),
+	              responseFromServer.error
+	            )
+	          )
+	          .show()
+	      }
+	    })
+	}
+
 	function editStudentPosition(postId, i, buttonDOM) {
 		if (buttonDOM) {
 			buttonDOM.disabled = true;
@@ -16,7 +66,6 @@
 				)
 			)
 			.show()
-		// console.log(postId, i);
 		const $position = $(`select#student-${i}-position`);
 		const $task = $(`#student-${i}-task`);
 		const $student = $(`select#student-${i}-user`);
@@ -24,9 +73,6 @@
 		if (student == '') {
 			student = null;
 		}
-		// console.log('position: ', $position.val());
-		// console.log('task: ', $task.val());
-		// console.log('student: ', $student.val());
 		API.teamwork
 			.editStudentPosition('<%= req.params.id %>', postId, $position.val(), $task.val(), student)
 			.then(responseFromServer => {
@@ -87,7 +133,7 @@
 					)
 				),
 				$('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
-					$('<button>', { class: 'btn btn-danger m-1', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
+					$('<button>', { class: 'btn btn-danger m-1', type: 'button', onclick: `deletePosition('${student == null ? 'new' : student._id}', 'student', ${i}, this, 'student');` }).html('&times;')
 				),
 				$('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
 					$('<button>', { class: 'btn btn-primary m-1', type: 'button', onclick: `editStudentPosition('${student == null ? 'new' : student._id}', ${i}, this);` }).html('&check;')
@@ -134,26 +180,89 @@
 		})
 	}
 
+	function editGuarantorPosition(postId, i, buttonDOM) {
+	  if (buttonDOM) {
+	    buttonDOM.disabled = true;
+	  }
+	  const $status = $(`#guarantor-${i}-status`);
+	  $status
+	    .empty()
+	    .append(
+	      $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+	        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	        'Zpracovávám'
+	      )
+	    )
+	    .show()
+	  const $task = $(`#guarantor-${i}-task`);
+	  const $guarantor = $(`select#guarantor-${i}-user`);
+	  let guarantor = $guarantor.val();
+	  if (guarantor == '') {
+	    guarantor = null;
+	  }
+	  API.teamwork
+	    .editGuarantorPosition('<%= req.params.id %>', postId, $task.val(), guarantor)
+	    .then(responseFromServer => {
+	      if (buttonDOM) {
+	        buttonDOM.disabled = false;
+	      }
+	      if (responseFromServer.status === 'ok') {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Gratuluji!'),
+	              ' Úspěšně jste upravil(a) pozici týmové práce'
+	            )
+	          )
+	          .show()
+	        setTimeout(function () {
+	          window.location.reload()
+	        }, 3500)
+	      } else {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Ach ne! '),
+	              responseFromServer.error
+	            )
+	          )
+	          .show()
+	      }
+	    })
+	}
+
 	function addGuarantorRow(guarantor, i = $('div#guarantors .row').length, motherDOM = $('div#guarantors')) {
-		$('<div>', { class: 'row' }).append(
-			$('<div>', { class: 'col' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-task` }).text('Popis práce'),
-					$('<textarea>', {
-						class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
-						placeholder: 'Zde se prosím rozepište o garantově zadaní'
-					}).text(guarantor == undefined || guarantor == null ? '' : guarantor.task)
-				)
+	  $('<form>', { action: '#' }).append(
+			$('<div>', { class: 'row' }).append(
+				$('<div>', { class: 'col' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `guarantor-${i}-task` }).text('Popis práce'),
+						$('<textarea>', {
+							class: 'form-control', id: `guarantor-${i}-task`, rows: '1', required: 'required',
+							placeholder: 'Zde se prosím rozepište o garantově zadaní'
+						}).text(guarantor == undefined || guarantor == null ? '' : guarantor.task)
+					)
+				),
+				$('<div>', { class: 'col-4' }).append(
+					$('<div>', { class: 'form-group' }).append(
+						$('<label>', { class: 'form-control-label', for: `guarantor-${i}-user` }).text('Uživatel(ka)'),
+						$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor == undefined || guarantor == null ? '' : (guarantor.user == undefined || guarantor.user == null ? '' : guarantor.user._id)) })
+					)
+				),
+	      $('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
+	        $('<button>', { class: 'btn btn-danger m-1', type: 'button', onclick: `deletePosition('${guarantor == null ? 'new' : guarantor._id}', 'guarantor', ${i}, this, 'guarantor');` }).html('&times;')
+	      ),
+	      $('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
+	        $('<button>', { class: 'btn btn-primary m-1', type: 'button', onclick: `editGuarantorPosition('${guarantor == null ? 'new' : guarantor._id}', ${i}, this);` }).html('&check;')
+	      )
 			),
-			$('<div>', { class: 'col-4' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `guarantor-${i}-user` }).text('Uživatel(ka)'),
-					$('<select>', { class: 'form-control', id: `guarantor-${i}-user`, required: 'required', value: (guarantor == undefined || guarantor == null ? '' : (guarantor.user == undefined || guarantor.user == null ? '' : guarantor.user._id)) })
-				)
-			),
-			$('<div>', { class: 'col-1 m-auto' }).append(
-				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-			)
+	    $('<div>', { class: 'row' }).append(
+	      $('<div>', { class: 'col', id: `guarantor-${i}-status`, style: 'display: none;' })
+	    )
 		).appendTo(motherDOM)
 		let $selectGuarantor = $(`select#guarantor-${i}-user`).select2()
 		$selectGuarantor.html(`<option selected="selected" value>Načítání...</option>`)
@@ -173,43 +282,108 @@
 		})
 	}
 
+
+
+	function editConsultantPosition(postId, i, buttonDOM) {
+	  if (buttonDOM) {
+	    buttonDOM.disabled = true;
+	  }
+	  const $status = $(`#consultant-${i}-status`);
+	  $status
+	    .empty()
+	    .append(
+	      $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
+	        $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	        'Zpracovávám'
+	      )
+	    )
+	    .show()
+	  const $task = $(`#consultant-${i}-task`);
+	  const $consultant = $(`select#consultant-${i}-user`);
+	  let consultant = $consultant.val();
+	  if (consultant == '') {
+	    consultant = null;
+	  }
+	  API.teamwork
+	    .editConsultantPosition('<%= req.params.id %>', postId, $task.val(), consultant)
+	    .then(responseFromServer => {
+	      if (buttonDOM) {
+	        buttonDOM.disabled = false;
+	      }
+	      if (responseFromServer.status === 'ok') {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Gratuluji!'),
+	              ' Úspěšně jste upravil(a) pozici týmové práce'
+	            )
+	          )
+	          .show()
+	        setTimeout(function () {
+	          window.location.reload()
+	        }, 3500)
+	      } else {
+	        $status
+	          .empty()
+	          .append(
+	            $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
+	              $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
+	              $('<strong>').text('Ach ne! '),
+	              responseFromServer.error
+	            )
+	          )
+	          .show()
+	      }
+	    })
+	}
+
 	function addConsultantRow(consultant, i = $('div#consultants .row').length, motherDOM = $('div#consultants')) {
-		$('<div>', { class: 'row' }).append(
-			$('<div>', { class: 'col' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `consultant-${i}-task` }).text('Popis práce'),
-					$('<textarea>', {
-						class: 'form-control', id: `consultant-${i}-task`, rows: '1', required: 'required',
-						placeholder: 'Zde se prosím rozepište o zadání konzultanta'
-					}).text(consultant == undefined || consultant == null ? '' : consultant.task)
-				)
-			),
-			$('<div>', { class: 'col-4' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `consultant-${i}-user` }).text('Uživatel(ka)'),
-					$('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant == undefined || consultant == null ? '' : (consultant.user == undefined || consultant.user == null ? '' : consultant.user._id)) })
-				)
-			),
-			$('<div>', { class: 'col-sm-1 m-auto' }).append(
-				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-			)
-		).appendTo(motherDOM)
-		let $selectConsultant = $(`select#consultant-${i}-user`).select2()
-		$selectConsultant.html(`<option selected="selected" value>Načítání...</option>`)
-		$selectConsultant.prop("disabled", true);
-		API.user.list({ type: 'consultant' }).then((listOfUsers) => {
-			$selectConsultant.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
-			listOfUsers.forEach((user) => {
-				$selectConsultant.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
-			})
-			if (consultant != undefined || consultant != null) {
-				if (consultant.user != undefined || consultant.user != null) {
-					$selectConsultant.val(consultant.user._id)
-					$selectConsultant.trigger('change')
-				}
-			}
-			$selectConsultant.prop("disabled", false);
-		})
+	  $('<form>', { action: '#' }).append(
+	    $('<div>', { class: 'row' }).append(
+	      $('<div>', { class: 'col' }).append(
+	        $('<div>', { class: 'form-group' }).append(
+	          $('<label>', { class: 'form-control-label', for: `consultant-${i}-task` }).text('Popis práce'),
+	          $('<textarea>', {
+	            class: 'form-control', id: `consultant-${i}-task`, rows: '1', required: 'required',
+	            placeholder: 'Zde se prosím rozepište o garantově zadaní'
+	          }).text(consultant == undefined || consultant == null ? '' : consultant.task)
+	        )
+	      ),
+	      $('<div>', { class: 'col-4' }).append(
+	        $('<div>', { class: 'form-group' }).append(
+	          $('<label>', { class: 'form-control-label', for: `consultant-${i}-user` }).text('Uživatel(ka)'),
+	          $('<select>', { class: 'form-control', id: `consultant-${i}-user`, required: 'required', value: (consultant == undefined || consultant == null ? '' : (consultant.user == undefined || consultant.user == null ? '' : consultant.user._id)) })
+	        )
+	      ),
+	      $('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
+	        $('<button>', { class: 'btn btn-danger m-1', type: 'button', onclick: `deletePosition('${consultant == null ? 'new' : consultant._id}', 'consultant', ${i}, this, 'consultant');` }).html('&times;')
+	      ),
+	      $('<div>', { class: 'col-1 mt-auto mb-auto d-flex' }).append(
+	        $('<button>', { class: 'btn btn-primary m-1', type: 'button', onclick: `editConsultantPosition('${consultant == null ? 'new' : consultant._id}', ${i}, this);` }).html('&check;')
+	      )
+	    ),
+	    $('<div>', { class: 'row' }).append(
+	      $('<div>', { class: 'col', id: `consultant-${i}-status`, style: 'display: none;' })
+	    )
+	  ).appendTo(motherDOM)
+	  let $selectConsultant = $(`select#consultant-${i}-user`).select2()
+	  $selectConsultant.html(`<option selected="selected" value>Načítání...</option>`)
+	  $selectConsultant.prop("disabled", true);
+	  API.user.list({ type: 'consultant' }).then((listOfUsers) => {
+	    $selectConsultant.html(`<option selected="selected" value disabled="disabled">Vyberte uživatele</option>`)
+	    listOfUsers.forEach((user) => {
+	      $selectConsultant.append(`<option value="${user._id}">${user.name.first} ${user.name.middle != undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+	    })
+	    if (consultant != undefined || consultant != null) {
+	      if (consultant.user != undefined || consultant != null) {
+	        $selectConsultant.val(consultant.user._id)
+	        $selectConsultant.trigger('change')
+	      }
+	    }
+	    $selectConsultant.prop("disabled", false);
+	  })
 	}
 
 	function showYearSelect(year, motherDOM = $('div#year-section')) {
@@ -279,41 +453,6 @@
 				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
 			)
 		).appendTo(motherDOM)
-	}
-
-	function getUsersForRequest() {
-		let students = []
-		let $students = $('div#students .row')
-		for (let i = 0; i < $students.length; i++) {
-			let user = $($($($($students[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val()
-			if (user == '') {
-				user = null
-			}
-			students.push({
-				position: $($($($($students[i]).children('div.col-2')[0]).children('div.form-group')[0]).children('select')[0]).val(),
-				task: $($($($($students[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
-				user,
-			})
-		}
-
-		let guarantors = []
-		let $guarantors = $('div#guarantors .row')
-		for (let i = 0; i < $guarantors.length; i++) {
-			guarantors.push({
-				task: $($($($($guarantors[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
-				user: $($($($($guarantors[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
-			})
-		}
-
-		let consultants = []
-		let $consultants = $('div#consultants .row')
-		for (let i = 0; i < $consultants.length; i++) {
-			consultants.push({
-				task: $($($($($consultants[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
-				user: $($($($($consultants[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val(),
-			})
-		}
-		return { students, guarantors, consultants }
 	}
 
 	function getMediaForRequest() {
@@ -503,55 +642,6 @@
 					}
 				})
 		})
-		$('form#edit-users-form').submit(function (event) {
-			event.preventDefault()
-			let $status = $('div#edit-users-status')
-			$status
-				.empty()
-				.append(
-					$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
-						$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-						'Zpracovávám'
-					)
-				)
-				.show()
-			let dataForRequest = getUsersForRequest()
-			API.teamwork
-				.updateUsers(
-					'<%= req.params.id %>',
-					dataForRequest.students,
-					dataForRequest.guarantors,
-					dataForRequest.consultants
-				)
-				.then(function (responseFromServer) {
-					if (responseFromServer.status === 'ok') {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste upravil(a) uživatele u údaje týmové práce'
-								)
-							)
-							.show()
-						setTimeout(function () {
-							window.location.reload()
-						}, 3500)
-					} else {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									responseFromServer.error
-								)
-							)
-							.show()
-					}
-				})
-		})
 		$('form#edit-media-form').submit(function (event) {
 			event.preventDefault()
 			let $status = $('div#edit-media-status')
@@ -679,7 +769,6 @@
 							</div>
 						</div>
 						<div class="card-body bg-secondary">
-							<!-- <form action="#" id="edit-users-form"> -->
 							<div class="row">
 								<div class="col float-left">
 									<h6 class="heading text-muted mb-4">Studenti</h6>
@@ -712,16 +801,6 @@
 								</div>
 							</div>
 							<div class="pl-lg-4" id="consultants"></div>
-							<div class="pl-lg-4">
-								<div class="row">
-									<div class="col" id="edit-users-status" style="display: none;"></div>
-									<div class="col-4 text-left">
-										<button type="submit" class="btn btn-primary"
-											id="edit-users-button">Upravit</button>
-									</div>
-								</div>
-							</div>
-							<!-- </form> -->
 						</div>
 					</div>
 				</div>

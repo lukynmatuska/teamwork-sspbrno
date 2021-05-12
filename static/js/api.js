@@ -326,9 +326,20 @@ var API = {
       return postData('/teamwork/new', { name, description, students, guarantors, consultants, result })
     },
 
+    deletePosition: function (teamWorkId, positionId, usertype) {
+      return postData('/teamwork/delete-position', { twid: teamWorkId, id: positionId, usertype: usertype })
+    },
+
     editStudentPosition: function (teamWorkId, studentPositionId, specializationId, task, userId) {
-      console.log(teamWorkId, studentPositionId, specializationId, task, userId);
       return postData('/teamwork/edit-student-position', { twid: teamWorkId, id: studentPositionId, specialization: specializationId, task, user: userId })
+    },
+
+    editGuarantorPosition: function (teamWorkId, guarantorPositionId, task, userId) {
+      return postData('/teamwork/edit-guarantor-position', { twid: teamWorkId, id: guarantorPositionId, task, user: userId, usertype: 'guarantor' })
+    },
+
+    editConsultantPosition: function (teamWorkId, consultantPositionId, task, userId) {
+      return postData('/teamwork/edit-consultant-position', { twid: teamWorkId, id: consultantPositionId, task, user: userId, usertype: 'consultant' })
     },
 
     updateBasicInfo: function (id, name, description, result, number) {
@@ -337,10 +348,6 @@ var API = {
 
     updateAdvanced: function (id, yearId) {
       return postData('/teamwork/update-advanced', { id, year: yearId })
-    },
-
-    updateUsers: function (id, students, guarantors, consultants) {
-      return postData('/teamwork/update-users', { id, students, guarantors, consultants })
     },
 
     updateMedia: function (id, media) {

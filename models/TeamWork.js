@@ -121,23 +121,6 @@ teamWorkSchema.virtual('fullname').get(function () {
   }
 })
 
-teamWorkSchema.virtual('owncloud.shares').get(function () {
-  let result = {
-    students: [],
-    consultantsAndGuarants: [],
-  };
-  for (let i = 0; i < this.students.length; i++) {
-    result.students.push(this.students[i].owncloudShareId);
-  }
-  for (let i = 0; i < this.consultants.length; i++) {
-    result.consultantsAndGuarants.push(this.consultants[i].owncloudShareId);
-  }
-  for (let i = 0; i < this.guarantors.length; i++) {
-    result.consultantsAndGuarants.push(this.guarantors[i].owncloudShareId);
-  }
-  return result;
-})
-
 // Ensure virtual fields are serialised.
 teamWorkSchema.set('toJSON', {
   virtuals: true

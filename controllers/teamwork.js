@@ -55,8 +55,7 @@ module.exports.new = (req, res) => {
     })
       .save((err, teamwork) => {
         if (err) {
-          console.log('error:')
-          console.error(err)
+          console.error('error: ', err)
           return res
             .status(500)
             .json({
@@ -161,98 +160,6 @@ module.exports.updateAdvanced = (req, res) => {
         .json({
           status: 'ok'
         })
-    })
-}
-
-module.exports.updateUsers = (req, res) => {
-  if (req.body.id === undefined) {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-send-id'
-      })
-  }
-  const update = {}
-
-  // Students
-  if (typeof req.body.students !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-students'
-      })
-  } else if (req.body.students !== undefined) {
-    update.students = req.body.students
-    if (update.students.length < 2) {
-      return res.send('few-students')
-    }
-    for (let i = 0; i < update.students.length; i++) {
-      if (typeof req.body.students[i].user !== 'string' || req.body.students[i].user === '') {
-        update.students[i].user = undefined
-      }
-    }
-  }
-
-  // Guarantors
-  if (typeof req.body.guarantors !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-guarantors'
-      })
-  } else if (req.body.guarantors !== undefined) {
-    update.guarantors = req.body.guarantors
-    if (update.guarantors.length < 1) {
-      return res.send('few-guarantors')
-    }
-  }
-
-  // Consultants
-  if (typeof req.body.consultants !== 'object') {
-    return res
-      .status(422)
-      .json({
-        status: 'error',
-        error: 'not-object-consultants'
-      })
-  } else if (req.body.consultants !== undefined) {
-    update.consultants = req.body.consultants
-  }
-
-  TeamWork
-    .findByIdAndUpdate(req.body.id, update, { new: true })
-    .populate({
-      path: 'students.user',
-      select: 'name email photo type ownCloudId'
-    })
-    .populate('students.position')
-    .populate({
-      path: 'guarantors.user',
-      select: 'name email photo type ownCloudId'
-    })
-    .populate({
-      path: 'consultants.user',
-      select: 'name email photo type ownCloudId'
-    })
-    .populate('year')
-    .populate({
-      path: 'author',
-      select: 'name email photo type ownCloudId'
-    })
-    .exec((err, teamWork) => {
-      if (err) {
-        console.error(err)
-        return res
-          .status(500)
-          .json({
-            status: 'error',
-            error: err
-          })
-      }
-      return owncloudController.updateSharesInTeamwork(req, res, teamWork)
     })
 }
 
@@ -781,7 +688,6 @@ module.exports.addFeedback = (req, res) => {
 }
 
 module.exports.editSetudentPosition = (req, res) => {
-  console.log(req.body.specialization);
   if (req.body.twid == undefined) {
     return res
       .status(422)
@@ -813,24 +719,6 @@ module.exports.editSetudentPosition = (req, res) => {
   }
   TeamWork
     .findById(req.body.twid)
-    .populate({
-      path: 'students.user',
-      select: 'name email photo type ownCloudId'
-    })
-    // .populate('students.position')
-    // .populate({
-    //   path: 'guarantors.user',
-    //   select: 'name email photo type ownCloudId'
-    // })
-    // .populate({
-    //   path: 'consultants.user',
-    //   select: 'name email photo type ownCloudId'
-    // })
-    // .populate('year')
-    // .populate({
-    //   path: 'author',
-    //   select: 'name email photo type ownCloudId'
-    // })
     .exec((err, teamwork) => {
       if (err) {
         console.error(err)
@@ -842,7 +730,6 @@ module.exports.editSetudentPosition = (req, res) => {
           })
       }
       let userChanged = false;
-      let user = null;
       let previousShareId = null;
       if (req.body.id == 'new') {
         teamwork.students.push({
@@ -853,62 +740,342 @@ module.exports.editSetudentPosition = (req, res) => {
         userChanged = true;
       }
       for (let i = 0; i < teamwork.students.length; i++) {
-        if (teamwork.students[i].id != req.body.id) {
+        if (teamwork.students[i]._id != req.body.id) {
           continue;
         }
         teamwork.students[i].task = req.body.task;
         teamwork.students[i].position = req.body.specialization;
-        user = teamwork.students[i].user;
-        if (teamwork.students[i].user != undefined) {
-          if (teamwork.students[i].user.id != req.body.user) {
-            teamwork.students[i].user = req.body.user;
-            userChanged = true;
-          }
-        } else {
-          previousShareId = teamwork.students[i].owncloudShareId;
+        previousShareId = teamwork.students[i].owncloudShareId;
+        if (teamwork.students[i].user == undefined || teamwork.students[i].user != req.body.user) {
           teamwork.students[i].user = req.body.user;
           userChanged = true;
         }
         break;
       }
-      teamwork.save();
-      if (userChanged && req.body.user != null) {
-        User
-          .findById(req.body.user)
-          .exec((err, user) => {
-            if (err) {
-              console.error(err)
-              return res
-                .status(500)
-                .json({
-                  status: 'error',
-                  error: err
-                })
+      TeamWork
+        .findByIdAndUpdate(
+          req.body.twid,
+          teamwork,
+          {
+            new: true,
+          }
+        )
+        .exec((err, tw) => {
+          if (err) {
+            console.error(err);
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          if (req.body.id == 'new') {
+            for (let i = 0; i < tw.students.length; i++) {
+              if (
+                tw.students[i].task == req.body.task &&
+                tw.students[i].position == req.body.specialization &&
+                tw.students[i].user == req.body.user
+              ) {
+                req.body.id = tw.students[i]._id;
+                break;
+              }
             }
-            if (user == null) {
-              return res
-                .status(200)
-                .json({
-                  status: 'error',
-                  error: 'user-not-found'
-                })
-            }
-            if (user.ownCloudId == null) {
-              return res
-                .status(200)
-                .json({
-                  status: 'error',
-                  error: 'user-doesnt-have-owncloudid-but-added-to-teamwork'
-                })
-            }
-            return owncloudController.shareTeamworkFolderToUser(req, res, teamwork, user.ownCloudId, 15, user.type, req.body.position, previousShareId)
-          })
-      } else {
+          }
+          if (req.body.user == null && previousShareId != null) {
+            return owncloudController.deleteShare(req, res, previousShareId);
+          } else if (userChanged && req.body.user != null) {
+            User
+              .findById(req.body.user)
+              .exec((err, user) => {
+                if (err) {
+                  console.error(err)
+                  return res
+                    .status(500)
+                    .json({
+                      status: 'error',
+                      error: err
+                    })
+                }
+                if (user == null) {
+                  return res
+                    .status(200)
+                    .json({
+                      status: 'error',
+                      error: 'user-not-found'
+                    })
+                }
+                if (user.ownCloudId == null) {
+                  return res
+                    .status(200)
+                    .json({
+                      status: 'error',
+                      error: 'user-doesnt-have-owncloudid-but-added-to-teamwork'
+                    })
+                }
+                return owncloudController.shareTeamworkFolderToUser(req, res, teamwork, user.ownCloudId, 15, user.type, req.body.id, previousShareId)
+              })
+          } else {
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
+          }
+        })
+    })
+}
+
+module.exports.deletePosition = (req, res) => {
+  if (req.body.twid == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-twid'
+      })
+  } else if (req.body.id == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  } else if (req.body.usertype == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-user-type'
+      })
+  } else if (!['student', 'guarantor', 'consultant'].includes(req.body.usertype)) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'bad-user-type'
+      })
+  }
+  TeamWork
+    .findById(req.body.twid)
+    .exec((err, teamwork) => {
+      if (err) {
+        console.error(err)
         return res
-          .status(200)
+          .status(500)
           .json({
-            status: 'ok'
+            status: 'error',
+            error: err
           })
       }
+      let owncloudShareId = null;
+      let update = {};
+      if (req.body.usertype == 'student') {
+        for (let i = 0; i < teamwork.students.length; i++) {
+          if (teamwork.students[i].id != req.body.id) {
+            continue;
+          }
+          owncloudShareId = teamwork.students[i].owncloudShareId;
+          teamwork.students.splice(i, 1);
+          break;
+        }
+        update.students = teamwork.students;
+      } else if (req.body.usertype == 'consultant') {
+        for (let i = 0; i < teamwork.consultants.length; i++) {
+          if (teamwork.consultants[i].id != req.body.id) {
+            continue;
+          }
+          owncloudShareId = teamwork.consultants[i].owncloudShareId;
+          teamwork.consultants.splice(i, 1);
+          break;
+        }
+        update.consultants = teamwork.consultants;
+      } else if (req.body.usertype == 'guarantor') {
+        for (let i = 0; i < teamwork.guarantors.length; i++) {
+          if (teamwork.guarantors[i].id != req.body.id) {
+            continue;
+          }
+          owncloudShareId = teamwork.guarantors[i].owncloudShareId;
+          teamwork.guarantors.splice(i, 1);
+          break;
+        }
+        update.guarantors = teamwork.guarantors;
+      }
+      TeamWork
+        .findByIdAndUpdate(
+          req.body.twid,
+          update
+        )
+        .exec((err, tw) => {
+          if (err) {
+            consoler.error(err);
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          if (owncloudShareId != undefined) {
+            return owncloudController.deleteShare(req, res, owncloudShareId)
+          }
+          return res
+            .status(200)
+            .json({
+              status: 'ok'
+            })
+        })
+    })
+}
+
+module.exports.editGuarantorAndConsultantPosition = (req, res) => {
+  if (req.body.twid == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-twid'
+      })
+  } else if (req.body.id == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  } else if (req.body.task == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-text'
+      })
+  } else if (req.body.user == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-user'
+      })
+  } else if (req.body.usertype == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-usertype'
+      })
+  } else if (!['consultant', 'guarantor'].includes(req.body.usertype)) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'bad-usertype'
+      })
+  }
+  const userType = `${req.body.usertype}s`;
+  TeamWork
+    .findById(req.body.twid)
+    .exec((err, teamwork) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: err
+          })
+      }
+      let userChanged = false;
+      let previousShareId = null;
+      if (req.body.id == 'new') {
+        teamwork[userType].push({
+          task: req.body.task,
+          user: req.body.user,
+        })
+        userChanged = true;
+      }
+      for (let i = 0; i < teamwork[userType].length; i++) {
+        if (teamwork[userType][i]._id != req.body.id) {
+          continue;
+        }
+        teamwork[userType][i].task = req.body.task;
+        previousShareId = teamwork[userType][i].owncloudShareId;
+        if (teamwork[userType][i].user == undefined || teamwork[userType][i].user != req.body.user) {
+          teamwork[userType][i].user = req.body.user;
+          userChanged = true;
+        }
+        break;
+      }
+      TeamWork
+        .findByIdAndUpdate(
+          req.body.twid,
+          teamwork,
+          {
+            new: true
+          }
+        )
+        .exec((err, tw) => {
+          if (err) {
+            console.error(err);
+            return res
+              .status(500)
+              .json({
+                status: 'error',
+                error: err
+              })
+          }
+          if (req.body.id == 'new') {
+            for (let i = 0; i < tw[userType].length; i++) {
+              if (
+                tw[userType][i].task == req.body.task &&
+                tw[userType][i].position == req.body.specialization &&
+                tw[userType][i].user == req.body.user
+              ) {
+                req.body.id = tw[userType][i]._id;
+                break;
+              }
+            }
+          }
+          if (req.body.user == null && previousShareId != null) {
+            return owncloudController.deleteShare(req, res, previousShareId);
+          } else if (userChanged && req.body.user != null) {
+            User
+              .findById(req.body.user)
+              .exec((err, user) => {
+                if (err) {
+                  console.error(err)
+                  return res
+                    .status(500)
+                    .json({
+                      status: 'error',
+                      error: err
+                    })
+                }
+                if (user == null) {
+                  return res
+                    .status(200)
+                    .json({
+                      status: 'error',
+                      error: 'user-not-found'
+                    })
+                }
+                if (user.ownCloudId == null) {
+                  return res
+                    .status(200)
+                    .json({
+                      status: 'error',
+                      error: 'user-doesnt-have-owncloudid-but-added-to-teamwork'
+                    })
+                }
+                return owncloudController.shareTeamworkFolderToUser(req, res, teamwork, user.ownCloudId, 31, user.type, req.body.id, previousShareId)
+              })
+          } else {
+            return res
+              .status(200)
+              .json({
+                status: 'ok'
+              })
+          }
+        })
     })
 }
