@@ -422,22 +422,22 @@ module.exports.select = (req, res) => {
     .findById(req.body.id)
     .populate({
       path: 'students.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate('students.position')
-    .populate({
+    /*.populate({
       path: 'guarantors.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type ownCloudId'
-    })
+      select: 'name email type ownCloudId'
+    })*/
     .exec((err, teamWork) => {
       if (err) {
         console.error(err)
@@ -450,9 +450,14 @@ module.exports.select = (req, res) => {
       }
       for (let i = 0; i < teamWork.students.length; i++) {
         if (String(teamWork.students[i]._id) === String(req.body.position)) {
-          if (teamWork.students[i].user === undefined) {
-            teamWork.students[i].user = req.session.user._id
-          } else {
+          if (String(teamWork.students[i].position._id) != String(req.session.user.specialization._id)) {
+            return res
+              .status(422)
+              .json({
+                status: 'error',
+                error: 'bad-specialization'
+              })
+          } else if (teamWork.students[i].user != undefined) {
             return res
               .status(422)
               .json({
@@ -460,17 +465,18 @@ module.exports.select = (req, res) => {
                 error: 'already-asigned'
               })
           }
+          teamWork.students[i].user = req.session.user._id
           break
         }
       }
-      owncloudController.selectTeamWork(req, res, teamWork)
+      owncloudController.selectTeamWork(req, res, teamWork, req.body.position)
     })
 }
 
-module.exports.leave = (req, res) => {
+/*module.exports.leave = (req, res) => {
   /**
    * Remove student from the TeamWork
-   */
+   * /
   if (req.body.id === undefined) {
     return res
       .status(422)
@@ -499,22 +505,22 @@ module.exports.leave = (req, res) => {
     .findById(req.body.id)
     .populate({
       path: 'students.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate('students.position')
-    .populate({
+    /*.populate({
       path: 'guarantors.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate({
       path: 'consultants.user',
-      select: 'name email photo type ownCloudId'
+      select: 'name email type ownCloudId'
     })
     .populate('year')
     .populate({
       path: 'author',
-      select: 'name email photo type ownCloudId'
-    })
+      select: 'name email type ownCloudId'
+    })* /
     .exec((err, teamWork) => {
       if (err) {
         console.error(err)
@@ -526,46 +532,57 @@ module.exports.leave = (req, res) => {
           })
       }
 
+      let update = {
+        students: []
+      };
+
       for (let i = 0; i < teamWork.students.length; i++) {
-        if (String(teamWork.students[i]._id) === String(req.body.position)) {
-          if (teamWork.students[i].user == undefined) {
-            return res
-              .status(422)
-              .json({
-                status: 'error',
-                error: 'already-free'
-              })
-          }
-          if (String(teamWork.students[i].user._id) === String(req.session.user._id)) {
-            teamWork.students[i].user = undefined
-          } else {
-            return res
-              .status(422)
-              .json({
-                status: 'error',
-                error: 'already-free'
-              })
-          }
-          break
+        if (String(teamWork.students[i]._id) != String(req.body.position)) {
+          continue;
+        }
+        // Find position
+        if (teamWork.students[i].user == undefined) {
+          return res
+            .status(422)
+            .json({
+              status: 'error',
+              error: 'already-free'
+            })
+        } else if (String(teamWork.students[i].user._id) === String(req.session.user._id)) {
+          // Remove current student
+          teamWork.students[i].user = undefined;
+          update.students.push(teamWork.students[i]);
+          update.students[0].owncloudShareId = undefined;
+          console.log(update);
+          TeamWork
+            .findByIdAndUpdate(
+              req.body.id,
+              {
+                students: {}
+              }
+            )
+            .exec((err) => {
+              if (err) {
+                console.error(err);
+                return res
+                  .status(500)
+                  .json({
+                    status: 'error',
+                    error: 'mongo-err'
+                  })
+              }
+              return owncloudController.leaveTeamWork(req, res, teamWork.students[i].owncloudShareId);
+            })
         }
       }
-
-      TeamWork
-        .findByIdAndUpdate(req.body.id, teamWork)
-        .exec((err) => {
-          if (err) {
-            console.error(err)
-            return res
-              .status(500)
-              .json({
-                status: 'error',
-                error: 'mongo-err'
-              })
-          }
-          return owncloudController.leaveTeamWork(req, res, teamWork)
+      return res
+        .status(422)
+        .json({
+          status: 'error',
+          error: 'not-your-position'
         })
     })
-}
+}*/
 
 module.exports.hasStudentBeenAsignedToTeamWork = (req, res) => {
   if (req.session.user === undefined || req.session.user == null) {

@@ -34,35 +34,6 @@ function selectTeamWork($DOM, teamWorkId, positionId) {
         })
 }
 
-function leaveTeamWork($DOM, teamWorkId, positionId) {
-    $DOM.text('Odcházím')
-    $DOM.removeClass('bg-secondary text-light')
-    $DOM.addClass('btn-dark')
-    API.teamwork
-        .leave(teamWorkId, positionId)
-        .then((response) => {
-            $DOM.removeClass('btn-dark')
-            if (response.status === 'ok') {
-                $DOM.addClass('btn-success')
-                $DOM.text('Odebráno')
-                location.reload()
-            } else if (response.error === 'already-free') {
-                $DOM.text('Jejda! Ani jste nebyl přihlášen')
-                $DOM.addClass('btn-danger')
-                location.reload()
-            } else if (response.error === 'end-of-selection-of-teamworks') {
-                $DOM.text('Jejda! Promeškal jste svoji svobodnou volbu týmové práce')
-                $DOM.addClass('btn-danger')
-                setTimeout(function () {
-                    location.reload()
-                }, 10000)
-            } else {
-                $DOM.text('Chyba!')
-                $DOM.addClass('btn-danger')
-            }
-        })
-}
-
 async function isGivenSpecializationMine(specializationId) {
     const response = await API.user.isGivenSpecializationMine(String(specializationId))
     if (response == undefined || response == null) {
@@ -85,8 +56,8 @@ async function isGivenUserIdMine(userId) {
     return response.data
 }
 
-async function isGivenTeamworkMine(userId) {
-    const response = await API.teamwork.isGivenTeamworkMine(userId)
+async function isGivenTeamworkMine(teamworkId) {
+    const response = await API.teamwork.isGivenTeamworkMine(teamworkId)
     if (!response) {
         return false
     }
@@ -98,6 +69,14 @@ async function isGivenTeamworkMine(userId) {
 
 async function hasStudentBeenAsignedToTeamWork() {
     const response = await API.teamwork.hasStudentBeenAsignedToTeamWork()
+    if (!response) {
+        return false
+    }
+    return response
+}
+
+async function canIseeGDPRthings() {
+    const response = await API.user.canIseeGDPRthings()
     if (!response) {
         return false
     }
@@ -123,14 +102,11 @@ async function studentsDOMsFromTeamwork(teamwork, isUserLoggedIn, hasStudentBeen
                 }
             }
         } else {
-            studentPositionUserName = $('<span>', { class: 'text-secondary' }).text(teamworkPositionUser.fullName)
+            studentPositionUserName = $('<span>', { class: 'text-secondary' }).text('Obsazená pozice')
             if (isUserLoggedIn) {
                 if (hasStudentBeenAsignedToTeamWorkInVar) {
                     if (await isGivenTeamworkMine(teamwork._id) && await isGivenSpecializationMine(teamwork.students[ii].position._id)) {
-                        studentPositionUserName = $('<button>', {
-                            class: 'btn btn-sm bg-danger text-light ml-2', type: 'button',
-                            onclick: `leaveTeamWork($(this), '${teamwork._id}', '${teamwork.students[ii]._id}')`
-                        }).text('Odejít')
+                        studentPositionUserName = $('<span>', { class: 'text-secondary' }).text('Vaše pozice')
                     }
                 }
             }
@@ -167,8 +143,9 @@ function teamWorkDetailButton(id) {
     return $('<a>', { class: 'btn btn-secondary', href: `/teamworks/detail/${id}` }).text('Detail')
 }
 
-async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar) {
+async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar, canIseeGDPRthingsInVar) {
     const consultantsDOMs = usersDOMsFromTeamwork(teamwork, 'consultants')
+    const guarantorsDOMs = usersDOMsFromTeamwork(teamwork);
     return $('<div>', { class: 'row mb-4' }).append(
         $('<div>', { class: 'col' }).append(
             $('<div>', { class: 'card flex-grow-1' }).append(
@@ -178,11 +155,13 @@ async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeam
                 ),
                 $('<h4>', { class: 'card-title text-dark' }).text('Studenti'),
                 await studentsDOMsFromTeamwork(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar),
-                $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti'),
-                usersDOMsFromTeamwork(teamwork),
-                consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : null,
-                consultantsDOMs,
-                isUserLoggedIn ? teamWorkDetailButton(teamwork._id) : null
+                (canIseeGDPRthingsInVar ? $('<span>').append(
+                    (guarantorsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti') : 'null0'),
+                    guarantorsDOMs,
+                    (consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : 'null1'),
+                    consultantsDOMs
+                ) : null),
+                !isUserLoggedIn ? null : (await isGivenTeamworkMine(teamwork._id) ? teamWorkDetailButton(teamwork._id) : null)
             )
         )
     )

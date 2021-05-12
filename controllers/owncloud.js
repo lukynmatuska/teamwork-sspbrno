@@ -97,7 +97,7 @@ module.exports.newTeamwork = (req, res, teamwork) => {
     })
 }
 
-module.exports.selectTeamWork = (req, res, teamWork) => {
+module.exports.selectTeamWork = (req, res, teamWork, positionId) => {
     function mongo(req, res, teamWorkUpdate) {
         TeamWork
             .findByIdAndUpdate(req.body.id, teamWorkUpdate)
@@ -124,15 +124,18 @@ module.exports.selectTeamWork = (req, res, teamWork) => {
             req.session.user.ownCloudId,
             { perms: 15 }
         ).then((shareInfo) => {
-            students = teamWork.owncloud.shares.students
-            students.push(shareInfo.shareInfo.id)
-            mongo(req, res, {
-                owncloud: {
-                    shares: {
-                        students
-                    }
+            let update = {
+                students: []
+            };
+            for (let i = 0; i < teamWork.students.length; i++) {
+                if (String(teamWork.students[i]._id) != String(positionId)) {
+                    continue;
                 }
-            })
+                update.students.push(teamWork.students[i])
+                update.students[0].owncloudShareId = shareInfo.shareInfo.id;
+                break;
+            }
+            return mongo(req, res, update);
         }).catch((err) => {
             if (err == 'Path already shared with this user') {
                 return mongo(req, res, teamWork)
@@ -167,106 +170,25 @@ module.exports.deleteTeamWork = (req, res, teamWork) => {
     })
 }
 
-module.exports.leaveTeamWork = (req, res, teamWork) => {
-    /**
-     * Better removing items from array
-     */
-    Array.prototype.remove = function () {
-        var what, a = arguments, L = a.length, ax
-        while (L && this.length) {
-            what = a[--L]
-            while ((ax = this.indexOf(what)) !== -1) {
-                this.splice(ax, 1);
-            }
-        }
-        return this
-    }
-
-    // Create arrays with OwnCloud IDs of students
-    const studentsOwnCloudIds = []
-    for (const student of teamWork.students) {
-        if (student.user != undefined) {
-            if (student.user.ownCloudId != undefined) {
-                studentsOwnCloudIds.push(student.user.ownCloudId)
-            }
-        }
-    }
-    let studentsOwnCloudIdsToShare = [...studentsOwnCloudIds]
-
-    // Create array for promises
-    const getSharePromises = []
-    for (const shareId of teamWork.owncloud.shares.students) {
-        if (shareId != undefined) {
-            getSharePromises.push(oc.shares.getShare(shareId))
-        }
-    }
-
-    // Solve promises
-    Promise.all(getSharePromises).then(shares => {
-        // Create arrays for share IDs
-        const studentsShares = []
-        for (const share of shares) {
-            if (studentsOwnCloudIds.includes(share.shareInfo.share_with)) {
-                studentsOwnCloudIdsToShare.remove(share.shareInfo.share_with)
-                studentsShares.push(share.shareInfo.id)
-            } else {
-                oc.shares.deleteShare(share.shareInfo.id).then(function () { }).catch(console.error)
-            }
-        }
-        const studentsPromises = []
-        for (const studentOwnCloudId of studentsOwnCloudIdsToShare) {
-            studentsPromises.push(oc.shares.shareFileWithUser(getPath(teamWork), studentOwnCloudId, { perms: 15 }))
-        }
-        Promise.all(studentsPromises).then((values) => {
-            for (const value of values) {
-                studentsShares.push(value.shareInfo.id)
-            }
-            TeamWork
-                .findByIdAndUpdate(
-                    teamWork._id,
-                    {
-                        owncloud: {
-                            shares: {
-                                students: studentsShares,
-                            }
-                        }
-                    }, { new: true }
-                )
-                .exec((err, tw) => {
-                    if (err) {
-                        console.error(err)
-                        return res
-                            .status(500)
-                            .json({
-                                status: 'error',
-                                error: err
-                            })
-                    }
-                    return res
-                        .status(200)
-                        .json({
-                            status: 'ok'
-                        })
-                })
-        }).catch((error) => {
-            console.error(error)
+/*module.exports.leaveTeamWork = (req, res, owncloudShareId) => {
+    oc.shares.deleteShare(owncloudShareId)
+        .then(result => {
             return res
-                .status(500)
+                .status(200)
                 .json({
-                    status: 'error',
-                    error
+                    status: 'ok'
                 })
         })
-    }).catch(error => {
-        console.error(error)
-        return res
-            .status(500)
-            .json({
-                status: 'error',
-                error
-            })
-    })
-}
+        .catch ((err) => {
+    console.error(err);
+    return res
+        .status(500)
+        .json({
+            status: 'error',
+            error: 'owncloud-error'
+        })
+})
+}*/
 
 module.exports.shareTeamworkFolderToUser = (req, res, teamwork, userOwnCloudId, perms = 1, userType, positionId, previousShareId, callback) => {
     if (previousShareId != undefined) {

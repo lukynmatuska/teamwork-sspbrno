@@ -269,11 +269,8 @@ var API = {
       return getData('/user/is-given-id-mine', { id: UserId })
     },
 
-    updateProfilePhoto: async function (file) {
-      let body = new FormData()
-      body.append('photo', file)
-      const request = await fetch(API.endpoint + '/user/update-profile-photo', { method: 'POST', body })
-      return request.json()
+    canIseeGDPRthings: function () {
+      return getData('/user/can-i-see-gdpr-things')
     }
   },
 
@@ -374,16 +371,16 @@ var API = {
       return postData('/teamwork/select', { id: teamWorkId, position: positionId })
     },
 
-    leave: function (teamWorkId, positionId) {
-      return postData('/teamwork/leave', { id: teamWorkId, position: positionId })
-    },
+    // leave: function (teamWorkId, positionId) {
+    //   return postData('/teamwork/leave', { id: teamWorkId, position: positionId })
+    // },
 
     hasStudentBeenAsignedToTeamWork: function () {
       return getData('/teamwork/has-student-been-asigned-to-teamwork')
     },
 
-    isGivenTeamworkMine: function (UserId) {
-      return getData('/teamwork/is-given-teamwork-mine', { id: UserId })
+    isGivenTeamworkMine: function (teamworkId) {
+      return getData('/teamwork/is-given-teamwork-mine', { id: teamworkId })
     },
 
     addFeedback: function (teamWorkId, text, UserIdOfStudent) {

@@ -21,6 +21,7 @@
                                         return $teamWorksDOM.append($('<p>', { class: 'lead description' }).text('Pro tento ročník ještě nebyly vytvořeny žádné týmové práce.'))
                                     }
                                     const canStudentsJoinOrLeaveTeamworkInVar = await API.year.canStudentsJoinOrLeaveTeamwork()
+                                    const canIseeGDPRthingsInVar = await canIseeGDPRthings();
                                     let isUserLoggedIn
                                     let hasStudentBeenAsignedToTeamWorkInVar
                                     if (canStudentsJoinOrLeaveTeamworkInVar) {
@@ -31,7 +32,7 @@
                                         hasStudentBeenAsignedToTeamWorkInVar = false
                                     }
                                     for (let i = 0; i < teamworks.length; i++) {
-                                        const teamworkDOM = await teamWorkDOM(teamworks[i], isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar)
+                                        const teamworkDOM = await teamWorkDOM(teamworks[i], isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar, canIseeGDPRthingsInVar)
                                         $teamWorksDOM.append(teamworkDOM)
                                     }
                                 })

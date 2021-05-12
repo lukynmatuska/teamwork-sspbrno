@@ -90,6 +90,7 @@ router.post('/user/parse-students-xlsx', partials.onlyAdmin, userController.pars
 router.get('/user/is-given-specialization-mine', partials.onlyLoggedIn, userController.isGivenSpecializationMine)
 router.get('/user/has-user-given-specialization', partials.onlyLoggedIn, userController.hasUserGivenSpecialization)
 router.get('/user/is-given-id-mine', userController.isGivenIdMine)
+router.get('/user/can-i-see-gdpr-things', userController.canIseeGDPRthings)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()
@@ -150,7 +151,7 @@ router.get('/teamwork/find-by-id/:id', teamworkController.findById)
 router.post('/teamwork/delete', partials.onlyAdmin, teamworkController.delete)
 router.post('/teamwork/copy', partials.onlyAdmin, teamworkController.copy)
 router.post('/teamwork/select', partials.onlyLoggedIn, teamworkController.select)
-router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
+// router.post('/teamwork/leave', partials.onlyLoggedIn, teamworkController.leave)
 router.get('/teamwork/has-student-been-asigned-to-teamwork', teamworkController.hasStudentBeenAsignedToTeamWork)
 router.get('/teamwork/is-given-teamwork-mine', teamworkController.isGivenTeamworkMine)
 router.post('/teamwork/add-feedback', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.addFeedback)
