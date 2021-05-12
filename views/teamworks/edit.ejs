@@ -2,321 +2,673 @@
 <%- include('../partials/file-start') %>
 <%- include('../partials/menu') %>
 <main role="main" class="inner cover mt-5">
-    <div class="m-auto">
-		<h1><%= teamwork.fullname %></h1>
-        <div class="card">
-            <%- include('./menu', { active: 'edit'}) %>
-            <div class="card-body">
-                <form action="#" id="edit-teamwork">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-control-label card-text text-dark h3" for="description">Popis</label>
-                                <textarea id="description" class="form-control" required rows="15"
-                                    placeholder="Vyplňte prosím toto povinné pole"><%= teamwork.description %></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-control-label card-text text-dark h3" for="result">Výsledek</label>
-                                <textarea id="result" class="form-control" required rows="15"
-                                    placeholder="Vyplňte prosím toto povinné pole"><%= teamwork.result %></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col float-left">
-                            <h4 class="heading text-dark mb-4">Studenti</h4>
-                        </div>
-                        <div class="col float-right">
-                            <button type="button" onclick="addStudentRow()"
-                                class="btn btn-sm btn-primary float-right">Přidat studenta</button>
-                        </div>
-                    </div>
-                    <div class="pl-lg-4" id="students"></div>
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col float-left">
-                            <h3 class="heading text-dark mb-4">Média</h3>
-                        </div>
-                        <div class="col float-right">
-                            <button type="button" onclick="addRepositoryRowToMedia()"
-                                class="btn btn-sm btn-primary float-right">Přidat repozitář</button>
-                        </div>
-                    </div>
-                    <div class="text-dark" id="media"></div>
-                    <div class="row mt-2 mb-2">
-                        <div class="col" id="edit-teamwork-status" style="display: none;"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <button type="submit" class="btn btn-dark"
-                                id="edit-teamwork-button">Editovat</button>
-                        </div>
-                    </div>
-                </form>
+  <div class="m-auto">
+    <h1><%= teamwork.fullname %></h1>
+    <div class="card">
+      <%- include('./menu', { active: 'edit'}) %>
+      <div class="card-body">
+        <form action="#" id="edit-basicinfo-form">
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label class="form-control-label card-text text-dark h3" for="description">Popis</label>
+                <textarea id="description" class="form-control" required rows="10" placeholder="Vyplňte prosím toto povinné pole"><%= teamwork.description %></textarea>
+              </div>
             </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label class="form-control-label card-text text-dark h3" for="result">Výsledek</label>
+                <textarea id="result" class="form-control" required rows="10" placeholder="Vyplňte prosím toto povinné pole"><%= teamwork.result %></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" id="edit-basicinfo-status" style="display: none;"></div>
+            <div class="col-4 text-left">
+              <button type="submit" class="btn btn-primary" id="edit-basicinfo-button">Upravit</button>
+            </div>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col float-left">
+            <h4 class="heading text-dark mb-4">Studenti</h4>
+          </div>
+          <div class="col float-right">
+            <button type="button" onclick="addStudentRow()" class="btn btn-sm btn-primary float-right">Přidat studenta</button>
+          </div>
         </div>
+        <div class="pl-lg-4" id="students"></div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col float-left">
+            <h3 class="heading text-dark mb-4">Média</h3>
+          </div>
+          <div class="col float-right">
+            <button type="button" onclick="addRepositoryRowToMedia()" class="btn btn-sm btn-primary float-right">Přidat repozitář</button>
+          </div>
+        </div>
+        <form action="#" id="edit-media-form">
+          <div class="text-dark" id="media"></div>
+          <div class="row mt-2 mb-2">
+            <div class="col" id="edit-media-status" style="display: none;"></div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="submit" class="btn btn-dark" id="edit-teamwork-button">Editovat</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </main>
 <%- include('../partials/scripts-file-end') %>
 <%- include('../admin/partials/select2') %>
 <%- include('../partials/footer') %>
 <script>
-	function addStudentRow(student, i = $('div#students .row').length, motherDOM = $('div#students')) {
-		$('<div>', { class: 'row' }).append(
-			$('<div>', { class: 'col-2' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `student-${i}-position` }).text('Zaměření (Pozice)'),
-					$('<select>', { class: 'form-control', id: `student-${i}-position`, required: 'required', value: (student == undefined || student == null ? '' : student.position._id) })
-				)
-			),
-			$('<div>', { class: 'col' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `student-${i}-task` }).text('Popis pozice'),
-					$('<textarea>', {
-						class: 'form-control', id: `student-${i}-task`, rows: '1', required: 'required',
-						placeholder: 'Zde se prosím rozepište o studentově úkolu'
-					}).text(student == undefined || student == null ? '' : student.task)
-				)
-			),
-			$('<div>', { class: 'col-4' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `student-${i}-user` }).text('Student'),
-					$('<select>', { class: 'form-control', id: `student-${i}-user`, value: (student == undefined || student == null ? '' : (student.user == undefined || student.user == null ? '' : student.user._id)) })
-				)
-			),
-			$('<div>', { class: 'col-1 m-auto' }).append(
-				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-			)
-		).appendTo(motherDOM)
-		let $selectPosition = $(`select#student-${i}-position`).select2({
-			minimumResultsForSearch: -1
-		})
-		$selectPosition.html(`<option selected="selected" value>Načítání...</option>`)
-		$selectPosition.prop("disabled", true);
-		API.specialization.list().then((listOfSpecializations) => {
-			$selectPosition.html(`<option selected="selected" value disabled="disabled">Vyberte zaměření</option>`)
-			listOfSpecializations.forEach((specialization) => {
-				$selectPosition.append(`<option value="${specialization._id}">${specialization.name}</option>`)
-			})
-			if (student !== undefined || student != null) {
-				if (student.position !== undefined || student.position != null) {
-					$selectPosition.val(student.position._id)
-					$selectPosition.trigger('change')
-				}
-			}
-			$selectPosition.prop("disabled", false)
+  function deletePosition(postId, DOMprefix, i, buttonDOM, userType) {
+    if (buttonDOM) {
+      buttonDOM.disabled = true;
+    }
+    const $status = $(`#${DOMprefix}-${i}-status`);
+    $status
+      .empty()
+      .append(
+        $('<div>', {
+          class: 'alert alert-info alert-dismissible'
+        }).append(
+          $('<a>', {
+            href: '#',
+            class: 'close',
+            'data-dismiss': 'alert',
+            'aria-label': 'close'
+          }).html('&times;'),
+          'Zpracovávám'
+        )
+      )
+      .show()
+    API.teamwork
+      .deletePosition('<%= req.params.id %>', postId, userType)
+      .then(responseFromServer => {
+        if (buttonDOM) {
+          buttonDOM.disabled = false;
+        }
+        if (responseFromServer.status === 'ok') {
+          $status
+            .empty()
+            .append(
+              $('<div>', {
+                class: 'alert alert-success alert-dismissible'
+              }).append(
+                $('<a>', {
+                  href: '#',
+                  class: 'close',
+                  'data-dismiss': 'alert',
+                  'aria-label': 'close'
+                }).html('&times;'),
+                $('<strong>').text('Gratuluji!'),
+                ' Úspěšně jste smazal(a) pozici týmové práce'
+              )
+            )
+            .show()
+          $(this).parent().parent().remove();
+          setTimeout(function() {
+            window.location.reload()
+          }, 3500)
+        } else {
+          $status
+            .empty()
+            .append(
+              $('<div>', {
+                class: 'alert alert-danger alert-dismissible'
+              }).append(
+                $('<a>', {
+                  href: '#',
+                  class: 'close',
+                  'data-dismiss': 'alert',
+                  'aria-label': 'close'
+                }).html('&times;'),
+                $('<strong>').text('Ach ne! '),
+                responseFromServer.error
+              )
+            )
+            .show()
+        }
+      })
+  }
 
-			let $selectStudent = $(`select#student-${i}-user`).select2()
-			$selectStudent.html(`<option selected="selected" value>Načítání...</option>`)
-			$selectStudent.prop("disabled", true);
-			API.user.list({ specialization: $selectPosition.val() }).then((listOfUsers) => {
-				$selectStudent.html(`<option selected="selected" value="">Vyberte uživatele / Žádný uživatel</option>`)
-				listOfUsers.forEach((user) => {
-					$selectStudent.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
-				})
-				if (student != undefined || student != null) {
-					if (student.user != undefined || student.user != null) {
-						$selectStudent.val(student.user._id)
-                        $selectStudent.trigger('change')
-					}
-				}
-				$selectStudent.prop("disabled", false)
-			})
-		})
+  function editStudentPosition(postId, i, buttonDOM) {
+    if (buttonDOM) {
+      buttonDOM.disabled = true;
+    }
+    const $status = $(`#student-${i}-status`);
+    $status
+      .empty()
+      .append(
+        $('<div>', {
+          class: 'alert alert-info alert-dismissible'
+        }).append(
+          $('<a>', {
+            href: '#',
+            class: 'close',
+            'data-dismiss': 'alert',
+            'aria-label': 'close'
+          }).html('&times;'),
+          'Zpracovávám'
+        )
+      )
+      .show()
+    const $position = $(`select#student-${i}-position`);
+    const $task = $(`#student-${i}-task`);
+    const $student = $(`select#student-${i}-user`);
+    let student = $student.val();
+    if (student == '') {
+      student = null;
+    }
+    API.teamwork
+      .editStudentPosition('<%= req.params.id %>', postId, $position.val(), $task.val(), student)
+      .then(responseFromServer => {
+        if (buttonDOM) {
+          buttonDOM.disabled = false;
+        }
+        if (responseFromServer.status === 'ok') {
+          $status
+            .empty()
+            .append(
+              $('<div>', {
+                class: 'alert alert-success alert-dismissible'
+              }).append(
+                $('<a>', {
+                  href: '#',
+                  class: 'close',
+                  'data-dismiss': 'alert',
+                  'aria-label': 'close'
+                }).html('&times;'),
+                $('<strong>').text('Gratuluji!'),
+                ' Úspěšně jste upravil(a) pozici týmové práce'
+              )
+            )
+            .show()
+          setTimeout(function() {
+            window.location.reload()
+          }, 3500)
+        } else {
+          $status
+            .empty()
+            .append(
+              $('<div>', {
+                class: 'alert alert-danger alert-dismissible'
+              }).append(
+                $('<a>', {
+                  href: '#',
+                  class: 'close',
+                  'data-dismiss': 'alert',
+                  'aria-label': 'close'
+                }).html('&times;'),
+                $('<strong>').text('Ach ne! '),
+                responseFromServer.error
+              )
+            )
+            .show()
+        }
+      })
+  }
+
+  function addStudentRow(student, i = $('div#students .row').length, motherDOM = $('div#students')) {
+    $('<form>', {
+      action: '#'
+    }).append(
+      $('<div>', {
+        class: 'row'
+      }).append(
+        $('<div>', {
+          class: 'col-2'
+        }).append(
+          $('<div>', {
+            class: 'form-group'
+          }).append(
+            $('<label>', {
+              class: 'form-control-label',
+              for: `student-${i}-position`
+            }).text('Zaměření (Pozice)'),
+            $('<select>', {
+              class: 'form-control',
+              id: `student-${i}-position`,
+              required: 'required',
+              value: (student == undefined || student == null ? '' : student.position._id)
+            })
+          )
+        ),
+        $('<div>', {
+          class: 'col'
+        }).append(
+          $('<div>', {
+            class: 'form-group'
+          }).append(
+            $('<label>', {
+              class: 'form-control-label',
+              for: `student-${i}-task`
+            }).text('Popis pozice'),
+            $('<textarea>', {
+              class: 'form-control',
+              id: `student-${i}-task`,
+              rows: '1',
+              required: 'required',
+              placeholder: 'Zde se prosím rozepište o studentově úkolu'
+            }).text(student == undefined || student == null ? '' : student.task)
+          )
+        ),
+        $('<div>', {
+          class: 'col-3'
+        }).append(
+          $('<div>', {
+            class: 'form-group'
+          }).append(
+            $('<label>', {
+              class: 'form-control-label',
+              for: `student-${i}-user`
+            }).text('Uživatel(ka)'),
+            $('<select>', {
+              class: 'form-control',
+              id: `student-${i}-user`,
+              value: (student == undefined || student == null ? '' : (student.user == undefined || student.user == null ? '' : student.user._id))
+            })
+          )
+        ),
+        $('<div>', {
+          class: 'col-1 mt-auto mb-auto d-flex'
+        }).append(
+          $('<button>', {
+            class: 'btn btn-danger m-1',
+            type: 'button',
+            onclick: `deletePosition('${student == null ? 'new' : student._id}', 'student', ${i}, this, 'student');`
+          }).html('&times;')
+        ),
+        $('<div>', {
+          class: 'col-1 mt-auto mb-auto d-flex'
+        }).append(
+          $('<button>', {
+            class: 'btn btn-primary m-1',
+            type: 'button',
+            onclick: `editStudentPosition('${student == null ? 'new' : student._id}', ${i}, this);`
+          }).html('&check;')
+        )
+      ),
+      $('<div>', {
+        class: 'row'
+      }).append(
+        $('<div>', {
+          class: 'col',
+          id: `student-${i}-status`,
+          style: 'display: none;'
+        })
+      )
+    ).appendTo(motherDOM)
+    let $selectPosition = $(`select#student-${i}-position`).select2({
+      minimumResultsForSearch: -1
+    })
+    $selectPosition.html(`<option selected="selected" value>Načítání...</option>`)
+    $selectPosition.prop("disabled", true);
+    API.specialization.list().then((listOfSpecializations) => {
+      $selectPosition.html(`<option selected="selected" value disabled="disabled">Vyberte zaměření</option>`)
+      listOfSpecializations.forEach((specialization) => {
+        $selectPosition.append(`<option value="${specialization._id}">${specialization.name}</option>`)
+      })
+      if (student !== undefined || student != null) {
+        if (student.position !== undefined || student.position != null) {
+          $selectPosition.val(student.position._id)
+          $selectPosition.trigger('change')
+        }
+      }
+      $selectPosition.prop("disabled", false)
+
+      let $selectStudent = $(`select#student-${i}-user`).select2()
+      $selectStudent.html(`<option selected="selected" value>Načítání...</option>`)
+      $selectStudent.prop("disabled", true);
+      API.user.list({
+        specialization: $selectPosition.val()
+      }).then((listOfUsers) => {
+        $selectStudent.html(`<option selected="selected" value="">Žádný uživatel</option>`)
+        listOfUsers.forEach((user) => {
+          $selectStudent.append(`<option value="${user._id}">${user.name.first} ${user.name.middle !== undefined ? `${user.name.middle} ` : ''}${user.name.last}</option>`)
+        })
+        if (student != undefined || student != null) {
+          if (student.user != undefined || student.user != null) {
+            $selectStudent.val(student.user._id)
+            $selectStudent.trigger('change')
+          }
+        }
+        $selectStudent.prop("disabled", false);
+      })
+    })
+  }
+
+  function addMedia(media, i = $('div#media .row').length, motherDOM = $('div#media')) {
+    if (media == undefined) {
+      media = {}
+    }
+    $('<div>', {
+      class: 'row'
+    }).append(
+      $('<div>', {
+        class: 'col-md-6'
+      }).append(
+        $('<div>', {
+          class: 'form-group'
+        }).append(
+          $('<label>', {
+            class: 'form-control-label',
+            for: `kanban`
+          }).text('Kanban'),
+          $('<textarea>', {
+            class: 'form-control',
+            id: `kanban`,
+            rows: '1',
+            placeholder: 'Zde prosím vložte odkaz na kanban (nástěnku, např. Trello)'
+          }).text(media.kanban == undefined || media.kanban == null || media.kanban == '#' ? '' : media.kanban)
+        )
+      ),
+      $('<div>', {
+        class: 'col-md-6'
+      }).append(
+        $('<div>', {
+          class: 'form-group'
+        }).append(
+          $('<label>', {
+            class: 'form-control-label',
+            for: `meeting`
+          }).text('Komunikační platforma'),
+          $('<textarea>', {
+            class: 'form-control',
+            id: `meeting`,
+            rows: '1',
+            placeholder: 'Zde prosím vložte odkaz na setkávací platformu'
+          }).text(media.meeting == undefined || media.meeting == null || media.meeting == '#' ? '' : media.meeting)
+        )
+      ),
+      $('<div>', {
+        class: 'col',
+        id: 'repositories'
+      }),
+    ).appendTo(motherDOM)
+  }
+
+  function addRepositoryRowToMedia(repository, i = $('div#repositories .row ').length, motherDOM = $('div#repositories')) {
+    $('<div>', {
+      class: 'row'
+    }).append(
+      $('<div>', {
+        class: 'col-sm-11'
+      }).append(
+        $('<div>', {
+          class: 'form-group'
+        }).append(
+          $('<label>', {
+            class: 'form-control-label',
+            for: `repository-${i}`
+          }).text(`${i+1}. repozitář`),
+          $('<textarea>', {
+            class: 'form-control',
+            id: `repository-${i}`,
+            rows: '1',
+            required: 'required',
+            placeholder: 'Zde prosím vložte odkaz na repozitář (např. GitLab, GitHub, Bitbucket, ...)'
+          }).text(repository == undefined || repository == null ? '' : repository)
+        ),
+      ),
+      $('<div>', {
+        class: 'col-sm-1 m-auto'
+      }).append(
+        $('<button>', {
+          class: 'btn btn-danger m-auto',
+          type: 'button',
+          onclick: '$(this).parent().parent().remove()'
+        }).html('&times;')
+      )
+    ).appendTo(motherDOM)
+  }
+
+
+
+  function getMediaForRequest() {
+    let media = {}
+    let $kanban = $('#kanban')
+    if ($kanban.val() == '') {
+      media.kanban = '#'
+    } else {
+      media.kanban = $kanban.val()
     }
 
-    function addMedia(media, i = $('div#media .row').length, motherDOM = $('div#media')) {
-		if (media == undefined ) {
-			media = {}
-		}
-		$('<div>', { class: 'row' }).append(
-			$('<div>', { class: 'col-md-6' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `kanban` }).text('Kanban'),
-					$('<textarea>', {
-						class: 'form-control', id: `kanban`, rows: '1',
-						placeholder: 'Zde prosím vložte odkaz na kanban (nástěnku, např. Trello)'
-					}).text(media.kanban == undefined || media.kanban == null || media.kanban == '#' ? '' : media.kanban)
-				)
-			),
-			$('<div>', { class: 'col-md-6' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `meeting` }).text('Komunikační platforma'),
-					$('<textarea>', {
-						class: 'form-control', id: `meeting`, rows: '1',
-						placeholder: 'Zde prosím vložte odkaz na setkávací platformu'
-					}).text(media.meeting == undefined || media.meeting == null || media.meeting == '#' ? '' : media.meeting)
-				)
-			),
-			$('<div>', { class: 'col', id: 'repositories' }),
-		).appendTo(motherDOM)
-	}
+    let $meeting = $('#meeting')
+    if ($meeting == '') {
+      media.meeting = '#'
+    } else {
+      media.meeting = $meeting.val()
+    }
 
-	function addRepositoryRowToMedia(repository, i = $('div#repositories .row ').length, motherDOM = $('div#repositories')) {
-		$('<div>', { class: 'row' }).append(
-			$('<div>', { class: 'col-sm-11' }).append(
-				$('<div>', { class: 'form-group' }).append(
-					$('<label>', { class: 'form-control-label', for: `repository-${i}` }).text(`${i+1}. repozitář`),
-					$('<textarea>', {
-						class: 'form-control', id: `repository-${i}`, rows: '1', required: 'required',
-						placeholder: 'Zde prosím vložte odkaz na repozitář (např. GitLab, GitHub, Bitbucket, ...)'
-					}).text(repository == undefined || repository == null ? '' : repository)
-				),
-			),
-			$('<div>', { class: 'col-sm-1 m-auto' }).append(
-				$('<button>', { class: 'btn btn-danger m-auto', type: 'button', onclick: '$(this).parent().parent().remove()' }).html('&times;')
-			)
-		).appendTo(motherDOM)
-	}
-    function getDataForRequest() {
-		let students = []
-		let $students = $('div#students .row')
-		for (let i = 0; i < $students.length; i++) {
-			let user = $($($($($students[i]).children('div.col-4')[0]).children('div.form-group')[0]).children('select')[0]).val()
-			if (user == '') {
-				user = null
-			}
-			students.push({
-				position: $($($($($students[i]).children('div.col-2')[0]).children('div.form-group')[0]).children('select')[0]).val(),
-				task: $($($($($students[i]).children('div.col')[0]).children('div.form-group')[0]).children('textarea')[0]).val(),
-				user,
-			})
-		}
+    let repositories = []
+    let $repositories = $('div#repositories .row')
+    for (let i = 0; i < $repositories.length; i++) {
+      let val = $($($($($repositories[i]).children('div.col-sm-11')[0]).children('div.form-group')[0]).children('textarea')[0]).val()
+      if (val != undefined || val != null || val != '') {
+        repositories.push(val)
+      }
+    }
+    if (repositories.length > 0) {
+      media.repositories = repositories
+    }
 
-		let media = {}
-		let $kanban = $('#kanban')
-		if ($kanban.val() == '') {
-			media.kanban = '#'
-		} else {
-			media.kanban = $kanban.val()
-		}
-		
-		let $meeting = $('#meeting')
-		if ($meeting == '') {
-			media.meeting = '#'
-		} else {
-			media.meeting = $meeting.val()
-		}
+    return media
+  }
 
-		let repositories = []
-		let $repositories = $('div#repositories .row')
-		for (let i = 0; i < $repositories.length; i++) {
-			let val = $($($($($repositories[i]).children('div.col-sm-11')[0]).children('div.form-group')[0]).children('textarea')[0]).val()
-			if (val != undefined || val != null || val != '') {
-				repositories.push(val)
-			}
-		}
-		if (repositories.length > 0) {
-			media.repositories = repositories
-		}
+  function getBasicInfoForRequest() {
+    return {
+      name: $('#name').val(),
+      number: Number($('#number').val()),
+      description: $('#description').val(),
+      result: $('#result').val(),
+    }
+  }
 
-		return {
-			description: $('#description').val(),
-			students,
-			media,
-			result: $('#result').val()
-		}
-	}
+  function getDataForRequest() {
+    let media = {}
+    let $kanban = $('#kanban')
+    if ($kanban.val() == '') {
+      media.kanban = '#'
+    } else {
+      media.kanban = $kanban.val()
+    }
 
-	$(document).ready(() => {
-		API.teamwork
-			.findById('<%= req.params.id %>')
-			.then(function (responseFromServer) {
-				if (responseFromServer.description !== undefined) {
-					$('#description').val(responseFromServer.description)
-				}
-				if (responseFromServer.result !== undefined) {
-					$('#result').val(responseFromServer.result)
-				}
-				if (responseFromServer.students !== undefined) {
-					for (let i = 0; i < responseFromServer.students.length; i++) {
-						addStudentRow(responseFromServer.students[i])
-					}
-				}
-				addMedia(responseFromServer.media)
-				if (responseFromServer.media != undefined ) {
-					if (responseFromServer.media.repositories != undefined) {
-						for (i = 0; i < responseFromServer.media.repositories.length; i++) {
-							addRepositoryRowToMedia(responseFromServer.media.repositories[i])
-						}
-					}
-				}
-			})
+    let $meeting = $('#meeting')
+    if ($meeting == '') {
+      media.meeting = '#'
+    } else {
+      media.meeting = $meeting.val()
+    }
 
-		$('form#edit-teamwork').submit(function (event) {
-			event.preventDefault()
-			let $status = $('div#edit-teamwork-status')
-			$status
-				.empty()
-				.append(
-					$('<div>', { class: 'alert alert-info alert-dismissible' }).append(
-						$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-						'Zpracovávám'
-					)
-				)
-				.show()
-			let dataForRequest = getDataForRequest()
-			if (dataForRequest.students.length < 2) {
-				return $status
-					.empty()
-					.append(
-						$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-							$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-							$('<strong>').text('Ouha! '),
-							'Minimální počet studentů u týmové práce je 2'
-						)
-					)
-					.show()
-			}
-			API.teamwork
-				.edit(
-					'<%= req.params.id %>',
-					dataForRequest.name,
-					dataForRequest.description,
-					dataForRequest.students,
-					dataForRequest.guarantors,
-					dataForRequest.consultants,
-					dataForRequest.result,
-					dataForRequest.number,
-					dataForRequest.media,
-					dataForRequest.year,
-				)
-				.then(function (responseFromServer) {
-					if (responseFromServer.status === 'ok') {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Gratuluji!'),
-									' Úspěšně jste upravil(a) týmovou práci'
-								)
-							)
-							.show()
+    let repositories = []
+    let $repositories = $('div#repositories .row')
+    for (let i = 0; i < $repositories.length; i++) {
+      let val = $($($($($repositories[i]).children('div.col-sm-11')[0]).children('div.form-group')[0]).children('textarea')[0]).val()
+      if (val != undefined || val != null || val != '') {
+        repositories.push(val)
+      }
+    }
+    if (repositories.length > 0) {
+      media.repositories = repositories
+    }
 
-						// Redirect to teamworks page
-						setTimeout(function () {
-							window.location.href = window.location.href;
-						}, 3500)
-					} else {
-						$status
-							.empty()
-							.append(
-								$('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-									$('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-									$('<strong>').text('Ach ne! '),
-									responseFromServer.error
-								)
-							)
-							.show()
-					}
-				})
-		})
-	})
+    return {
+      description: $('#description').val(),
+      media,
+      result: $('#result').val()
+    }
+  }
+
+  $(document).ready(() => {
+    API.teamwork
+      .findById('<%= req.params.id %>')
+      .then(function(responseFromServer) {
+        if (responseFromServer.description !== undefined) {
+          $('#description').val(responseFromServer.description)
+        }
+        if (responseFromServer.result !== undefined) {
+          $('#result').val(responseFromServer.result)
+        }
+        if (responseFromServer.students !== undefined) {
+          for (let i = 0; i < responseFromServer.students.length; i++) {
+            addStudentRow(responseFromServer.students[i])
+          }
+        }
+        addMedia(responseFromServer.media)
+        if (responseFromServer.media != undefined) {
+          if (responseFromServer.media.repositories != undefined) {
+            for (i = 0; i < responseFromServer.media.repositories.length; i++) {
+              addRepositoryRowToMedia(responseFromServer.media.repositories[i])
+            }
+          }
+        }
+        $('form#edit-basicinfo-form').submit(function(event) {
+          event.preventDefault()
+          let $status = $('div#edit-basicinfo-status')
+          $status
+            .empty()
+            .append(
+              $('<div>', {
+                class: 'alert alert-info alert-dismissible'
+              }).append(
+                $('<a>', {
+                  href: '#',
+                  class: 'close',
+                  'data-dismiss': 'alert',
+                  'aria-label': 'close'
+                }).html('&times;'),
+                'Zpracovávám'
+              )
+            )
+            .show()
+          let dataForRequest = getBasicInfoForRequest()
+          API.teamwork
+            .updateBasicInfo(
+              '<%= req.params.id %>',
+              responseFromServer.name,
+              dataForRequest.description,
+              dataForRequest.result,
+              responseFromServer.number
+            )
+            .then(function(responseFromServer) {
+              if (responseFromServer.status === 'ok') {
+                $status
+                  .empty()
+                  .append(
+                    $('<div>', {
+                      class: 'alert alert-success alert-dismissible'
+                    }).append(
+                      $('<a>', {
+                        href: '#',
+                        class: 'close',
+                        'data-dismiss': 'alert',
+                        'aria-label': 'close'
+                      }).html('&times;'),
+                      $('<strong>').text('Gratuluji!'),
+                      ' Úspěšně jste upravil(a) základní údaje týmové práce'
+                    )
+                  )
+                  .show()
+                setTimeout(function() {
+                  window.location.reload()
+                }, 3500)
+              } else {
+                $status
+                  .empty()
+                  .append(
+                    $('<div>', {
+                      class: 'alert alert-danger alert-dismissible'
+                    }).append(
+                      $('<a>', {
+                        href: '#',
+                        class: 'close',
+                        'data-dismiss': 'alert',
+                        'aria-label': 'close'
+                      }).html('&times;'),
+                      $('<strong>').text('Ach ne! '),
+                      responseFromServer.error
+                    )
+                  )
+                  .show()
+              }
+            })
+        })
+      })
+
+
+    $('form#edit-media-form').submit(function(event) {
+      event.preventDefault()
+      let $status = $('div#edit-media-status')
+      $status
+        .empty()
+        .append(
+          $('<div>', {
+            class: 'alert alert-info alert-dismissible'
+          }).append(
+            $('<a>', {
+              href: '#',
+              class: 'close',
+              'data-dismiss': 'alert',
+              'aria-label': 'close'
+            }).html('&times;'),
+            'Zpracovávám'
+          )
+        )
+        .show()
+      API.teamwork
+        .updateMedia('<%= req.params.id %>', getMediaForRequest())
+        .then(function(responseFromServer) {
+          if (responseFromServer.status === 'ok') {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-success alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Gratuluji!'),
+                  ' Úspěšně jste upravil(a) média týmové práce'
+                )
+              )
+              .show()
+            setTimeout(function() {
+              window.location.reload()
+            }, 3500)
+          } else {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-danger alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Ach ne! '),
+                  responseFromServer.error
+                )
+              )
+              .show()
+          }
+        })
+    })
+  })
 </script>
 <%- include('../partials/file-end') %>

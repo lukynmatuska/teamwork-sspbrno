@@ -340,7 +340,7 @@ var API = {
     },
 
     updateBasicInfo: function (id, name, description, result, number) {
-      return postData('/teamwork/update-basic-info', { id, name, description, students, result, number })
+      return postData('/teamwork/update-basic-info', { id, name, description, result, number })
     },
 
     updateAdvanced: function (id, yearId) {
