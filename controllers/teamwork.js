@@ -1100,3 +1100,44 @@ module.exports.editGuarantorAndConsultantPosition = (req, res) => {
         })
     })
 }
+
+module.exports.updateFinalFeedback = (req, res) => {
+  if (req.body.id == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-id'
+      })
+  } else if (req.body.finalfeedback == undefined) {
+    return res
+      .status(422)
+      .json({
+        status: 'error',
+        error: 'not-send-finalfeedback'
+      })
+  }
+  TeamWork
+    .findByIdAndUpdate(
+      req.body.id,
+      {
+        finalFeedback: req.body.finalfeedback,
+      }
+    )
+    .exec((err) => {
+      if (err) {
+        console.error(err)
+        return res
+          .status(500)
+          .json({
+            status: 'error',
+            error: 'mongo-err'
+          })
+      }
+      return res
+        .status(200)
+        .json({
+          status: 'ok'
+        })
+    })
+}

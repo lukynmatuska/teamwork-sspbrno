@@ -1,131 +1,220 @@
 <%- include('../partials/header') %>
-    <%- include('../partials/file-start') %>
-        <%- include('../partials/menu') %>
-            <main role="main" class="inner cover mt-5">
-                <div class="m-auto">
-                    <div class="card">
-                        <%- include('./menu', { active: 'feedback' }) %>
-                            <div class="card-body">
-                                <h1 class="card-title text-dark">
-                                    <%= teamwork.fullname %>
-                                </h1>
-                                <h3 class="card-text text-dark">Finální hodnocení týmu</h3>
-                                <p class="card-text text-muted">
-                                    <% if (!teamwork.finalFeedback) { %>
-                                        Žádné
-                                        <% } else { %>
-                                            <%= teamwork.finalFeedback %>
-                                                <% } %>
-                                </p>
-                                <h3 class="card-text text-dark">Hodnocení studentů</h3>
-                                <% if (teamwork.feedbacks.length==0) { %>
-                                    <p class="card-text text-muted">
-                                        Žádné
-                                    </p>
-                                    <% } %>
-                                        <% for( let i=0; i < teamwork.feedbacks.length; i++ ) { %>
-                                            <div class="text-dark">
-                                                <%if ( teamwork.feedbacks[i].student==null || ['admin', 'guarantor'
-                                                    , 'consultant' ].includes(req.session.user.type) ||
-                                                    String(teamwork.feedbacks[i].student) == String(req.session.user._id) ) {%>
-                                                    <%= moment(teamwork.feedbacks[i].date).format('DD.MM.YYYY') %>
-                                                        <%= teamwork.feedbacks[i].author.name.full %>
-                                                            <%= teamwork.feedbacks[i].student ? 'zhodnotil' : '' %>
-                                                                <%= teamwork.feedbacks[i]?.student?.name.full %>
-                                                                    <%= teamwork.feedbacks[i].text %>
-                                                                        <%}%>
-                                            </div>
-                                            <% } %>
-                                                <% if (canFeedback) { %>
-                                                    <form action="#" id="feedback">
-                                                        <div class="mb-3">
-                                                            <label for="feedback-student"
-                                                                class="text-dark">Student</label>
-                                                            <select class="form-control" id="feedback-student">
-                                                                <option selected value="null">
-                                                                    Vyberte studenta
-                                                                    k hodnocení nebo hodnoťte celý tým</option>
-                                                                <% teamwork.students.forEach(studentObj=> {
-                                                                    if (studentObj.user != undefined) { %>
-                                                                    <%= studentObj.user.name.first %>
-                                                                        <option value="<%= studentObj.user._id %>">
-                                                                            <%= studentObj.user.name.full %>
-                                                                        </option>
-                                                                        <% } }) %>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="add-feedback-text" class="form-label text-dark">
-                                                                Hodnocení
-                                                            </label>
-                                                            <input type="text" id="add-feedback-text"
-                                                                class="form-control"
-                                                                placeholder="Super, student AB pracoval přesně podle mých představ. Navrhuji známku jedna.">
-                                                        </div>
-                                                        <div class="pl-lg-4">
-                                                            <div class="row">
-                                                                <div class="col" id="add-feedback-status"
-                                                                    style="display: none;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary">Přidat</button>
-                                                    </form>
-                                                    <% } %>
-                            </div>
-                    </div>
+<%- include('../partials/file-start') %>
+<%- include('../partials/menu') %>
+<main role="main" class="inner cover mt-5">
+  <div class="m-auto">
+    <div class="card">
+      <%- include('./menu', { active: 'feedback' }) %>
+      <div class="card-body">
+        <h1 class="card-title text-dark"><%= teamwork.fullname %></h1>
+        <h3 class="card-text text-dark">Finální hodnocení týmu</h3>
+        <p class="card-text text-muted">
+          <% if (!teamwork.finalFeedback) { %>
+          Žádné
+          <% } else { %>
+          <%= teamwork.finalFeedback %>
+          <% } %>
+        </p>
+        <h3 class="card-text text-dark">Hodnocení studentů</h3>
+        <% if (teamwork.feedbacks.length==0) { %>
+        <p class="card-text text-muted">
+          Žádné
+        </p>
+        <% } %>
+        <% for( let i=0; i < teamwork.feedbacks.length; i++ ) { %>
+        <div class="text-dark">
+          <%if ( teamwork.feedbacks[i].student == null || ['admin', 'guarantor', 'consultant' ].includes(req.session.user.type) || String(teamwork.feedbacks[i].student) == String(req.session.user._id) ) {%>
+          <%= moment(teamwork.feedbacks[i].date).format('DD.MM.YYYY') %>
+          <%= teamwork.feedbacks[i].author.name.full %>
+          <%= teamwork.feedbacks[i].student ? 'ohodnotil' : '' %>
+          <%= teamwork.feedbacks[i]?.student?.name.full %>
+          <%= teamwork.feedbacks[i].text %>
+          <%}%>
+        </div>
+        <% } %>
+          <% if (canFeedback) { %>
+          <form action="#" id="feedback">
+            <div class="mb-3">
+              <label for="feedback-student" class="text-dark">Student</label>
+              <select class="form-control" id="feedback-student">
+                <option selected value="null">Vyberte studenta k hodnocení nebo hodnoťte celý tým</option>
+                <% teamwork.students.forEach(studentObj=> {
+              if (studentObj.user != undefined) { %>
+                <%= studentObj.user.name.first %>
+                <option value="<%= studentObj.user._id %>"><%= studentObj.user.name.full %></option>
+                <% } }) %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="add-feedback-text" class="form-label text-dark">Hodnocení</label>
+              <input type="text" id="add-feedback-text" class="form-control" placeholder="Student AB pracoval přesně podle mých představ. Navrhuji známku jedna.">
+            </div>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col" id="add-feedback-status" style="display: none;"></div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Přidat</button>
+          </form>
+          <form action="#" id="final-feedback-form" class="mt-3">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label class="form-control-label card-text text-dark h3" for="description">Finální hodnocení týmu</label>
+                  <textarea id="final-feedback" class="form-control" rows="10" placeholder="Zde se prosím rozepište o výsledku týmové práce."><%= teamwork.finalFeedback %></textarea>
                 </div>
-            </main>
-            <%- include('../partials/scripts-file-end') %>
-                <%- include('../partials/footer') %>
-                    <%- include('../partials/file-end') %>
-                        <script>
-                            $(document).ready(() => {
-                                let $status = $('div#add-feedback-status')
-                                let $feedbackStudent = $('#feedback-student')
-                                let $feedbackText = $('#add-feedback-text')
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" id="edit-final-feedback-status" style="display: none;"></div>
+              <div class="col-4 text-left">
+                <button type="submit" class="btn btn-primary">Upravit</button>
+              </div>
+            </div>
+          </form>
+          <% } %>
+        </div>
+      </div>
+    </div>
+</main>
+<%- include('../partials/scripts-file-end') %>
+<%- include('../partials/footer') %>
+<%- include('../partials/file-end') %>
+<script>
+  $(document).ready(() => {
+    let $status = $('div#add-feedback-status')
+    let $feedbackStudent = $('#feedback-student')
+    let $feedbackText = $('#add-feedback-text')
+    let $finalFeedback = $('#final-feedback')
 
-                                $('form#feedback').submit(function (event) {
-                                    event.preventDefault()
-                                    let $status = $('div#edit-basicinfo-status')
-                                    $status
-                                        .empty()
-                                        .append(
-                                            $('<div>', { class: 'alert alert-info alert-dismissible' }).append(
-                                                $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                                'Zpracovávám'
-                                            )
-                                        )
-                                        .show()
-                                    API.teamwork
-                                        .addFeedback('<%= req.params.id %>', $feedbackText.val(), $feedbackStudent.val())
-                                        .then(function (responseFromServer) {
-                                            if (responseFromServer.status === 'ok') {
-                                                $status
-                                                    .empty()
-                                                    .append(
-                                                        $('<div>', { class: 'alert alert-success alert-dismissible' }).append(
-                                                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                                            $('<strong>').text('Gratuluji!'),
-                                                            ' Úspěšně jste přidal(a) hodnocení do týmové práce'
-                                                        )
-                                                    )
-                                                    .show()
-                                                setTimeout(function () {
-                                                    window.location.reload()
-                                                }, 3500)
-                                            } else {
-                                                $status
-                                                    .empty()
-                                                    .append(
-                                                        $('<div>', { class: 'alert alert-danger alert-dismissible' }).append(
-                                                            $('<a>', { href: '#', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' }).html('&times;'),
-                                                            $('<strong>').text('Ach ne! '),
-                                                            responseFromServer.error
-                                                        )
-                                                    )
-                                                    .show()
-                                            }
-                                        })
-                                })
-                            })
-                        </script>
+    $('form#feedback').submit(function(event) {
+      event.preventDefault()
+      let $status = $('div#edit-basicinfo-status')
+      $status
+        .empty()
+        .append(
+          $('<div>', {
+            class: 'alert alert-info alert-dismissible'
+          }).append(
+            $('<a>', {
+              href: '#',
+              class: 'close',
+              'data-dismiss': 'alert',
+              'aria-label': 'close'
+            }).html('&times;'),
+            'Zpracovávám'
+          )
+        )
+        .show()
+      API.teamwork
+        .addFeedback('<%= req.params.id %>', $feedbackText.val(), $feedbackStudent.val())
+        .then(function(responseFromServer) {
+          if (responseFromServer.status === 'ok') {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-success alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Gratuluji!'),
+                  ' Úspěšně jste přidal(a) hodnocení do týmové práce'
+                )
+              )
+              .show()
+            setTimeout(function() {
+              window.location.reload()
+            }, 3500)
+          } else {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-danger alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Ach ne! '),
+                  responseFromServer.error
+                )
+              )
+              .show()
+          }
+        })
+    })
+
+    $('form#final-feedback-form').submit(function(event) {
+      event.preventDefault()
+      let $status = $('div#edit-final-feedback-status')
+      $status
+        .empty()
+        .append(
+          $('<div>', {
+            class: 'alert alert-info alert-dismissible'
+          }).append(
+            $('<a>', {
+              href: '#',
+              class: 'close',
+              'data-dismiss': 'alert',
+              'aria-label': 'close'
+            }).html('&times;'),
+            'Zpracovávám'
+          )
+        )
+        .show()
+      API.teamwork
+        .updateFinalFeedback('<%= req.params.id %>', $finalFeedback.val())
+        .then(function(responseFromServer) {
+          if (responseFromServer.status === 'ok') {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-success alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Gratuluji!'),
+                  ' Úspěšně jste přidal(a) hodnocení do týmové práce'
+                )
+              )
+              .show()
+            setTimeout(function() {
+              window.location.reload()
+            }, 3500)
+          } else {
+            $status
+              .empty()
+              .append(
+                $('<div>', {
+                  class: 'alert alert-danger alert-dismissible'
+                }).append(
+                  $('<a>', {
+                    href: '#',
+                    class: 'close',
+                    'data-dismiss': 'alert',
+                    'aria-label': 'close'
+                  }).html('&times;'),
+                  $('<strong>').text('Ach ne! '),
+                  responseFromServer.error
+                )
+              )
+              .show()
+          }
+        })
+    })
+  })
+</script>

@@ -351,6 +351,10 @@ var API = {
       return postData('/teamwork/update-media', { id, media })
     },
 
+    updateFinalFeedback: function (id, finalFeedback) {
+      return postData('/teamwork/update-finalfeedback', { id, finalfeedback: finalFeedback })
+    },
+
     findById: function (id) {
       return getData('/teamwork/find-by-id/' + id)
     },

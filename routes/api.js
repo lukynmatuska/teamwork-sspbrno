@@ -146,6 +146,7 @@ router.post('/teamwork/delete-position', partials.onlyGuarantorAndConsultantAndA
 router.post('/teamwork/edit-guarantor-position', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.editGuarantorAndConsultantPosition)
 router.post('/teamwork/edit-consultant-position', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.editGuarantorAndConsultantPosition)
 router.post('/teamwork/update-media', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.updateMedia)
+router.post('/teamwork/update-finalfeedback', partials.onlyGuarantorAndConsultantAndAdmin, teamworkController.updateFinalFeedback)
 router.get('/teamwork/list', teamworkController.list)
 router.get('/teamwork/find-by-id/:id', teamworkController.findById)
 router.post('/teamwork/delete', partials.onlyAdmin, teamworkController.delete)
