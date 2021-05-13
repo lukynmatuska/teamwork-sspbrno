@@ -91,7 +91,7 @@
 									break
 							}
 						})
-					
+
 				}
 			})
 		}
@@ -147,7 +147,8 @@
 										$(nTd).html(oData.specialization.name)
 									} else {
 										if (oData.type == 'student') {
-											$(nTd).parent().addClass('bg-gradient-danger text-white')
+											$(nTd).parent().addClass('bg-gradient-danger text-white');
+											$(nTd).addClass('bg-gradient-warning text-white');
 										}
 										$(nTd).html('')
 									}
@@ -156,7 +157,8 @@
 								data: 'ownCloudId',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 									if (oData.ownCloudId == undefined) {
-										$(nTd).parent().addClass('bg-gradient-danger text-white')
+										$(nTd).parent().addClass('bg-gradient-danger text-white');
+										$(nTd).addClass('bg-gradient-warning text-white');
 										$(nTd).html('Chybí')
 									} else {
 										$(nTd).html(oData.ownCloudId)
@@ -180,7 +182,8 @@
 										}
 									}
 									if (oData.years.length == 0) {
-										$(nTd).parent().addClass('bg-gradient-danger text-white')
+										$(nTd).parent().addClass('bg-gradient-danger text-white');
+										$(nTd).addClass('bg-gradient-warning text-white');
 									}
 								}
 							}, {

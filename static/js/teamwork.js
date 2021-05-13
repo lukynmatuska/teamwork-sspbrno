@@ -156,9 +156,9 @@ async function teamWorkDOM(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeam
                 $('<h4>', { class: 'card-title text-dark' }).text('Studenti'),
                 await studentsDOMsFromTeamwork(teamwork, isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar),
                 (canIseeGDPRthingsInVar ? $('<span>').append(
-                    (guarantorsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti') : 'null0'),
+                    (guarantorsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Garanti') : null),
                     guarantorsDOMs,
-                    (consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : 'null1'),
+                    (consultantsDOMs.children().length > 0 ? $('<h4>', { class: 'card-title text-dark mt-3' }).text('Konzultanti') : null),
                     consultantsDOMs
                 ) : null),
                 !isUserLoggedIn ? null : (await isGivenTeamworkMine(teamwork._id) ? teamWorkDetailButton(teamwork._id) : null)
