@@ -464,8 +464,7 @@ module.exports.select = (req, res) => {
                 error: 'already-asigned'
               })
           }
-          teamWork.students[i].user = req.session.user._id
-          break
+          teamWork.students[i].user = req.session.user._id;
         }
       }
       owncloudController.selectTeamWork(req, res, teamWork, req.body.position)

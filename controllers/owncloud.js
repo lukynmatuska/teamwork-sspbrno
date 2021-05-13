@@ -128,12 +128,11 @@ module.exports.selectTeamWork = (req, res, teamWork, positionId) => {
                 students: []
             };
             for (let i = 0; i < teamWork.students.length; i++) {
+                update.students.push(teamWork.students[i])
                 if (String(teamWork.students[i]._id) != String(positionId)) {
                     continue;
                 }
-                update.students.push(teamWork.students[i])
                 update.students[0].owncloudShareId = shareInfo.shareInfo.id;
-                break;
             }
             return mongo(req, res, update);
         }).catch((err) => {
