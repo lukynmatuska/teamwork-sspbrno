@@ -90,7 +90,6 @@ router.post('/user/parse-students-xlsx', partials.onlyAdmin, userController.pars
 router.get('/user/is-given-specialization-mine', partials.onlyLoggedIn, userController.isGivenSpecializationMine)
 router.get('/user/has-user-given-specialization', partials.onlyLoggedIn, userController.hasUserGivenSpecialization)
 router.get('/user/is-given-id-mine', userController.isGivenIdMine)
-router.get('/user/can-i-see-gdpr-things', userController.canIseeGDPRthings)
 
 router.get('/user/logout', partials.onlyLoggedIn, (req, res) => {
   req.session.destroy()

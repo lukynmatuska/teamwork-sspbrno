@@ -1172,19 +1172,3 @@ module.exports.isGivenIdMine = (req, res) => {
       data: (String(req.session.user._id) == String(req.query.id))
     })
 }
-
-module.exports.canIseeGDPRthings = (req, res) => {
-  if (req.session.user == undefined) {
-    return res
-      .status(200)
-      .send(false)
-  } else if (['admin', 'consultant', 'guarantor'].includes(req.session.user.type)) {
-    return res
-      .status(200)
-      .send(true)
-  } else {
-    return res
-      .status(200)
-      .send(false)
-  }
-}

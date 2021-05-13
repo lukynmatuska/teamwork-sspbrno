@@ -17,20 +17,19 @@
                             API.teamwork
                                 .list()
                                 .then(async function (teamworks) {
-                                    if (teamworks.length == 0){
+                                    if (teamworks.length == 0) {
                                         return $teamWorksDOM.append($('<p>', { class: 'lead description' }).text('Pro tento ročník ještě nebyly vytvořeny žádné týmové práce.'))
                                     }
-                                    teamworks.sort(function (a,b) {
-                                      if (a.number < b.number) {
-                                        return -1;
-                                      }
-                                      if (a.number > b.number) {
-                                        return 1;
-                                      }
-                                      return 0;
+                                    teamworks.sort(function (a, b) {
+                                        if (a.number < b.number) {
+                                            return -1;
+                                        }
+                                        if (a.number > b.number) {
+                                            return 1;
+                                        }
+                                        return 0;
                                     });
                                     const canStudentsJoinOrLeaveTeamworkInVar = await API.year.canStudentsJoinOrLeaveTeamwork()
-                                    const canIseeGDPRthingsInVar = await canIseeGDPRthings();
                                     let isUserLoggedIn
                                     let hasStudentBeenAsignedToTeamWorkInVar
                                     if (canStudentsJoinOrLeaveTeamworkInVar) {
@@ -41,7 +40,7 @@
                                         hasStudentBeenAsignedToTeamWorkInVar = false
                                     }
                                     for (let i = 0; i < teamworks.length; i++) {
-                                        const teamworkDOM = await teamWorkDOM(teamworks[i], isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar, canIseeGDPRthingsInVar)
+                                        const teamworkDOM = await teamWorkDOM(teamworks[i], isUserLoggedIn, hasStudentBeenAsignedToTeamWorkInVar);
                                         $teamWorksDOM.append(teamworkDOM)
                                     }
                                 })

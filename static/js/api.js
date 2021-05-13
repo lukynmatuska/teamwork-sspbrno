@@ -267,10 +267,6 @@ var API = {
 
     isGivenUserIdMine: function (UserId) {
       return getData('/user/is-given-id-mine', { id: UserId })
-    },
-
-    canIseeGDPRthings: function () {
-      return getData('/user/can-i-see-gdpr-things')
     }
   },
 
