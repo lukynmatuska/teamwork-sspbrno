@@ -22,7 +22,7 @@ var teamWorkSchema = new mongoose.Schema({
   },
   number: {
     type: Number,
-    default: 1
+    default: 0
   },
   result: {
     type: String,
@@ -114,10 +114,10 @@ teamWorkSchema.virtual('id').get(function () {
 })
 
 teamWorkSchema.virtual('fullname').get(function () {
-  if (this.number == undefined || this.number == null || this.number <= 1) {
+  if (this.number == undefined || this.number == null) {
     return this.name
   } else {
-    return String(`${this.name} ${this.number}`)
+    return String(`${this.number} ${this.name}`)
   }
 })
 

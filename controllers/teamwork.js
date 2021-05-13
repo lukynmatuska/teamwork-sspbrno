@@ -265,7 +265,6 @@ module.exports.copy = (req, res) => {
       }
       teamWork._id = mongoose.Types.ObjectId()
       teamWork.media = {}
-      teamWork.number += 1
       teamWork = new TeamWork(teamWork)
       teamWork.isNew = true
       teamWork.save((err, tw) => {

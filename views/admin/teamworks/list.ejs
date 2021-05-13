@@ -22,7 +22,7 @@
 									<tr>
 										<th scope="col" class="sort">ID</th>
 										<th scope="col" class="sort" data-sort="name">Název</th>
-										<th scope="col">Číslo TP</th>
+										<th scope="col">Číslo tématu</th>
 										<th scope="col">Studenti</th>
 										<th scope="col">Garanti</th>
 										<th scope="col">Konzultanti</th>
@@ -117,7 +117,7 @@
 						})
 					}
 				})
-				
+
 				if (!year) {
 					return Swal
 						.fire({
@@ -174,6 +174,7 @@
 						},
 						responsive: true,
 						data: responseFromServer,
+						order: [[2, "asc"]],
 						columns: [
 							{
 								data: "_id",
@@ -182,6 +183,15 @@
 								data: 'name',
 							}, {
 								data: 'number',
+								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+									if (oData.number != undefined || oData.number != null) {
+										$(nTd).html(oData.number)
+									}
+									if (oData.number == 0) {
+										$(nTd).parent().addClass('bg-gradient-danger text-white');
+										$(nTd).addClass('bg-gradient-warning text-white');
+									}
+								}
 							}, {
 								data: 'students',
 								fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
