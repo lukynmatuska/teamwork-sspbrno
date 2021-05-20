@@ -14,7 +14,14 @@
 					<div class="card">
 						<!-- Card header -->
 						<div class="card-header border-0">
-							<h3 class="mb-0">Seznam</h3>
+							<div class="row align-items-center">
+								<div class="col">
+									<h3 class="mb-0">Seznam</h3>
+								</div>
+								<div class="col text-right">
+									<button onclick="API.user.list().then(users => { myCopyToClipboard(JSON.stringify(users)); });" class="btn btn-sm btn-primary">Zkopírovat seznam uživatelů do schránky</button>
+								</div>
+							</div>
 						</div>
 						<div class="table-responsive">
 							<table class="table w-100" id="users">
